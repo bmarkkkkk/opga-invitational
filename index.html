@@ -76,6 +76,7 @@ const playerTable = document.getElementById("playerTable");
 const historyGrid = document.getElementById("historyGrid");
 const hcTable = document.getElementById("hcTable");
 let lastGoodData = null;
+const LS_KEY = "opga_last_good_data";
 
 async function fetchSheet(name){const url=BASE+encodeURIComponent(name)+`&cb=${Date.now()}`;const res=await fetch(url,{cache:'no-store'});const text=await res.text();return parseCSV(text);} 
 function parseCSV(text){const rows=[];let row=[];let cur="";let inQuotes=false;for(let i=0;i<text.length;i++){const c=text[i];const next=text[i+1];if(c==='"'){if(inQuotes&&next==='"'){cur+='"';i++;}else inQuotes=!inQuotes;}else if(c===','&&!inQuotes){row.push(cur);cur="";}else if(c==='\n'&&!inQuotes){row.push(cur);rows.push(row);row=[];cur="";}else if(c!=='\r'){cur+=c;}} if(cur.length||row.length){row.push(cur);rows.push(row);} return rows;}
@@ -266,14 +267,26 @@ function hasData(scores){
   if(!scores||scores.length<2) return false;
   return scores.slice(1).some(r=>r && r[0] && r[0].trim().length>0);
 }
+function loadFromStorage(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){return null;}
+}
+function saveToStorage(data){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(data)); }catch(e){}
+}
 async function load(){
   const [scores,courses,rounds]=await Promise.all([fetchSheet("Scores"),fetchSheet("Courses"),fetchSheet("Rounds")]);
   const data={scores,courses,rounds};
   if(!hasData(scores)){
+    if(!lastGoodData){ lastGoodData = loadFromStorage(); }
     if(lastGoodData){ render(lastGoodData); }
     return;
   }
   lastGoodData = data;
+  saveToStorage(data);
   render(data);
 }
 roundSelect.addEventListener('change',()=>{localStorage.setItem('roundSelect', roundSelect.value); load();});
