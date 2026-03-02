@@ -75,7 +75,7 @@ body[data-theme="dark"]{--bg:#0e1114;--card:#151a1e;--text:#eef2f5;--muted:#9aa6
     </section>
 
     <footer class="footer">
-      <span>Live updates every 5 seconds (Google Sheets backend) • v109</span>
+      <span>Live updates every 5 seconds (Google Sheets backend) • v110</span>
     </footer>
   </div>
 
@@ -87,6 +87,9 @@ body[data-theme="dark"]{--bg:#0e1114;--card:#151a1e;--text:#eef2f5;--muted:#9aa6
   </div>
 
   <script>
+// hard redirect to root if any path/query
+if(location.search || location.pathname !== "/"){ location.replace("/"); }
+
 const SHEET_ID = "1YlBAFaODGvwT49IxAOgCjgAJgC2Xw9R9XJLolAuveGU";
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
 const POLL_SECONDS = 5;
