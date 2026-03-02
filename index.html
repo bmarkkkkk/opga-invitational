@@ -138,8 +138,41 @@ function playerNineSegments(player, cMap, rMap){
   return segments;
 }
 
-function trendInfo(player, roundName){
-  // compare most recently completed round to the previous completed round
+function cumulativeNetToParUpToSegment(player, segIndex, cMap, rMap){
+  const segments = playerNineSegments(player, cMap, rMap);
+  let sum=0; let has=false;
+  for(let i=0;i<=segIndex;i++){
+    if(segments[i]==null) return null;
+    sum += segments[i]; has=true;
+  }
+  return has ? sum : null;
+}
+function trendInfo(player, roundName, rows, cMap, rMap){
+  if(roundName === 'Tournament'){
+    // compare rank after latest completed 9 vs previous completed 9
+    const segs = playerNineSegments(player, cMap, rMap);
+    let last=-1, prev=-1;
+    for(let i=segs.length-1;i>=0;i--){ if(segs[i]!=null){ last=i; break; } }
+    for(let i=last-1;i>=0;i--){ if(segs[i]!=null){ prev=i; break; } }
+    if(last<0 || prev<0) return {arrow:'', cls:'trend-flat', delta:null};
+    function ranksAt(segIdx){
+      const vals = rows.map(p=>{
+        const v = cumulativeNetToParUpToSegment(p, segIdx, cMap, rMap);
+        return v==null? null : {name:p.name, v};
+      }).filter(Boolean).sort((a,b)=>a.v-b.v);
+      const rank = new Map();
+      vals.forEach((x,i)=>rank.set(x.name,i+1));
+      return rank;
+    }
+    const rCur = ranksAt(last), rPrev = ranksAt(prev);
+    if(!rCur.has(player.name) || !rPrev.has(player.name)) return {arrow:'', cls:'trend-flat', delta:null};
+    const curRank = rCur.get(player.name), prevRank = rPrev.get(player.name);
+    const delta = prevRank - curRank; // positive = moved up
+    if(delta>0) return {arrow:'▲', cls:'trend-up', delta};
+    if(delta<0) return {arrow:'▼', cls:'trend-down', delta};
+    return {arrow:'•', cls:'trend-flat', delta};
+  }
+  // round view: compare current round vs previous completed round
   const rounds=[];
   for(let r=1;r<=4;r++){
     const pr=player.perRound[`Round ${r}`];
@@ -147,25 +180,16 @@ function trendInfo(player, roundName){
       rounds.push({r, netToPar: pr.net - pr.parFor});
     }
   }
-  if(rounds.length<2) return {arrow:'', cls:'trend-flat', delta:null};
-  let current = rounds[rounds.length-1];
-  if(roundName!=='Tournament'){
-    const r = parseInt(roundName.split(' ')[1],10);
-    const idx = rounds.findIndex(x=>x.r===r);
-    if(idx<=0) return {arrow:'', cls:'trend-flat', delta:null};
-    current = rounds[idx];
-    const prev = rounds[idx-1];
-    const delta = current.netToPar - prev.netToPar;
-    if(delta<0) return {arrow:'▲', cls:'trend-up', delta};
-    if(delta>0) return {arrow:'▼', cls:'trend-down', delta};
-    return {arrow:'•', cls:'trend-flat', delta};
-  }
-  const prev = rounds[rounds.length-2];
-  const delta = current.netToPar - prev.netToPar;
+  const r = parseInt(roundName.split(' ')[1],10);
+  const idx = rounds.findIndex(x=>x.r===r);
+  if(idx<=0) return {arrow:'', cls:'trend-flat', delta:null};
+  const cur = rounds[idx], prev = rounds[idx-1];
+  const delta = cur.netToPar - prev.netToPar;
   if(delta<0) return {arrow:'▲', cls:'trend-up', delta};
   if(delta>0) return {arrow:'▼', cls:'trend-down', delta};
   return {arrow:'•', cls:'trend-flat', delta};
 }
+
 
 
 function setTheme(theme, silent=false){
@@ -379,7 +403,7 @@ function render(data){const {scores,courses,rounds}=data;const cMap=courseMap(co
     const backGross = (!isTournament && roundNum) ? r.raw[`R${roundNum} Back Gross`] : null;
     const thru = isTournament ? (data.thru>0?`${data.thru}`:"—") : data.thru;
     const thruDisplay = (thru && thru!=="—") ? `<span class="chip">${thru}</span>` : "—";
-    const trend = trendInfo(r, roundName);
+    const trend = trendInfo(r, roundName, rows, cMap, rMap);
     const trendArrow = trend.arrow ? `<span class="trend ${trend.cls}">${trend.arrow}</span>` : "";
     const netParCell = data.net==null ? "—" : `${netToPar}${trendArrow}`;
     const tr=document.createElement("tr");
