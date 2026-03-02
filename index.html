@@ -75,7 +75,7 @@ body[data-theme="dark"]{--bg:#0e1114;--card:#151a1e;--text:#eef2f5;--muted:#9aa6
     </section>
 
     <footer class="footer">
-      <span>Live updates every 5 seconds (Google Sheets backend) • v107</span>
+      <span>Live updates every 5 seconds (Google Sheets backend) • v108</span>
     </footer>
   </div>
 
@@ -601,10 +601,6 @@ if(modalClose) modalClose.addEventListener('click', closeModal);
 if(playerModal) playerModal.addEventListener('click', (e)=>{ if(e.target===playerModal) closeModal(); });
 
 // restore selections
-const savedRound = localStorage.getItem('roundSelect');
-if (savedRound) roundSelect.value = savedRound;
-const savedView = localStorage.getItem('viewSelect');
-if (savedView) viewSelect.value = savedView;
 const savedTheme = localStorage.getItem('theme') || 'light';
 setTheme(savedTheme, true);
 applyQuery();
