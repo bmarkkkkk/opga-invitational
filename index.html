@@ -249,7 +249,7 @@ function renderLeadChart(rows, cMap, rMap){
   `;
 
   const svg = `
-  <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
     <rect x="0" y="0" width="${W}" height="${H}" fill="#ffffff" rx="10" stroke="#e6e6e6"/>
     ${axes}
     ${ylabels}
@@ -261,9 +261,9 @@ function renderLeadChart(rows, cMap, rMap){
   leadChart.innerHTML = `
     <div style="position:relative;">
       ${svg}
-      <div class="legend" style="position:absolute; top:8px; right:10px; background:rgba(255,255,255,0.8); padding:4px 6px; border-radius:6px;">
+      <div class="legend" style="position:absolute; top:8px; right:16px; background:rgba(255,255,255,0.8); padding:4px 6px; border-radius:6px; font-size:10px;">
         <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:${teamColors['Team Ilan']};display:inline-block;"></span>Team Ilan</span>
-        <span style="display:inline-flex;align-items:center;gap:6px; margin-left:10px;"><span style="width:10px;height:10px;border-radius:50%;background:${teamColors['Team Luka']};display:inline-block;"></span>Team Luka</span>
+        <span style="display:inline-flex;align-items:center;gap:6px; margin-left:6px;"><span style="width:10px;height:10px;border-radius:50%;background:${teamColors['Team Luka']};display:inline-block;"></span>Team Luka</span>
       </div>
     </div>
   `;
