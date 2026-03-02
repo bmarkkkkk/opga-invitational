@@ -385,6 +385,7 @@ function render(data){const {scores,courses,rounds}=data;const cMap=courseMap(co
     if(trend.delta!=null && trend.delta<0) tr.classList.add('hot-row');
     tr.addEventListener('click',()=>{
       const hiStr = r.hi==null ? "—" : r.hi.toFixed(1);
+      const chVal = (!isTournament) ? chFor(r.hi, cMap[rMap[roundName]]) : null;
       const title = isTournament ? "Tournament" : roundName;
       const frontVal = frontGross!=null ? Math.round(frontGross) : "—";
       const backVal = backGross!=null ? Math.round(backGross) : "—";
@@ -393,17 +394,17 @@ function render(data){const {scores,courses,rounds}=data;const cMap=courseMap(co
       const r3 = r.perRound["Round 3"].gross ?? "—";
       const r4 = r.perRound["Round 4"].gross ?? "—";
       const extra = isTournament ? `
-          <div><strong>Round 1</strong><br>${r1}</div>
-          <div><strong>Round 2</strong><br>${r2}</div>
-          <div><strong>Round 3</strong><br>${r3}</div>
-          <div><strong>Round 4</strong><br>${r4}</div>
+          <div><strong>Round 1 (Gross)</strong><br>${r1}</div>
+          <div><strong>Round 2 (Gross)</strong><br>${r2}</div>
+          <div><strong>Round 3 (Gross)</strong><br>${r3}</div>
+          <div><strong>Round 4 (Gross)</strong><br>${r4}</div>
       ` : `
           <div><strong>Front Nine</strong><br>${frontVal}</div>
           <div><strong>Back Nine</strong><br>${backVal}</div>
       `;
       const html = `
         <h3>${r.name}</h3>
-        <div class="muted" style="font-family: ui-sans-serif, system-ui; margin-bottom:10px;">${r.team || "—"} • HI ${hiStr} • ${title}</div>
+        <div class="muted" style="font-family: ui-sans-serif, system-ui; margin-bottom:10px;">${r.team || "—"} • ${isTournament ? `HI ${hiStr}` : `CH ${chVal ?? "—"}`} • ${title}</div>
         <div class="modal-list">
           <div><strong>Net</strong><br>${netStr}</div>
           <div><strong>Gross</strong><br>${grossStr}</div>
