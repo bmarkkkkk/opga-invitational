@@ -423,6 +423,8 @@ async function fetchTab(tab){
 async function load(){
   const tabs=tabsForYear(currentYear);
   const[scoresRaw,coursesRaw,roundsRaw]=await Promise.all([fetchTab(tabs.scores),fetchTab(tabs.courses),fetchTab(tabs.rounds)]);
+  // If scores came back empty (rate-limited), keep existing data
+  if(scoresRaw.length<=1 && players.length>0)return;
   const csv=JSON.stringify(scoresRaw);
   if(csv===lastCSV)return;
   lastCSV=csv;
@@ -936,9 +938,11 @@ function renderYearSelector(){
 
 async function init(){
   availableYears=await scanYears();
-  currentYear=availableYears[availableYears.length-1]; // default to most recent
+  currentYear=availableYears[availableYears.length-1];
   renderYearSelector();
-  load();
+  await load();
+  // Retry if first load was rate-limited
+  if(!players.length){for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,2000));await load();if(players.length)break}}
   setInterval(load,POLL_SECONDS*1000);
 }
 init();
