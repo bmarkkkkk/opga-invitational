@@ -87,6 +87,9 @@
     .champion-margin { font-size:0.8rem; color:var(--text-secondary); margin-top:4px; }
     .champion-individual { font-size:0.82rem; color:var(--text-secondary); margin-top:10px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); }
     .champion-individual strong { color:var(--cream); font-weight:600; }
+    .champion-accolades { display:flex; justify-content:center; gap:20px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); font-size:0.78rem; color:var(--text-secondary); }
+    .champion-accolades span { white-space:nowrap; }
+    .champion-accolades strong { color:var(--cream); font-weight:600; }
 
     /* Final mode badge */
     .header-badge.final { color:var(--gold); background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.35); }
@@ -355,6 +358,8 @@
       <div class="champion-team" id="champTeam"></div>
       <div class="champion-margin" id="champMargin"></div>
       <div class="champion-individual" id="champIndividual"></div>
+      <div class="champion-accolades" id="champAccolades"></div>
+      <div class="champion-accolades" id="champAccolades"></div>
     </div>
 
     <div class="highlight-strip" id="highlights" style="display:none"></div>
@@ -604,6 +609,32 @@ function renderChampionState(complete){
     document.getElementById('champMargin').textContent=spread===0?'Tied with '+teamData[1].name:'Won by '+spread+' stroke'+(spread!==1?'s':'')+' over '+teamData[1].name;
   }
   document.getElementById('champIndividual').innerHTML='Individual Champion: <strong>'+esc(indivData[0].name)+'</strong> ('+fmtPar(indivData[0].netToPar)+')';
+
+  // Best Round & Best Nine for banner
+  let bestRoundList=[], bestNines=[];
+  for(const p of players){
+    for(let rn=1;rn<=4;rn++){
+      const res=calcPlayerRound(p,rn);if(!res||res.thru<18)continue;
+      bestRoundList.push({name:p.name,ntp:res.netToPar,gross:res.gross,rn});
+      const par=getCoursePar(rn);
+      const frontPar=Math.ceil(par/2), backPar=Math.floor(par/2);
+      if(res.hasFront)bestNines.push({name:p.name,score:res.frontNet-frontPar,label:'R'+rn+' Front',gross:p.rounds[String(rn)].front});
+      if(res.hasBack)bestNines.push({name:p.name,score:res.backNet-backPar,label:'R'+rn+' Back',gross:p.rounds[String(rn)].back});
+    }
+  }
+  let accoladesHtml='';
+  if(bestRoundList.length){
+    bestRoundList.sort((a,b)=>a.ntp-b.ntp);
+    const br=bestRoundList[0];
+    accoladesHtml+=`<span>Best Round: <strong>${esc(br.name)}</strong> ${fmtPar(br.ntp)} · R${br.rn}</span>`;
+  }
+  if(bestNines.length){
+    bestNines.sort((a,b)=>a.score-b.score);
+    const bn=bestNines[0];
+    accoladesHtml+=`<span>Best Nine: <strong>${esc(bn.name)}</strong> ${fmtPar(bn.score)} · ${bn.label}</span>`;
+  }
+  document.getElementById('champAccolades').innerHTML=accoladesHtml;
+
   banner.classList.add('show');
 }
 
@@ -652,7 +683,7 @@ function renderHighlights(complete){
   const viewRn=isTourn?null:parseInt(currentView);
 
   const data=players.map(p=>{const v=calcPlayerView(p,currentView);return{player:p,...v}}).filter(d=>d.thru>0);
-  if(!data.length){el.style.display='none';return}
+  if(!data.length||isFinal){el.style.display='none';return}
   el.style.display='flex';
   data.sort((a,b)=>a.netToPar-b.netToPar);
 
