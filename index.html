@@ -188,27 +188,29 @@
     .round-dot.rank-poor { background:#d88; }
     .round-dot.rank-worst { background:#c43; }
 
-    /* Course Info */
-    .course-card { display:none; background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; margin-bottom:20px; position:relative; overflow:hidden; align-items:center; justify-content:space-between; }
-    .course-card.show { display:flex; animation:fadeUp 0.3s ease both; }
-    .course-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent); }
-    .course-card-name { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.1rem; color:var(--cream); line-height:1.2; }
-    .course-card-round { font-size:0.72rem; color:var(--text-muted); margin-top:2px; }
-    .course-card-stats { display:flex; gap:16px; }
-    .course-card-stat { text-align:center; }
-    .course-card-stat-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2px; }
-    .course-card-stat-val { font-size:0.95rem; font-weight:700; color:var(--cream); font-variant-numeric:tabular-nums; }
-    .course-strip { display:none; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px; }
-    .course-strip.show { display:grid; animation:fadeUp 0.3s ease both; }
-    .course-strip-card { background:var(--surface-1); border:1px solid var(--border); border-radius:8px; padding:10px 8px; text-align:center; }
-    .course-strip-round { font-size:0.55rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
-    .course-strip-name { font-size:0.78rem; font-weight:600; color:var(--cream); line-height:1.2; margin-bottom:4px; }
-    .course-strip-detail { font-size:0.65rem; color:var(--text-secondary); font-variant-numeric:tabular-nums; }
+    /* Course Info Card (above leaderboard in round views) */
+    .course-info-card { display:none; background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; margin-bottom:12px; position:relative; overflow:hidden; align-items:center; justify-content:space-between; }
+    .course-info-card.show { display:flex; animation:fadeUp 0.3s ease both; }
+    .course-info-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent); }
+    .course-info-name { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.1rem; color:var(--cream); line-height:1.2; }
+    .course-info-round { font-size:0.72rem; color:var(--text-muted); margin-top:2px; }
+    .course-info-stats { display:flex; gap:16px; }
+    .course-info-stat { text-align:center; }
+    .course-info-stat-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2px; }
+    .course-info-stat-val { font-size:0.95rem; font-weight:700; color:var(--cream); font-variant-numeric:tabular-nums; }
     @media(max-width:480px){
-      .course-card { flex-direction:column; align-items:flex-start; gap:10px; }
-      .course-card-stats { width:100%; justify-content:space-around; }
-      .course-strip { grid-template-columns:repeat(2,1fr); }
+      .course-info-card { flex-direction:column; align-items:flex-start; gap:10px; }
+      .course-info-stats { width:100%; justify-content:space-around; }
     }
+
+    /* Courses Table */
+    .courses-table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+    .courses-table th { font-size:0.62rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); padding:8px 10px; background:var(--surface-2); border-bottom:1px solid var(--border); text-align:center; }
+    .courses-table th:first-child { text-align:left; }
+    .courses-table td { padding:8px 10px; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; text-align:center; color:var(--text-secondary); }
+    .courses-table td:first-child { text-align:left; }
+    .courses-table tr:last-child td { border-bottom:none; }
+    .courses-table .course-name-cell { font-weight:600; color:var(--text-primary); }
 
     /* Chart */
     .chart-wrap { padding:16px; background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); }
@@ -347,12 +349,6 @@
       </div>
     </div>
 
-    <div class="course-card" id="courseCard">
-      <div><div class="course-card-name" id="ccName"></div><div class="course-card-round" id="ccRound"></div></div>
-      <div class="course-card-stats" id="ccStats"></div>
-    </div>
-    <div class="course-strip" id="courseStrip"></div>
-
     <div class="champion-banner" id="championBanner">
       <div class="champion-label">🏆 2026 Champions</div>
       <div class="champion-team" id="champTeam"></div>
@@ -387,6 +383,10 @@
         <span class="section-title">Individual Leaderboard</span>
         <span class="section-line"></span>
       </div>
+      <div class="course-info-card" id="courseInfoCard">
+        <div><div class="course-info-name" id="ciName"></div><div class="course-info-round" id="ciRound"></div></div>
+        <div class="course-info-stats" id="ciStats"></div>
+      </div>
       <div class="card" id="individualCard">
         <div class="lb-header" id="lbHeader">
           <span>#</span><span>Player</span><span class="sortable" data-sort="net">Net</span><span class="sortable sort-active" data-sort="netToPar">To Par</span><span class="sortable" data-sort="gross">Gross</span><span class="sortable" data-sort="thru">Thru</span>
@@ -402,6 +402,19 @@
         <span class="section-badge">Gross / Net to Par</span>
       </div>
       <div class="history-grid" id="historyGrid"></div>
+    </div>
+
+    <div class="section" id="coursesSection">
+      <div class="section-head">
+        <span class="section-title">Courses</span>
+        <span class="section-line"></span>
+      </div>
+      <div class="card" style="overflow-x:auto">
+        <table class="courses-table">
+          <thead><tr><th>Round</th><th>Course</th><th>Par</th><th>Rating</th><th>Slope</th></tr></thead>
+          <tbody id="coursesBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <div class="section" id="hcSection">
@@ -594,43 +607,39 @@ function renderChampionState(complete){
 
 /* ═══ COURSE INFO ═══ */
 function renderCourseInfo(){
-  const card=document.getElementById('courseCard');
-  const strip=document.getElementById('courseStrip');
+  const card=document.getElementById('courseInfoCard');
   const isTourn=currentView==='tournament';
 
+  // Course card above leaderboard (round views only)
   if(isTourn){
     card.classList.remove('show');
-    // Tournament: show compact strip of all 4 courses
-    let hasAnyCourse=false;
-    let html='';
-    for(let rn=1;rn<=4;rn++){
-      const cName=getCourseName(rn);
-      const c=courses[cName];
-      if(cName&&c){
-        hasAnyCourse=true;
-        html+=`<div class="course-strip-card"><div class="course-strip-round">R${rn}</div><div class="course-strip-name">${esc(cName)}</div><div class="course-strip-detail">Par ${c.par} · ${c.rating} / ${c.slope}</div></div>`;
-      }else{
-        html+=`<div class="course-strip-card"><div class="course-strip-round">R${rn}</div><div class="course-strip-name" style="color:var(--text-muted)">TBD</div><div class="course-strip-detail">—</div></div>`;
-      }
-    }
-    if(hasAnyCourse){strip.innerHTML=html;strip.classList.add('show')}
-    else{strip.classList.remove('show')}
   }else{
-    strip.classList.remove('show');
-    // Round view: show single course card
     const rn=parseInt(currentView);
     const cName=getCourseName(rn);
     const c=courses[cName];
     if(cName&&c){
-      document.getElementById('ccName').textContent=cName;
-      document.getElementById('ccRound').textContent='Round '+rn;
-      document.getElementById('ccStats').innerHTML=`
-        <div class="course-card-stat"><div class="course-card-stat-label">Par</div><div class="course-card-stat-val">${c.par}</div></div>
-        <div class="course-card-stat"><div class="course-card-stat-label">Rating</div><div class="course-card-stat-val">${c.rating}</div></div>
-        <div class="course-card-stat"><div class="course-card-stat-label">Slope</div><div class="course-card-stat-val">${c.slope}</div></div>`;
+      document.getElementById('ciName').textContent=cName;
+      document.getElementById('ciRound').textContent='Round '+rn;
+      document.getElementById('ciStats').innerHTML=`
+        <div class="course-info-stat"><div class="course-info-stat-label">Par</div><div class="course-info-stat-val">${c.par}</div></div>
+        <div class="course-info-stat"><div class="course-info-stat-label">Rating</div><div class="course-info-stat-val">${c.rating}</div></div>
+        <div class="course-info-stat"><div class="course-info-stat-label">Slope</div><div class="course-info-stat-val">${c.slope}</div></div>`;
       card.classList.add('show');
     }else{card.classList.remove('show')}
   }
+
+  // Courses table at bottom
+  let html='';
+  for(let rn=1;rn<=4;rn++){
+    const cName=getCourseName(rn);
+    const c=courses[cName];
+    if(cName&&c){
+      html+=`<tr><td>R${rn}</td><td class="course-name-cell">${esc(cName)}</td><td>${c.par}</td><td>${c.rating}</td><td>${c.slope}</td></tr>`;
+    }else{
+      html+=`<tr><td>R${rn}</td><td style="color:var(--text-muted)">—</td><td>—</td><td>—</td><td>—</td></tr>`;
+    }
+  }
+  document.getElementById('coursesBody').innerHTML=html;
 }
 
 /* ═══ HIGHLIGHTS ═══ */
