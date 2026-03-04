@@ -1475,10 +1475,10 @@ function renderIndivRecords(){
   if(bestGrossRound.detail)rows.push({icon:'💪',label:'Best Gross Round',value:String(bestGrossRound.val),detail:bestGrossRound.detail});
   // Most team championships
   const teamChampSorted=Object.entries(teamChampCounts).sort((a,b)=>b[1].length-a[1].length);
-  if(teamChampSorted.length){const tc=teamChampSorted[0];rows.push({icon:'🥇',label:'Most Team Championships',value:String(tc[1].length),detail:esc(tc[0])+' ('+tc[1].join(', ')+')'})};
+  if(teamChampSorted.length){const topCount=teamChampSorted[0][1].length;const tied=teamChampSorted.filter(e=>e[1].length===topCount);const detail=tied.map(tc=>esc(tc[0])+' ('+tc[1].join(', ')+')').join('<br>');rows.push({icon:'🥇',label:'Most Team Championships',value:String(topCount),detail})};
   // Most individual championships
   const indivChampSorted=Object.entries(indivChampCounts).sort((a,b)=>b[1].length-a[1].length);
-  if(indivChampSorted.length){const ic=indivChampSorted[0];rows.push({icon:'🎖️',label:'Most Individual Championships',value:String(ic[1].length),detail:esc(ic[0])+' ('+ic[1].join(', ')+')'})};
+  if(indivChampSorted.length){const topCount=indivChampSorted[0][1].length;const tied=indivChampSorted.filter(e=>e[1].length===topCount);const detail=tied.map(ic=>esc(ic[0])+' ('+ic[1].join(', ')+')').join('<br>');rows.push({icon:'🎖️',label:'Most Individual Championships',value:String(topCount),detail})};
   card.innerHTML=rows.length?rows.map((r,i)=>`<div class="rec-row"><div class="rec-icon">${r.icon}</div><div class="rec-info"><div class="rec-label">${r.label}</div><div class="rec-detail">${r.detail}</div></div><div class="rec-value">${r.value}</div></div>`).join(''):'<div class="empty-state">No records yet</div>';
 }
 
