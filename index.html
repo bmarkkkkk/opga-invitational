@@ -1432,8 +1432,12 @@ function renderTeamRecords(){
 function renderIndivRecords(){
   const card=document.getElementById('indivRecordsCard');
   let bestTourn={val:Infinity,detail:''},bestNetRound={val:Infinity,detail:''},bestGrossRound={val:Infinity,detail:''};
+  const teamChampCounts={}, indivChampCounts={};
   for(const y of availableYears){
     const yd=allYearsData[y];if(!yd||!yd.players.length)continue;
+    // Check if year is complete
+    let complete=true;
+    for(const p of yd.players){for(let rn=1;rn<=4;rn++){const r=p.rounds[String(rn)];if(!r||!r.front||!r.back||r.front<=0||r.back<=0){complete=false;break}}if(!complete)break}
     for(const p of yd.players){
       // Tournament
       let tNtp=0,tComplete=true;
@@ -1446,11 +1450,35 @@ function renderIndivRecords(){
         if(res.gross<bestGrossRound.val){bestGrossRound={val:res.gross,detail:esc(p.name)+' · R'+rn+' · '+y}}
       }
     }
+    // Championship counts (only for complete years)
+    if(complete){
+      // Team champion — find winning team, credit all members
+      const teamMap={};
+      for(const p of yd.players){if(!p.team)continue;if(!teamMap[p.team])teamMap[p.team]=[];teamMap[p.team].push(p)}
+      const teams=Object.entries(teamMap).map(([name,members])=>{
+        let ntp=0;for(const m of members){for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}}
+        return{name,netToPar:ntp,members};
+      }).sort((a,b)=>a.netToPar-b.netToPar);
+      for(const m of teams[0].members){
+        if(!teamChampCounts[m.name])teamChampCounts[m.name]=[];
+        teamChampCounts[m.name].push(y);
+      }
+      // Individual champion
+      const indiv=yd.players.map(p=>{let ntp=0,net=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(res){ntp+=res.netToPar;net+=res.net}}return{name:p.name,netToPar:ntp,net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
+      if(!indivChampCounts[indiv[0].name])indivChampCounts[indiv[0].name]=[];
+      indivChampCounts[indiv[0].name].push(y);
+    }
   }
   const rows=[];
   if(bestTourn.detail)rows.push({icon:'👑',label:'Best Tournament',value:fmtPar(bestTourn.val),detail:bestTourn.detail});
   if(bestNetRound.detail)rows.push({icon:'🏆',label:'Best Net Round',value:fmtPar(bestNetRound.val),detail:bestNetRound.detail});
   if(bestGrossRound.detail)rows.push({icon:'💪',label:'Best Gross Round',value:String(bestGrossRound.val),detail:bestGrossRound.detail});
+  // Most team championships
+  const teamChampSorted=Object.entries(teamChampCounts).sort((a,b)=>b[1].length-a[1].length);
+  if(teamChampSorted.length){const tc=teamChampSorted[0];rows.push({icon:'🥇',label:'Most Team Championships',value:String(tc[1].length),detail:esc(tc[0])+' ('+tc[1].join(', ')+')'})};
+  // Most individual championships
+  const indivChampSorted=Object.entries(indivChampCounts).sort((a,b)=>b[1].length-a[1].length);
+  if(indivChampSorted.length){const ic=indivChampSorted[0];rows.push({icon:'🎖️',label:'Most Individual Championships',value:String(ic[1].length),detail:esc(ic[0])+' ('+ic[1].join(', ')+')'})};
   card.innerHTML=rows.length?rows.map((r,i)=>`<div class="rec-row"><div class="rec-icon">${r.icon}</div><div class="rec-info"><div class="rec-label">${r.label}</div><div class="rec-detail">${r.detail}</div></div><div class="rec-value">${r.value}</div></div>`).join(''):'<div class="empty-state">No records yet</div>';
 }
 
