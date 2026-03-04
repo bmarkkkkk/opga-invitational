@@ -661,6 +661,7 @@ function isTournamentComplete(){
 }
 
 function render(){
+  if(recordsOpen)return;
   const complete=isTournamentComplete();
   renderChampionState(complete);
   renderCourseInfo();
