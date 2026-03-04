@@ -965,7 +965,7 @@ function renderHistory(){
 function renderHandicaps(){
   document.getElementById('hcBody').innerHTML=[...players].sort((a,b)=>a.hi-b.hi).map(p=>{
     const chs=[1,2,3,4].map(rn=>`<td class="hc-val">${getCH(p.hi,rn)||'—'}</td>`).join('');
-    return`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi}</td>${chs}</tr>`;
+    return`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
   }).join('');
 }
 
