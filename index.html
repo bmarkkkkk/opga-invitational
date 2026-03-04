@@ -691,12 +691,16 @@ function renderChampionState(complete){
   const indivData=players.map(p=>{const v=calcPlayerView(p,'tournament');return{name:p.name,netToPar:v.netToPar,net:v.net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
 
   document.querySelector('.champion-label').textContent=`🏆 ${currentYear} Champions`;
-  document.getElementById('champTeam').textContent=teamData[0].name;
+  const tiedTeams=teamData.filter(t=>t.netToPar===teamData[0].netToPar);
+  document.getElementById('champTeam').textContent=tiedTeams.map(t=>t.name).join(' & ');
   if(teamData.length>=2){
     const spread=Math.abs(teamData[0].netToPar-teamData[1].netToPar);
-    document.getElementById('champMargin').textContent=spread===0?'Tied with '+teamData[1].name:'Won by '+spread+' stroke'+(spread!==1?'s':'')+' over '+teamData[1].name;
+    if(tiedTeams.length>1){document.getElementById('champMargin').textContent='Teams tied at '+fmtPar(teamData[0].netToPar)}
+    else{document.getElementById('champMargin').textContent='Won by '+spread+' stroke'+(spread!==1?'s':'')+' over '+teamData[1].name}
   }
-  document.getElementById('champIndividual').innerHTML='Individual Champion: <strong>'+esc(indivData[0].name)+'</strong> ('+fmtPar(indivData[0].netToPar)+')';
+  const tiedIndiv=indivData.filter(d=>d.netToPar===indivData[0].netToPar&&d.net===indivData[0].net);
+  const indivNames=tiedIndiv.map(d=>'<strong>'+esc(d.name)+'</strong>').join(' & ');
+  document.getElementById('champIndividual').innerHTML='Individual Champion'+(tiedIndiv.length>1?'s':'')+': '+indivNames+' ('+fmtPar(indivData[0].netToPar)+')';
 
   // Best Round & Best Nine for banner
   let bestRoundList=[], bestNines=[];
@@ -713,13 +717,17 @@ function renderChampionState(complete){
   let accoladesHtml='';
   if(bestRoundList.length){
     bestRoundList.sort((a,b)=>a.ntp-b.ntp);
-    const br=bestRoundList[0];
-    accoladesHtml+=`<span>Best Round: <strong>${esc(br.name)}</strong> ${fmtPar(br.ntp)} · R${br.rn}</span>`;
+    const bestNtp=bestRoundList[0].ntp;
+    const tiedBR=bestRoundList.filter(b=>b.ntp===bestNtp);
+    const brNames=tiedBR.map(b=>esc(b.name)).join(' & ');
+    accoladesHtml+=`<span>Best Round: <strong>${brNames}</strong> ${fmtPar(bestNtp)}${tiedBR.length===1?' · R'+tiedBR[0].rn:''}</span>`;
   }
   if(bestNines.length){
     bestNines.sort((a,b)=>a.score-b.score);
-    const bn=bestNines[0];
-    accoladesHtml+=`<span>Best Nine: <strong>${esc(bn.name)}</strong> ${fmtPar(bn.score)} · ${bn.label}</span>`;
+    const bestScore=bestNines[0].score;
+    const tiedBN=bestNines.filter(b=>b.score===bestScore);
+    const bnNames=tiedBN.map(b=>esc(b.name)).join(' & ');
+    accoladesHtml+=`<span>Best Nine: <strong>${bnNames}</strong> ${fmtPar(bestScore)}${tiedBN.length===1?' · '+tiedBN[0].label:''}</span>`;
   }
   document.getElementById('champAccolades').innerHTML=accoladesHtml;
 
@@ -849,12 +857,12 @@ function renderTeams(complete){
   const teamData=Object.entries(teamMap).map(([name,members])=>{
     let ntp=0,thru=0;for(const m of members){const v=calcPlayerView(m,currentView);ntp+=v.netToPar;thru+=v.thru}
     return{name,netToPar:ntp,thru,lastNine:calcLastNine(members)}
-  }).sort((a,b)=>a.netToPar-b.netToPar);
+  }).sort((a,b)=>{if(a.netToPar!==b.netToPar)return a.netToPar-b.netToPar;if(a.lastNine===null&&b.lastNine===null)return 0;if(a.lastNine===null)return 1;if(b.lastNine===null)return-1;return a.lastNine-b.lastNine});
   const container=document.getElementById('teamCard');
   if(!teamData.length){container.innerHTML='<div class="empty-state">No team data available</div>';return}
   let html=teamData.map((t,i)=>{
     const ln=t.lastNine!==null?` <span class="last-nine-badge ${parClass(t.lastNine)}">Last 9: ${fmtPar(t.lastNine)}</span>`:'';
-    const champClass=isFinal&&i===0?' champion':'';
+    const champClass=isFinal&&t.netToPar===teamData[0].netToPar?' champion':'';
     return`<div class="team-row${champClass}" data-team="${esc(t.name)}"><div class="team-rank rank-${i+1}">${i+1}</div><div><div class="team-name">${esc(t.name)}</div><div class="team-thru">Thru ${t.thru}${ln}</div></div><div></div><div class="team-score ${parClass(t.netToPar)}">${fmtPar(t.netToPar)}</div></div>`;
   }).join('');
   if(teamData.length>=2){
@@ -896,8 +904,12 @@ function renderIndividual(complete){
   // Official ranking sort (always by netToPar)
   const data=players.map(p=>{const v=calcPlayerView(p,currentView);return{player:p,...v}}).filter(d=>d.thru>0).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
   const arrows=computeArrows(data);
-  // Assign official rank
-  data.forEach((d,i)=>{d.rank=i+1});
+  // Assign official rank with ties
+  data.forEach((d,i)=>{
+    if(i>0&&d.netToPar===data[i-1].netToPar&&d.net===data[i-1].net){d.rank=data[i-1].rank}else{d.rank=i+1}
+  });
+  const rankCounts={};data.forEach(d=>{rankCounts[d.rank]=(rankCounts[d.rank]||0)+1});
+  data.forEach(d=>{d.tied=rankCounts[d.rank]>1});
   // Re-sort by selected column for display
   if(currentSort!=='netToPar'){
     const key=currentSort;
@@ -934,8 +946,8 @@ function renderIndividual(complete){
         dotsHtml+='</span>';
       }
     }
-    return`<div class="lb-row${pos===1?' is-leader':''}${isFinal&&pos===1?' champion':''}" data-player="${esc(d.player.name)}">
-      <span class="lb-pos ${pos<=3?'top-3':''}">${pos}</span>
+    return`<div class="lb-row${d.rank===1?' is-leader':''}${isFinal&&d.rank===1?' champion':''}" data-player="${esc(d.player.name)}">
+      <span class="lb-pos ${pos<=3?'top-3':''}">${d.tied?'T':''}${pos}</span>
       <div class="lb-name-cell"><div class="lb-player-name">${esc(d.player.name)}${arrowHtml}</div><div class="lb-team-tag">${esc(d.player.team)} ${dotsHtml}</div></div>
       <span class="lb-val">${d.net}</span><span class="lb-val net-par ${parClass(d.netToPar)}">${fmtPar(d.netToPar)}</span><span class="lb-val">${d.gross}</span><span class="lb-thru">${d.thru}</span>
     </div>`;
@@ -1040,8 +1052,21 @@ function renderHistory(){
     if(!rp.length){html+='<div class="history-upcoming">Upcoming</div>'}
     else{
       const byNet=rp.filter(p=>p.thru===18).sort((a,b)=>a.netToPar-b.netToPar);
-      if(byNet.length>0)html+=`<div class="history-place"><span><span class="history-medal gold">1st</span>${esc(byNet[0].name)}</span><span class="history-place-score">${byNet[0].gross} / ${fmtPar(byNet[0].netToPar)}</span></div>`;
-      if(byNet.length>1)html+=`<div class="history-place"><span><span class="history-medal silver">2nd</span>${esc(byNet[1].name)}</span><span class="history-place-score">${byNet[1].gross} / ${fmtPar(byNet[1].netToPar)}</span></div>`;
+      if(byNet.length>0){
+        const bestNtp=byNet[0].netToPar;
+        const tied1st=byNet.filter(p=>p.netToPar===bestNtp);
+        const label1=tied1st.length>1?'T1':'1st';
+        const names1=tied1st.map(p=>esc(p.name)).join(' & ');
+        html+=`<div class="history-place"><span><span class="history-medal gold">${label1}</span>${names1}</span><span class="history-place-score">${byNet[0].gross} / ${fmtPar(bestNtp)}</span></div>`;
+        const rest=byNet.filter(p=>p.netToPar!==bestNtp);
+        if(rest.length>0){
+          const secondNtp=rest[0].netToPar;
+          const tied2nd=rest.filter(p=>p.netToPar===secondNtp);
+          const label2=tied2nd.length>1?'T2':'2nd';
+          const names2=tied2nd.map(p=>esc(p.name)).join(' & ');
+          html+=`<div class="history-place"><span><span class="history-medal silver">${label2}</span>${names2}</span><span class="history-place-score">${rest[0].gross} / ${fmtPar(secondNtp)}</span></div>`;
+        }
+      }
       if(!byNet.length&&rp.length)html+='<div class="history-upcoming">In progress…</div>';
     }
     html+='</div>';
@@ -1066,7 +1091,8 @@ function openPlayerModal(name){
   let isChamp=false;
   if(complete&&isTourn){
     const sorted=players.map(p=>{const v=calcPlayerView(p,'tournament');return{name:p.name,netToPar:v.netToPar,net:v.net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
-    isChamp=sorted[0].name===name;
+    const pv=sorted.find(s=>s.name===name);
+    isChamp=pv&&pv.netToPar===sorted[0].netToPar&&pv.net===sorted[0].net;
   }
   const sheet=document.querySelector('#playerModal .modal-sheet');
   sheet.classList.toggle('champion-modal',isChamp);
@@ -1124,7 +1150,7 @@ function openTeamModal(teamName){
     const teamMap2={};
     for(const p of players){if(!p.team)continue;if(!teamMap2[p.team])teamMap2[p.team]=0;teamMap2[p.team]+=calcPlayerView(p,'tournament').netToPar}
     const sorted=Object.entries(teamMap2).sort((a,b)=>a[1]-b[1]);
-    isChamp=sorted[0][0]===teamName;
+    isChamp=teamMap2[teamName]!==undefined&&teamMap2[teamName]===sorted[0][1];
   }
   const sheet=document.querySelector('#teamModal .modal-sheet');
   sheet.classList.toggle('champion-modal',isChamp);
@@ -1141,13 +1167,14 @@ function openTeamModal(teamName){
   const mvp=memberData[0];
 
   // Find best single round on team (respect current view)
-  let bestRound=null;
+  let bestRoundNtp=Infinity, bestRounds=[];
   const tmRounds=currentView==='tournament'?[1,2,3,4]:[parseInt(currentView)];
   for(const m of members){
     for(const rn of tmRounds){
       const res=calcPlayerRound(m,rn);
-      if(res&&res.thru===18&&(!bestRound||res.netToPar<bestRound.ntp)){
-        bestRound={name:m.name,rn,ntp:res.netToPar,gross:res.gross};
+      if(res&&res.thru===18){
+        if(res.netToPar<bestRoundNtp){bestRoundNtp=res.netToPar;bestRounds=[{name:m.name,rn,ntp:res.netToPar,gross:res.gross}]}
+        else if(res.netToPar===bestRoundNtp){bestRounds.push({name:m.name,rn,ntp:res.netToPar,gross:res.gross})}
       }
     }
   }
@@ -1196,8 +1223,9 @@ function openTeamModal(teamName){
   }
 
   // Best round callout
-  if(bestRound){
-    html+=`<div class="tm-best"><div class="tm-best-label">⭐ Best Round on Team</div><div class="tm-best-val">${esc(bestRound.name)} — ${bestRound.gross} gross (${fmtPar(bestRound.ntp)}) in R${bestRound.rn}</div></div>`;
+  if(bestRounds.length){
+    const brText=bestRounds.map(b=>esc(b.name)+' — '+b.gross+' gross ('+fmtPar(b.ntp)+') in R'+b.rn).join('<br>');
+    html+=`<div class="tm-best"><div class="tm-best-label">⭐ Best Round on Team</div><div class="tm-best-val">${brText}</div></div>`;
   }
 
   html+=`<div class="tm-tap-hint">Tap a player to see their full details</div>`;
@@ -1278,6 +1306,8 @@ let recordsOpen = false;
 
 function showRecordsPage(){
   recordsOpen = true;
+  // Clear current year cache so we get fresh live data
+  delete allYearsData[currentYear];
   // Hide main content sections
   document.querySelectorAll('#yearControls, .controls, #championBanner, #highlights, #teamSection, #chartSection, #individualSection, #historySection, #coursesSection, #hcSection').forEach(el=>el.style.display='none');
   document.getElementById('recordsPage').style.display='block';
