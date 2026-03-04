@@ -673,15 +673,26 @@ function render(){
 function renderChampionState(complete){
   const badge=document.querySelector('.header-badge');
   const banner=document.getElementById('championBanner');
-  if(!complete||currentView!=='tournament'){
+
+  // Badge: "Final Results" if full tournament complete, or current round is complete for all players
+  let roundFinal=false;
+  if(!complete&&currentView!=='tournament'){
+    const rn=parseInt(currentView);
+    roundFinal=players.length>0&&players.every(p=>{const res=calcPlayerRound(p,rn);return res&&res.thru===18});
+  }
+  if(complete||roundFinal){
+    badge.classList.add('final');
+    badge.innerHTML='<span class="live-dot"></span>Final Results';
+  }else{
     badge.classList.remove('final');
     badge.innerHTML='<span class="live-dot"></span>Live Scoring';
+  }
+
+  // Banner: only for completed tournament in tournament view
+  if(!complete||currentView!=='tournament'){
     banner.classList.remove('show');
     return;
   }
-  // Final badge
-  badge.classList.add('final');
-  badge.innerHTML='<span class="live-dot"></span>Final Results';
 
   // Team champion
   const teamMap={};
