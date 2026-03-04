@@ -208,7 +208,8 @@
     .courses-table th { font-size:0.62rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); padding:8px 10px; background:var(--surface-2); border-bottom:1px solid var(--border); text-align:center; }
     .courses-table th:first-child, .courses-table th:nth-child(2) { text-align:left; }
     .courses-table td { padding:8px 10px; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; text-align:center; color:var(--text-secondary); }
-    .courses-table td:first-child { text-align:left; }
+    .courses-table td:first-child { text-align:left; padding-left:14px; color:var(--text-muted); font-size:0.75rem; font-weight:500; }
+    .courses-table th:first-child { padding-left:14px; }
     .courses-table tr:last-child td { border-bottom:none; }
     .courses-table .course-name-cell { font-weight:600; color:var(--text-primary); text-align:left; }
 
@@ -411,7 +412,8 @@
       </div>
       <div class="card" style="overflow-x:auto">
         <table class="courses-table">
-          <thead><tr><th>Round</th><th>Course</th><th>Par</th><th>Rating</th><th>Slope</th></tr></thead>
+          <colgroup><col style="width:42px"><col style="width:40%"><col style="width:18%"><col style="width:18%"><col style="width:18%"></colgroup>
+          <thead><tr><th></th><th>Course</th><th>Par</th><th>Rating</th><th>Slope</th></tr></thead>
           <tbody id="coursesBody"></tbody>
         </table>
       </div>
