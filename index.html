@@ -1168,9 +1168,6 @@ function openTeamModal(teamName){
     return{player:m,...v};
   }).sort((a,b)=>a.netToPar-b.netToPar);
 
-  // Find MVP (lowest net-to-par on team)
-  const mvp=memberData[0];
-
   // Find best single round on team (respect current view)
   let bestRoundNtp=Infinity, bestRounds=[];
   const tmRounds=currentView==='tournament'?[1,2,3,4]:[parseInt(currentView)];
@@ -1447,7 +1444,7 @@ function renderTeamRecords(){
     // Tournament totals
     const teamTotals=Object.entries(teamMap).map(([name,members])=>{
       let ntp=0,complete=true;
-      for(const m of members){for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar;else{complete=false}}}
+      for(const m of members){for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res&&res.thru===18)ntp+=res.netToPar;else{complete=false}}}
       return{name,netToPar:ntp,members,complete};
     }).sort((a,b)=>a.netToPar-b.netToPar);
     // Best tournament
@@ -1456,7 +1453,7 @@ function renderTeamRecords(){
     const completedTeams=teamTotals.filter(t=>t.complete);
     if(completedTeams.length>=2){
       const margin=Math.abs(completedTeams[0].netToPar-completedTeams[1].netToPar);
-      const md=esc(completedTeams[0].name)+' over '+esc(completedTeams[1].name)+' · '+y;
+      const md=margin===0?esc(completedTeams[0].name)+' & '+esc(completedTeams[1].name)+' (tied) · '+y:esc(completedTeams[0].name)+' over '+esc(completedTeams[1].name)+' · '+y;
       if(margin>largestVictory.val){largestVictory={val:margin,details:[md]}}else if(margin===largestVictory.val){largestVictory.details.push(md)}
       if(margin<closestFinish.val){closestFinish={val:margin,details:[md]}}else if(margin===closestFinish.val){closestFinish.details.push(md)}
     }
@@ -1562,7 +1559,7 @@ function renderCourseHistory(){
   if(!sorted.length){card.innerHTML='<div class="empty-state">No course data yet</div>';return}
   card.innerHTML=sorted.map(([name,d],i)=>{
     const avgNtp=d.totalPlayers>0?(d.totalNtp/d.totalPlayers):0;
-    const avgStr=avgNtp>=0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1);
+    const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
     const avgClass=avgNtp<0?'under':(avgNtp>0?'over':'even');
     const bestClass=d.bestNet<0?'under':(d.bestNet>0?'over':'even');
     return`<div class="course-hist-item">
