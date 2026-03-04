@@ -275,7 +275,9 @@
     .modal-perf-val.over { color:var(--red); }
     .modal-perf-val.even { color:var(--text-primary); }
     .modal-divider { height:1px; background:var(--border); margin:14px 0; }
-    .modal-rounds-title { font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+    .modal-rounds-title { display:flex; align-items:center; gap:8px; font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
+    .modal-rounds-title .mrt-line { flex:1; height:1px; background:var(--border-bright); }
+    .modal-rounds-title .mrt-course { font-weight:500; letter-spacing:0.03em; text-transform:none; color:var(--text-secondary); font-size:0.75rem; }
     .modal-round-row { display:flex; justify-content:space-between; padding:8px 0; font-size:0.85rem; border-bottom:1px solid var(--border); }
     .modal-round-row:last-child { border-bottom:none; }
     .modal-round-label { color:var(--text-secondary); font-weight:500; }
@@ -1130,12 +1132,13 @@ function openPlayerModal(name){
 
   let roundsHtml='';
   if(currentView==='tournament'){
-    document.getElementById('pmRoundsTitle').textContent='Round Breakdown (Gross)';
+    document.getElementById('pmRoundsTitle').innerHTML='<span>Round Breakdown (Gross)</span>';
     for(let rn=1;rn<=4;rn++){const res=calcPlayerRound(player,rn);roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Round ${rn}</span><span class="modal-round-val">${res&&res.thru>0?res.gross:'—'}</span></div>`}
     document.getElementById('pmSummary').textContent=`Handicap Index: ${player.hi}`;
   }else{
     const rn=parseInt(currentView);
-    document.getElementById('pmRoundsTitle').textContent=`Round ${rn} Detail (Gross)`;
+    const cName=getCourseName(rn);
+    document.getElementById('pmRoundsTitle').innerHTML=`<span>Round ${rn} Detail (Gross)</span>${cName?'<span class="mrt-line"></span><span class="mrt-course">'+esc(cName)+'</span>':''}`;
     const res=calcPlayerRound(player,rn);
     if(res){roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Front Nine</span><span class="modal-round-val">${res.hasFront?res.frontGross:'—'}</span></div><div class="modal-round-row"><span class="modal-round-label">Back Nine</span><span class="modal-round-val">${res.hasBack?res.backGross:'—'}</span></div>`}
     document.getElementById('pmSummary').textContent=`Course Handicap: ${getCH(player.hi,rn)}`;
