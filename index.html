@@ -183,13 +183,10 @@
     .arrow.down { color:var(--red); }
     .round-dots { display:inline-flex; gap:3px; margin-left:6px; vertical-align:middle; }
     .round-dot { width:8px; height:8px; border-radius:2px; display:inline-block; }
-    .round-dot.big-up { background:#2e9e6a; }
-    .round-dot.sm-up { background:#5ec49a; opacity:0.8; }
-    .round-dot.flat { background:var(--text-muted); opacity:0.35; }
-    .round-dot.sm-down { background:#d88; opacity:0.8; }
-    .round-dot.big-down { background:#c43; }
-    .round-dot.baseline { background:var(--text-muted); opacity:0.4; }
-    .round-dot.empty { background:var(--text-muted); opacity:0.12; }
+    .round-dot.rank-best { background:#2e9e6a; }
+    .round-dot.rank-good { background:#5ec49a; }
+    .round-dot.rank-poor { background:#d88; }
+    .round-dot.rank-worst { background:#c43; }
 
     /* Chart */
     .chart-wrap { padding:16px; background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); }
@@ -713,27 +710,28 @@ function renderIndividual(complete){
     const pos=d.rank,arrowHtml=arrows[d.player.name]||'';
     let dotsHtml='';
     if(currentView==='tournament'){
-      dotsHtml='<span class="round-dots">';
-      let prevNTP=null;
+      // Check if all 4 rounds complete for this player
+      const rScores=[];
+      let allDone=true;
       for(let rn=1;rn<=4;rn++){
         const res=calcPlayerRound(d.player,rn);
-        if(!res||res.thru===0){dotsHtml+='<span class="round-dot empty" title="R'+rn+': —"></span>';continue}
-        const ntp=res.netToPar;
-        if(prevNTP===null){
-          dotsHtml+=`<span class="round-dot baseline" title="R${rn}: ${fmtPar(ntp)}"></span>`;
-        }else{
-          const diff=prevNTP-ntp;// positive = improved
-          let cls,label;
-          if(diff>=3){cls='big-up';label='▲▲'}
-          else if(diff>=1){cls='sm-up';label='▲'}
-          else if(diff===0){cls='flat';label='—'}
-          else if(diff>=-2){cls='sm-down';label='▼'}
-          else{cls='big-down';label='▼▼'}
-          dotsHtml+=`<span class="round-dot ${cls}" title="R${rn}: ${fmtPar(ntp)} (${label}${Math.abs(diff)} vs R${rn-1})"></span>`;
-        }
-        prevNTP=ntp;
+        if(!res||res.thru<18){allDone=false;break}
+        rScores.push({rn,ntp:res.netToPar});
       }
-      dotsHtml+='</span>';
+      if(allDone){
+        const sorted=[...rScores].sort((a,b)=>a.ntp-b.ntp);
+        const rankColors=['rank-best','rank-good','rank-poor','rank-worst'];
+        // Assign rank to each, handling ties
+        const colorMap={};
+        sorted.forEach((s,i)=>{
+          // If tied with previous, use same color
+          if(i>0&&s.ntp===sorted[i-1].ntp){colorMap[s.rn]=colorMap[sorted[i-1].rn]}
+          else{colorMap[s.rn]=rankColors[i]}
+        });
+        dotsHtml='<span class="round-dots">';
+        for(let rn=1;rn<=4;rn++){dotsHtml+=`<span class="round-dot ${colorMap[rn]}"></span>`}
+        dotsHtml+='</span>';
+      }
     }
     return`<div class="lb-row${pos===1?' is-leader':''}${isFinal&&pos===1?' champion':''}" data-player="${esc(d.player.name)}">
       <span class="lb-pos ${pos<=3?'top-3':''}">${pos}</span>
