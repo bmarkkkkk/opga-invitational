@@ -1434,15 +1434,14 @@ function renderChampionsWall(){
       <div class="champ-label">${indivLabel}</div>
       <div class="champ-name">${indivNames}</div>
       <div class="champ-score">${fmtPar(c.score)} net to par</div>
-      <div class="champ-roster" id="roster-${c.year}">${rosterHtml}</div>
-      <div class="champ-tap-hint" id="hint-${c.year}">Tap to see roster</div>
+      <div class="champ-roster" data-roster="${esc(c.year)}">${rosterHtml}</div>
+      <div class="champ-tap-hint" data-hint="${esc(c.year)}">Tap to see roster</div>
     </div>`;
   }).join('');
   wall.querySelectorAll('.champ-card').forEach(card=>{
     card.addEventListener('click',()=>{
-      const y=card.dataset.year;
-      const roster=document.getElementById('roster-'+y);
-      const hint=document.getElementById('hint-'+y);
+      const roster=card.querySelector('.champ-roster');
+      const hint=card.querySelector('.champ-tap-hint');
       const isOpen=roster.classList.contains('open');
       roster.classList.toggle('open');
       hint.textContent=isOpen?'Tap to see roster':'Tap to collapse';
