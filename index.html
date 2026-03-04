@@ -315,6 +315,50 @@
     .champion-modal-label { font-size:0.6rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); text-align:center; margin-bottom:6px; }
     .modal-stat.champion-accent { border:1px solid rgba(201,168,76,0.3); }
 
+    /* Records Link */
+    .records-link-wrap { text-align:center; margin-top:12px; }
+    .records-link { display:inline-block; font-size:0.68rem; font-weight:500; color:var(--text-secondary); cursor:pointer; letter-spacing:0.03em; padding:5px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(245,240,232,0.04); transition:all var(--transition); }
+    .records-link:hover { background:rgba(245,240,232,0.08); color:var(--text-primary); }
+
+    /* Records Page */
+    .records-header { text-align:center; margin-bottom:24px; }
+    .records-back { display:inline-block; font-size:0.72rem; font-weight:500; color:var(--text-secondary); cursor:pointer; margin-bottom:16px; padding:5px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(245,240,232,0.04); transition:all var(--transition); }
+    .records-back:hover { background:rgba(245,240,232,0.08); color:var(--text-primary); }
+    .records-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.8rem; color:var(--cream); margin:4px 0; }
+    .records-subtitle { font-size:0.75rem; color:var(--text-muted); }
+    .champions-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .champ-card { background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:16px; position:relative; overflow:hidden; cursor:pointer; transition:background var(--transition); }
+    .champ-card:hover { background:var(--surface-2); }
+    .champ-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent); }
+    .champ-year { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.3rem; color:var(--gold); margin-bottom:8px; }
+    .champ-label { font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+    .champ-name { font-weight:600; font-size:0.9rem; color:var(--text-primary); }
+    .champ-detail { font-size:0.72rem; color:var(--text-secondary); margin-bottom:10px; }
+    .champ-score { font-size:0.72rem; color:var(--text-secondary); }
+    .champ-roster { margin-top:12px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); display:none; }
+    .champ-roster.open { display:block; }
+    .champ-roster-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+    .champ-roster-row { display:flex; justify-content:space-between; padding:4px 0; font-size:0.78rem; }
+    .champ-roster-row .r-name { color:var(--text-secondary); }
+    .champ-roster-row .r-score { font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-secondary); }
+    .champ-tap-hint { margin-top:10px; font-size:0.6rem; color:var(--text-muted); font-style:italic; text-align:center; }
+    .rec-row { display:flex; align-items:center; padding:14px 16px; gap:14px; }
+    .rec-row:not(:last-child) { border-bottom:1px solid var(--border); }
+    .rec-icon { font-size:1.2rem; width:28px; text-align:center; flex-shrink:0; }
+    .rec-info { flex:1; }
+    .rec-label { font-size:0.62rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+    .rec-detail { font-size:0.82rem; color:var(--text-secondary); }
+    .rec-value { font-weight:700; font-size:1.15rem; color:var(--text-primary); font-variant-numeric:tabular-nums; text-align:right; min-width:60px; }
+    .course-hist-item { padding:14px 16px; }
+    .course-hist-item:not(:last-child) { border-bottom:1px solid var(--border); }
+    .course-hist-name { font-weight:600; font-size:0.95rem; color:var(--text-primary); margin-bottom:8px; }
+    .course-hist-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .course-hist-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 10px; text-align:center; }
+    .course-hist-stat-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+    .course-hist-stat-val { font-weight:700; font-size:0.95rem; color:var(--text-primary); }
+    .course-hist-stat-sub { font-size:0.6rem; color:var(--text-secondary); margin-top:2px; }
+    @media(max-width:480px){ .champions-grid{grid-template-columns:1fr} }
+
     /* Footer / Misc */
     .footer { text-align:center; padding:32px 0 20px; font-size:0.7rem; color:var(--text-muted); }
     .loading-msg { text-align:center; padding:40px 0; color:var(--text-muted); font-size:0.85rem; }
@@ -337,6 +381,7 @@
       <div class="header-badge"><span class="live-dot"></span>Live Scoring</div>
       <h1>OPGA Invitational</h1>
       <div class="header-sub" id="lastUpdate">Connecting…</div>
+      <div class="records-link-wrap" id="recordsLinkWrap" style="display:none"><span class="records-link" id="recordsLink">All-Time Records <span style="color:var(--gold)">→</span></span></div>
     </header>
 
     <div class="controls" id="yearControls" style="display:none">
@@ -358,7 +403,6 @@
       <div class="champion-team" id="champTeam"></div>
       <div class="champion-margin" id="champMargin"></div>
       <div class="champion-individual" id="champIndividual"></div>
-      <div class="champion-accolades" id="champAccolades"></div>
       <div class="champion-accolades" id="champAccolades"></div>
     </div>
 
@@ -434,6 +478,47 @@
           <thead><tr><th>Player</th><th>HI</th><th>CH R1</th><th>CH R2</th><th>CH R3</th><th>CH R4</th></tr></thead>
           <tbody id="hcBody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Records Page (hidden by default) -->
+    <div id="recordsPage" style="display:none">
+      <div class="records-header">
+        <span class="records-back" id="recordsBack">← Back to Leaderboard</span>
+        <h2 class="records-title">All-Time Records</h2>
+        <div class="records-subtitle">Across all OPGA Invitational tournaments</div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <span class="section-title">Champions Wall</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="champions-grid" id="championsWall"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <span class="section-title">Team Records</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="card" id="teamRecordsCard"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <span class="section-title">Individual Records</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="card" id="indivRecordsCard"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <span class="section-title">Course History</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="card" id="courseHistoryCard"></div>
       </div>
     </div>
 
@@ -1184,10 +1269,235 @@ function renderYearSelector(){
   });
 }
 
+/* ═══ RECORDS PAGE ═══ */
+let allYearsData = {}; // {year: {players, courses, roundMap}}
+let recordsOpen = false;
+
+function showRecordsPage(){
+  recordsOpen = true;
+  // Hide main content sections
+  document.querySelectorAll('#yearControls, .controls, #championBanner, #highlights, #teamSection, #chartSection, #individualSection, #historySection, #coursesSection, #hcSection').forEach(el=>el.style.display='none');
+  document.getElementById('recordsPage').style.display='block';
+  loadAllYearsAndRender();
+  window.scrollTo(0,0);
+}
+
+function hideRecordsPage(){
+  recordsOpen = false;
+  document.getElementById('recordsPage').style.display='none';
+  // Restore main content
+  if(availableYears.length>1) document.getElementById('yearControls').style.display='flex';
+  document.querySelectorAll('.controls').forEach(el=>el.style.display='flex');
+  document.querySelectorAll('#teamSection, #chartSection, #individualSection, #historySection, #coursesSection, #hcSection').forEach(el=>el.style.display='block');
+  document.getElementById('championBanner').style.display='';
+  document.getElementById('highlights').style.display='';
+  lastCSV='';
+  render();
+  window.scrollTo(0,0);
+}
+
+async function loadAllYearsAndRender(){
+  for(const y of availableYears){
+    if(allYearsData[y]) continue;
+    const tabs={scores:`Scores ${y}`,courses:`Courses ${y}`,rounds:`Rounds ${y}`};
+    const[scoresRaw,coursesRaw,roundsRaw]=await Promise.all([fetchTab(tabs.scores),fetchTab(tabs.courses),fetchTab(tabs.rounds)]);
+    const yPlayers=[], yCourses={}, yRoundMap={};
+    if(coursesRaw.length>1){for(let i=1;i<coursesRaw.length;i++){const r=coursesRaw[i];if(r[0])yCourses[r[0].trim()]={par:num(r[1]),rating:num(r[2]),slope:num(r[3])}}}
+    if(roundsRaw.length>1){for(let i=1;i<roundsRaw.length;i++){const r=roundsRaw[i];if(r[0]&&r[1])yRoundMap[r[0].replace(/[^0-9]/g,'')]=r[1].trim()}}
+    if(scoresRaw.length>1){for(let i=1;i<scoresRaw.length;i++){const r=scoresRaw[i];if(!r[0]||!r[0].trim())continue;yPlayers.push({name:r[0].trim(),hi:num(r[1]),team:(r[2]||'').trim(),rounds:{'1':{front:num(r[3]),back:num(r[4])},'2':{front:num(r[5]),back:num(r[6])},'3':{front:num(r[7]),back:num(r[8])},'4':{front:num(r[9]),back:num(r[10])}}})}}
+    allYearsData[y]={players:yPlayers,courses:yCourses,roundMap:yRoundMap};
+  }
+  renderRecordsPage();
+}
+
+function recGetCH(hi,rn,yCourses,yRoundMap){const c=yCourses[yRoundMap[String(rn)]];if(!c)return 0;return Math.round(hi*(c.slope/113)+(c.rating-c.par))}
+function recGetPar(rn,yCourses,yRoundMap){const c=yCourses[yRoundMap[String(rn)]];return c?c.par:72}
+function recCalcRound(p,rn,yCourses,yRoundMap){
+  const r=p.rounds[String(rn)];if(!r)return null;
+  const fg=r.front,bg=r.back,hasFront=fg>0,hasBack=bg>0;
+  if(!hasFront&&!hasBack)return null;
+  const ch=recGetCH(p.hi,rn,yCourses,yRoundMap),par=recGetPar(rn,yCourses,yRoundMap);
+  const fHc=Math.ceil(ch/2),bHc=Math.floor(ch/2);
+  const frontNet=hasFront?fg-fHc:0,backNet=hasBack?bg-bHc:0;
+  const thru=(hasFront?9:0)+(hasBack?9:0);
+  const net=frontNet+backNet,gross=(hasFront?fg:0)+(hasBack?bg:0);
+  const parForHoles=(hasFront&&hasBack)?par:(hasFront?Math.ceil(par/2):Math.floor(par/2));
+  return{net,gross,thru,netToPar:net-parForHoles,frontNet,backNet,hasFront,hasBack,ch};
+}
+
+function renderRecordsPage(){
+  renderChampionsWall();
+  renderTeamRecords();
+  renderIndivRecords();
+  renderCourseHistory();
+}
+
+function renderChampionsWall(){
+  const wall=document.getElementById('championsWall');
+  const champData=[];
+  for(const y of availableYears){
+    const yd=allYearsData[y];if(!yd||!yd.players.length)continue;
+    // Check if year is complete
+    let complete=true;
+    for(const p of yd.players){for(let rn=1;rn<=4;rn++){const r=p.rounds[String(rn)];if(!r||!r.front||!r.back||r.front<=0||r.back<=0){complete=false;break}}if(!complete)break}
+    if(!complete)continue;
+    // Team champion
+    const teamMap={};
+    for(const p of yd.players){if(!p.team)continue;if(!teamMap[p.team])teamMap[p.team]=[];teamMap[p.team].push(p)}
+    const teams=Object.entries(teamMap).map(([name,members])=>{
+      let ntp=0;for(const m of members){for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}}
+      return{name,netToPar:ntp,members};
+    }).sort((a,b)=>a.netToPar-b.netToPar);
+    // Individual champion
+    const indiv=yd.players.map(p=>{let ntp=0,net=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(res){ntp+=res.netToPar;net+=res.net}}return{name:p.name,netToPar:ntp,net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
+    const margin=teams.length>=2?Math.abs(teams[0].netToPar-teams[1].netToPar):0;
+    const loser=teams.length>=2?teams[1].name:'';
+    champData.push({year:y,team:teams[0].name,margin,loser,individual:indiv[0].name,score:indiv[0].netToPar,roster:teams[0].members.map(m=>{let ntp=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}return{name:m.name,ntp}}).sort((a,b)=>a.ntp-b.ntp)});
+  }
+  if(!champData.length){wall.innerHTML='<div class="empty-state">No completed tournaments yet</div>';return}
+  wall.innerHTML=[...champData].reverse().map(c=>{
+    const marginText=c.margin===0?'Tied':'Won by '+c.margin+' stroke'+(c.margin!==1?'s':'')+' over '+esc(c.loser);
+    return`<div class="champ-card" data-year="${c.year}">
+      <div class="champ-year">${c.year}</div>
+      <div class="champ-label">Team Champion</div>
+      <div class="champ-name">${esc(c.team)}</div>
+      <div class="champ-detail">${marginText}</div>
+      <div class="champ-label">Individual Champion</div>
+      <div class="champ-name">${esc(c.individual)}</div>
+      <div class="champ-score">${fmtPar(c.score)} net to par</div>
+      <div class="champ-roster" id="roster-${c.year}">
+        <div class="champ-roster-label">Winning Roster</div>
+        ${c.roster.map(m=>`<div class="champ-roster-row"><span class="r-name">${esc(m.name)}</span><span class="r-score">${fmtPar(m.ntp)}</span></div>`).join('')}
+      </div>
+      <div class="champ-tap-hint" id="hint-${c.year}">Tap to see roster</div>
+    </div>`;
+  }).join('');
+  wall.querySelectorAll('.champ-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const y=card.dataset.year;
+      const roster=document.getElementById('roster-'+y);
+      const hint=document.getElementById('hint-'+y);
+      const isOpen=roster.classList.contains('open');
+      roster.classList.toggle('open');
+      hint.textContent=isOpen?'Tap to see roster':'Tap to collapse';
+    });
+  });
+}
+
+function renderTeamRecords(){
+  const card=document.getElementById('teamRecordsCard');
+  let bestTourn={val:Infinity,detail:''},largestVictory={val:0,detail:''},closestFinish={val:Infinity,detail:''},bestRound={val:Infinity,detail:''},worstRound={val:-Infinity,detail:''};
+  for(const y of availableYears){
+    const yd=allYearsData[y];if(!yd||!yd.players.length)continue;
+    const teamMap={};
+    for(const p of yd.players){if(!p.team)continue;if(!teamMap[p.team])teamMap[p.team]=[];teamMap[p.team].push(p)}
+    // Tournament totals
+    const teamTotals=Object.entries(teamMap).map(([name,members])=>{
+      let ntp=0,complete=true;
+      for(const m of members){for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar;else{complete=false}}}
+      return{name,netToPar:ntp,members,complete};
+    }).sort((a,b)=>a.netToPar-b.netToPar);
+    // Best tournament
+    if(teamTotals[0]&&teamTotals[0].complete&&teamTotals[0].netToPar<bestTourn.val){bestTourn={val:teamTotals[0].netToPar,detail:esc(teamTotals[0].name)+' · '+y}}
+    // Margins
+    const completedTeams=teamTotals.filter(t=>t.complete);
+    if(completedTeams.length>=2){
+      const margin=Math.abs(completedTeams[0].netToPar-completedTeams[1].netToPar);
+      if(margin>largestVictory.val){largestVictory={val:margin,detail:esc(completedTeams[0].name)+' over '+esc(completedTeams[1].name)+' · '+y}}
+      if(margin<closestFinish.val){closestFinish={val:margin,detail:esc(completedTeams[0].name)+' over '+esc(completedTeams[1].name)+' · '+y}}
+    }
+    // Round-by-round
+    for(let rn=1;rn<=4;rn++){
+      for(const[tName,members] of Object.entries(teamMap)){
+        let rnNtp=0,allPlayed=true;
+        for(const m of members){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res&&res.thru===18)rnNtp+=res.netToPar;else allPlayed=false}
+        if(!allPlayed)continue;
+        if(rnNtp<bestRound.val){bestRound={val:rnNtp,detail:esc(tName)+' · R'+rn+' · '+y}}
+        if(rnNtp>worstRound.val){worstRound={val:rnNtp,detail:esc(tName)+' · R'+rn+' · '+y}}
+      }
+    }
+  }
+  const rows=[];
+  if(bestTourn.detail)rows.push({icon:'🏆',label:'Best Tournament',value:fmtPar(bestTourn.val),detail:bestTourn.detail});
+  if(largestVictory.detail)rows.push({icon:'💪',label:'Largest Victory',value:largestVictory.val+' stroke'+(largestVictory.val!==1?'s':''),detail:largestVictory.detail});
+  if(closestFinish.detail)rows.push({icon:'🤏',label:'Closest Finish',value:closestFinish.val+' stroke'+(closestFinish.val!==1?'s':''),detail:closestFinish.detail});
+  if(bestRound.detail)rows.push({icon:'🔥',label:'Best Team Round',value:fmtPar(bestRound.val),detail:bestRound.detail});
+  if(worstRound.detail)rows.push({icon:'🥄',label:'Worst Team Round',value:fmtPar(worstRound.val),detail:worstRound.detail});
+  card.innerHTML=rows.length?rows.map((r,i)=>`<div class="rec-row"><div class="rec-icon">${r.icon}</div><div class="rec-info"><div class="rec-label">${r.label}</div><div class="rec-detail">${r.detail}</div></div><div class="rec-value">${r.value}</div></div>`).join(''):'<div class="empty-state">No records yet</div>';
+}
+
+function renderIndivRecords(){
+  const card=document.getElementById('indivRecordsCard');
+  let bestTourn={val:Infinity,detail:''},bestNetRound={val:Infinity,detail:''},bestGrossRound={val:Infinity,detail:''};
+  for(const y of availableYears){
+    const yd=allYearsData[y];if(!yd||!yd.players.length)continue;
+    for(const p of yd.players){
+      // Tournament
+      let tNtp=0,tComplete=true;
+      for(let rn=1;rn<=4;rn++){const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(res&&res.thru===18)tNtp+=res.netToPar;else tComplete=false}
+      if(tComplete&&tNtp<bestTourn.val){bestTourn={val:tNtp,detail:esc(p.name)+' · '+y}}
+      // Rounds
+      for(let rn=1;rn<=4;rn++){
+        const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
+        if(res.netToPar<bestNetRound.val){bestNetRound={val:res.netToPar,detail:esc(p.name)+' · R'+rn+' · '+y}}
+        if(res.gross<bestGrossRound.val){bestGrossRound={val:res.gross,detail:esc(p.name)+' · R'+rn+' · '+y}}
+      }
+    }
+  }
+  const rows=[];
+  if(bestTourn.detail)rows.push({icon:'👑',label:'Best Tournament',value:fmtPar(bestTourn.val),detail:bestTourn.detail});
+  if(bestNetRound.detail)rows.push({icon:'🏆',label:'Best Net Round',value:fmtPar(bestNetRound.val),detail:bestNetRound.detail});
+  if(bestGrossRound.detail)rows.push({icon:'💪',label:'Best Gross Round',value:String(bestGrossRound.val),detail:bestGrossRound.detail});
+  card.innerHTML=rows.length?rows.map((r,i)=>`<div class="rec-row"><div class="rec-icon">${r.icon}</div><div class="rec-info"><div class="rec-label">${r.label}</div><div class="rec-detail">${r.detail}</div></div><div class="rec-value">${r.value}</div></div>`).join(''):'<div class="empty-state">No records yet</div>';
+}
+
+function renderCourseHistory(){
+  const card=document.getElementById('courseHistoryCard');
+  const courseData={};
+  for(const y of availableYears){
+    const yd=allYearsData[y];if(!yd)continue;
+    for(let rn=1;rn<=4;rn++){
+      const cName=yd.roundMap[String(rn)];if(!cName)continue;
+      const c=yd.courses[cName];if(!c)continue;
+      if(!courseData[cName])courseData[cName]={rounds:0,totalNtp:0,totalPlayers:0,bestNet:Infinity,bestBy:'',par:c.par,rating:c.rating,slope:c.slope};
+      let roundHasScores=false;
+      for(const p of yd.players){
+        const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
+        roundHasScores=true;
+        courseData[cName].totalNtp+=res.netToPar;
+        courseData[cName].totalPlayers++;
+        if(res.netToPar<courseData[cName].bestNet){courseData[cName].bestNet=res.netToPar;courseData[cName].bestBy=esc(p.name)+' · R'+rn+' · '+y}
+      }
+      if(roundHasScores)courseData[cName].rounds++;
+    }
+  }
+  const sorted=Object.entries(courseData).sort((a,b)=>b[1].rounds-a[1].rounds);
+  if(!sorted.length){card.innerHTML='<div class="empty-state">No course data yet</div>';return}
+  card.innerHTML=sorted.map(([name,d],i)=>{
+    const avgNtp=d.totalPlayers>0?(d.totalNtp/d.totalPlayers):0;
+    const avgStr=avgNtp>=0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1);
+    const avgClass=avgNtp<0?'under':(avgNtp>0?'over':'even');
+    const bestClass=d.bestNet<0?'under':(d.bestNet>0?'over':'even');
+    return`<div class="course-hist-item">
+      <div class="course-hist-name">${esc(name)}</div>
+      <div class="course-hist-stats">
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestBy?`<div class="course-hist-stat-sub">${d.bestBy}</div>`:''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 async function init(){
   availableYears=await scanYears();
   currentYear=availableYears[availableYears.length-1];
   renderYearSelector();
+  // Show records link if we have multiple years
+  if(availableYears.length>1) document.getElementById('recordsLinkWrap').style.display='block';
+  // Records navigation
+  document.getElementById('recordsLink').addEventListener('click',showRecordsPage);
+  document.getElementById('recordsBack').addEventListener('click',hideRecordsPage);
   await load();
   // Retry if first load was rate-limited
   if(!players.length){for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,2000));await load();if(players.length)break}}
