@@ -351,7 +351,10 @@
     .rec-value { font-weight:700; font-size:1.15rem; color:var(--text-primary); font-variant-numeric:tabular-nums; text-align:right; min-width:60px; }
     .course-hist-item { padding:14px 16px; }
     .course-hist-item:not(:last-child) { border-bottom:1px solid var(--border); }
-    .course-hist-name { font-weight:600; font-size:0.95rem; color:var(--text-primary); margin-bottom:8px; }
+    .course-hist-name { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .course-hist-name-text { font-weight:600; font-size:0.95rem; color:var(--text-primary); }
+    .course-hist-name-line { flex:1; height:1px; background:var(--border); }
+    .course-hist-name-info { font-size:0.72rem; color:var(--text-muted); font-weight:400; white-space:nowrap; }
     .course-hist-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .course-hist-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 10px; text-align:center; display:flex; flex-direction:column; }
     .course-hist-stat-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
@@ -1479,7 +1482,7 @@ function renderCourseHistory(){
     const avgClass=avgNtp<0?'under':(avgNtp>0?'over':'even');
     const bestClass=d.bestNet<0?'under':(d.bestNet>0?'over':'even');
     return`<div class="course-hist-item">
-      <div class="course-hist-name">${esc(name)}</div>
+      <div class="course-hist-name"><span class="course-hist-name-text">${esc(name)}</span><span class="course-hist-name-line"></span><span class="course-hist-name-info">Par ${d.par} / ${d.rating} / ${d.slope}</span></div>
       <div class="course-hist-stats">
         <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
