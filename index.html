@@ -338,6 +338,7 @@
     .champ-roster { margin-top:12px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); display:none; }
     .champ-roster.open { display:block; }
     .champ-roster-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+    .champ-roster .champ-roster-label ~ .champ-roster-label { margin-top:10px; padding-top:8px; border-top:1px solid rgba(201,168,76,0.12); }
     .champ-roster-row { display:flex; justify-content:space-between; padding:4px 0; font-size:0.78rem; }
     .champ-roster-row .r-name { color:var(--text-secondary); }
     .champ-roster-row .r-score { font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-secondary); }
@@ -719,14 +720,14 @@ function renderChampionState(complete){
     bestRoundList.sort((a,b)=>a.ntp-b.ntp);
     const bestNtp=bestRoundList[0].ntp;
     const tiedBR=bestRoundList.filter(b=>b.ntp===bestNtp);
-    const brNames=tiedBR.map(b=>esc(b.name)).join(' & ');
+    const brNames=[...new Set(tiedBR.map(b=>esc(b.name)))].join(' & ');
     accoladesHtml+=`<span>Best Round: <strong>${brNames}</strong> ${fmtPar(bestNtp)}${tiedBR.length===1?' · R'+tiedBR[0].rn:''}</span>`;
   }
   if(bestNines.length){
     bestNines.sort((a,b)=>a.score-b.score);
     const bestScore=bestNines[0].score;
     const tiedBN=bestNines.filter(b=>b.score===bestScore);
-    const bnNames=tiedBN.map(b=>esc(b.name)).join(' & ');
+    const bnNames=[...new Set(tiedBN.map(b=>esc(b.name)))].join(' & ');
     accoladesHtml+=`<span>Best Nine: <strong>${bnNames}</strong> ${fmtPar(bestScore)}${tiedBN.length===1?' · '+tiedBN[0].label:''}</span>`;
   }
   document.getElementById('champAccolades').innerHTML=accoladesHtml;
@@ -811,7 +812,7 @@ function renderHighlights(complete){
       const b=tied[0];
       bestNineCard=`<div class="hl-card hl-hot"><div class="hl-label">🔥 Best Nine</div><div class="hl-name">${esc(b.name)}</div><div class="hl-detail">${b.gross} gross (${fmtPar(b.score)}) · ${b.label}</div></div>`;
     }else{
-      const names=tied.map(b=>esc(b.name)).join(' & ');
+      const names=[...new Set(tied.map(b=>esc(b.name)))].join(' & ');
       bestNineCard=`<div class="hl-card hl-hot"><div class="hl-label">🔥 Best Nine</div><div class="hl-name">${names}</div><div class="hl-detail">${fmtPar(bestScore)} net-to-par</div></div>`;
     }
   }
@@ -833,7 +834,7 @@ function renderHighlights(complete){
       const g=tied[0];
       bestRoundCard=`<div class="hl-card hl-low"><div class="hl-label">🏆 Best Round</div><div class="hl-name">${esc(g.name)}</div><div class="hl-detail">${fmtPar(g.ntp)} net · R${g.round}</div></div>`;
     }else{
-      const names=tied.map(g=>esc(g.name)).join(' & ');
+      const names=[...new Set(tied.map(g=>esc(g.name)))].join(' & ');
       bestRoundCard=`<div class="hl-card hl-low"><div class="hl-label">🏆 Best Round</div><div class="hl-name">${names}</div><div class="hl-detail">${fmtPar(bestNtp)} net</div></div>`;
     }
   }
@@ -1035,11 +1036,15 @@ function renderChart(){
       }
     }
   });
-  // Dismiss tooltip on mobile tap-away
-  ctx.canvas.addEventListener('click',function(e){
-    const pts=chartInstance.getElementsAtEventForMode(e,'index',{intersect:false},false);
-    if(!pts.length){chartInstance.tooltip.setActiveElements([]);chartInstance.update('none')}
-  });
+  // Dismiss tooltip on mobile tap-away (only add once)
+  if(!ctx.canvas._chartTapHandler){
+    ctx.canvas._chartTapHandler=function(e){
+      if(!chartInstance)return;
+      const pts=chartInstance.getElementsAtEventForMode(e,'index',{intersect:false},false);
+      if(!pts.length){chartInstance.tooltip.setActiveElements([]);chartInstance.update('none')}
+    };
+    ctx.canvas.addEventListener('click',ctx.canvas._chartTapHandler);
+  }
 }
 
 /* ═══ HISTORY ═══ */
@@ -1057,14 +1062,14 @@ function renderHistory(){
         const tied1st=byNet.filter(p=>p.netToPar===bestNtp);
         const label1=tied1st.length>1?'T1':'1st';
         const names1=tied1st.map(p=>esc(p.name)).join(' & ');
-        html+=`<div class="history-place"><span><span class="history-medal gold">${label1}</span>${names1}</span><span class="history-place-score">${byNet[0].gross} / ${fmtPar(bestNtp)}</span></div>`;
+        html+=`<div class="history-place"><span><span class="history-medal gold">${label1}</span>${names1}</span><span class="history-place-score">${tied1st.length===1?tied1st[0].gross+' / ':'' }${fmtPar(bestNtp)}</span></div>`;
         const rest=byNet.filter(p=>p.netToPar!==bestNtp);
         if(rest.length>0){
           const secondNtp=rest[0].netToPar;
           const tied2nd=rest.filter(p=>p.netToPar===secondNtp);
           const label2=tied2nd.length>1?'T2':'2nd';
           const names2=tied2nd.map(p=>esc(p.name)).join(' & ');
-          html+=`<div class="history-place"><span><span class="history-medal silver">${label2}</span>${names2}</span><span class="history-place-score">${rest[0].gross} / ${fmtPar(secondNtp)}</span></div>`;
+          html+=`<div class="history-place"><span><span class="history-medal silver">${label2}</span>${names2}</span><span class="history-place-score">${tied2nd.length===1?tied2nd[0].gross+' / ':''}${fmtPar(secondNtp)}</span></div>`;
         }
       }
       if(!byNet.length&&rp.length)html+='<div class="history-upcoming">In progress…</div>';
@@ -1077,7 +1082,7 @@ function renderHistory(){
 /* ═══ HANDICAPS ═══ */
 function renderHandicaps(){
   document.getElementById('hcBody').innerHTML=[...players].sort((a,b)=>a.hi-b.hi).map(p=>{
-    const chs=[1,2,3,4].map(rn=>`<td class="hc-val">${getCH(p.hi,rn)||'—'}</td>`).join('');
+    const chs=[1,2,3,4].map(rn=>{const cName=getCourseName(rn);return`<td class="hc-val">${cName&&courses[cName]?getCH(p.hi,rn):'—'}</td>`}).join('');
     return`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
   }).join('');
 }
@@ -1308,8 +1313,9 @@ function showRecordsPage(){
   recordsOpen = true;
   // Clear current year cache so we get fresh live data
   delete allYearsData[currentYear];
-  // Hide main content sections
+  // Hide main content sections and records link
   document.querySelectorAll('#yearControls, .controls, #championBanner, #highlights, #teamSection, #chartSection, #individualSection, #historySection, #coursesSection, #hcSection').forEach(el=>el.style.display='none');
+  document.getElementById('recordsLinkWrap').style.display='none';
   document.getElementById('recordsPage').style.display='block';
   loadAllYearsAndRender();
   window.scrollTo(0,0);
@@ -1324,6 +1330,7 @@ function hideRecordsPage(){
   document.querySelectorAll('#teamSection, #chartSection, #individualSection, #historySection, #coursesSection, #hcSection').forEach(el=>el.style.display='block');
   document.getElementById('championBanner').style.display='';
   document.getElementById('highlights').style.display='';
+  if(availableYears.length>1) document.getElementById('recordsLinkWrap').style.display='block';
   lastCSV='';
   render();
   window.scrollTo(0,0);
@@ -1384,24 +1391,37 @@ function renderChampionsWall(){
     // Individual champion
     const indiv=yd.players.map(p=>{let ntp=0,net=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(res){ntp+=res.netToPar;net+=res.net}}return{name:p.name,netToPar:ntp,net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
     const margin=teams.length>=2?Math.abs(teams[0].netToPar-teams[1].netToPar):0;
-    const loser=teams.length>=2?teams[1].name:'';
-    champData.push({year:y,team:teams[0].name,margin,loser,individual:indiv[0].name,score:indiv[0].netToPar,roster:teams[0].members.map(m=>{let ntp=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}return{name:m.name,ntp}}).sort((a,b)=>a.ntp-b.ntp)});
+    const tiedChampTeams=teams.filter(t=>t.netToPar===teams[0].netToPar);
+    const loser=teams.length>tiedChampTeams.length?teams[tiedChampTeams.length].name:'';
+    const tiedIndivChamps=indiv.filter(d=>d.netToPar===indiv[0].netToPar&&d.net===indiv[0].net);
+    const teamRosters=tiedChampTeams.map(ct=>{
+      const members=ct.members.map(m=>{let ntp=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}return{name:m.name,ntp}}).sort((a,b)=>a.ntp-b.ntp);
+      return{teamName:ct.name,members};
+    });
+    champData.push({year:y,teams:tiedChampTeams.map(t=>t.name),margin,loser,individuals:tiedIndivChamps.map(d=>d.name),score:indiv[0].netToPar,teamRosters});
   }
   if(!champData.length){wall.innerHTML='<div class="empty-state">No completed tournaments yet</div>';return}
   wall.innerHTML=[...champData].reverse().map(c=>{
-    const marginText=c.margin===0?'Tied':'Won by '+c.margin+' stroke'+(c.margin!==1?'s':'')+' over '+esc(c.loser);
+    const marginText=c.margin===0&&c.teams.length>1?'Tied':c.margin===0?'':'Won by '+c.margin+' stroke'+(c.margin!==1?'s':'')+' over '+esc(c.loser);
+    const teamLabel=c.teams.length>1?'Team Champions':'Team Champion';
+    const teamNames=c.teams.map(t=>esc(t)).join(' & ');
+    const indivLabel=c.individuals.length>1?'Individual Champions':'Individual Champion';
+    const indivNames=c.individuals.map(n=>esc(n)).join(' & ');
+    let rosterHtml='';
+    if(c.teams.length>1){
+      rosterHtml=c.teamRosters.map(tr=>`<div class="champ-roster-label">${esc(tr.teamName)}</div>${tr.members.map(m=>`<div class="champ-roster-row"><span class="r-name">${esc(m.name)}</span><span class="r-score">${fmtPar(m.ntp)}</span></div>`).join('')}`).join('');
+    }else{
+      rosterHtml=`<div class="champ-roster-label">Winning Roster</div>${c.teamRosters[0].members.map(m=>`<div class="champ-roster-row"><span class="r-name">${esc(m.name)}</span><span class="r-score">${fmtPar(m.ntp)}</span></div>`).join('')}`;
+    }
     return`<div class="champ-card" data-year="${c.year}">
       <div class="champ-year">${c.year}</div>
-      <div class="champ-label">Team Champion</div>
-      <div class="champ-name">${esc(c.team)}</div>
-      <div class="champ-detail">${marginText}</div>
-      <div class="champ-label">Individual Champion</div>
-      <div class="champ-name">${esc(c.individual)}</div>
+      <div class="champ-label">${teamLabel}</div>
+      <div class="champ-name">${teamNames}</div>
+      ${marginText?`<div class="champ-detail">${marginText}</div>`:''}
+      <div class="champ-label">${indivLabel}</div>
+      <div class="champ-name">${indivNames}</div>
       <div class="champ-score">${fmtPar(c.score)} net to par</div>
-      <div class="champ-roster" id="roster-${c.year}">
-        <div class="champ-roster-label">Winning Roster</div>
-        ${c.roster.map(m=>`<div class="champ-roster-row"><span class="r-name">${esc(m.name)}</span><span class="r-score">${fmtPar(m.ntp)}</span></div>`).join('')}
-      </div>
+      <div class="champ-roster" id="roster-${c.year}">${rosterHtml}</div>
       <div class="champ-tap-hint" id="hint-${c.year}">Tap to see roster</div>
     </div>`;
   }).join('');
@@ -1491,14 +1511,18 @@ function renderIndivRecords(){
         let ntp=0;for(const m of members){for(let rn=1;rn<=4;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}}
         return{name,netToPar:ntp,members};
       }).sort((a,b)=>a.netToPar-b.netToPar);
-      for(const m of teams[0].members){
+      const tiedWinTeams=teams.filter(t=>t.netToPar===teams[0].netToPar);
+      for(const wt of tiedWinTeams){for(const m of wt.members){
         if(!teamChampCounts[m.name])teamChampCounts[m.name]=[];
         teamChampCounts[m.name].push(y);
-      }
+      }}
       // Individual champion
       const indiv=yd.players.map(p=>{let ntp=0,net=0;for(let rn=1;rn<=4;rn++){const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(res){ntp+=res.netToPar;net+=res.net}}return{name:p.name,netToPar:ntp,net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
-      if(!indivChampCounts[indiv[0].name])indivChampCounts[indiv[0].name]=[];
-      indivChampCounts[indiv[0].name].push(y);
+      const tiedWinIndiv=indiv.filter(d=>d.netToPar===indiv[0].netToPar&&d.net===indiv[0].net);
+      for(const wi of tiedWinIndiv){
+        if(!indivChampCounts[wi.name])indivChampCounts[wi.name]=[];
+        indivChampCounts[wi.name].push(y);
+      }
     }
   }
   const rows=[];
