@@ -103,6 +103,8 @@
     /* Controls */
     .controls { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 16px 0 24px; }
     .ctrl-group { display: flex; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    #yearBtns { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    #yearBtns::-webkit-scrollbar { display: none; }
     .ctrl-btn {
       background: none; border: none; color: var(--text-secondary);
       font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 500;
@@ -555,7 +557,7 @@
   <script>
 const SHEET_ID = '1YlBAFaODGvwT49IxAOgCjgAJgC2Xw9R9XJLolAuveGU';
 const POLL_SECONDS = 5;
-const START_YEAR = 2026;
+const START_YEAR = '2026';
 let availableYears = [];
 let currentYear = START_YEAR;
 function tabsForYear(y){return{scores:`Scores ${y}`,courses:`Courses ${y}`,rounds:`Rounds ${y}`}}
@@ -1289,10 +1291,9 @@ async function scanYears(){
     const rows=await fetchTab('Config');
     const found=[];
     for(let i=1;i<rows.length;i++){
-      const y=parseInt(rows[i][0]);
-      if(y>=2000 && y<=2100)found.push(y);
+      const v=(rows[i][0]||'').trim();
+      if(v)found.push(v);
     }
-    found.sort((a,b)=>a-b);
     return found.length?found:[START_YEAR];
   }catch{return[START_YEAR]}
 }
@@ -1305,7 +1306,7 @@ function renderYearSelector(){
   btns.innerHTML=availableYears.map(y=>`<button class="ctrl-btn${y===currentYear?' active':''}" data-year="${y}">${y}</button>`).join('');
   btns.querySelectorAll('.ctrl-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      const y=parseInt(btn.dataset.year);
+      const y=btn.dataset.year;
       if(y===currentYear)return;
       btns.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
