@@ -374,7 +374,7 @@
     .empty-state { text-align:center; padding:30px 20px; color:var(--text-muted); font-size:0.85rem; }
 
     @media(max-width:480px){
-      html{font-size:14px}
+      html{font-size:13px}
       .header h1{font-size:2rem}
       .ctrl-btn{padding:7px 10px;font-size:0.72rem}
       .lb-header,.lb-row{grid-template-columns:28px 1fr 46px 54px 46px 36px;gap:2px;padding:10px 10px}
@@ -718,7 +718,7 @@ function renderChampionState(complete){
   }
   const tiedIndiv=indivData.filter(d=>d.netToPar===indivData[0].netToPar&&d.net===indivData[0].net);
   const indivNames=tiedIndiv.map(d=>'<strong>'+esc(d.name)+'</strong>').join(' & ');
-  document.getElementById('champIndividual').innerHTML='<span style="font-size:0.72em">🏆</span> Individual Champion'+(tiedIndiv.length>1?'s':'')+': '+indivNames+' ('+fmtPar(indivData[0].netToPar)+')';
+  document.getElementById('champIndividual').innerHTML='<span style="font-size:0.72em;vertical-align:middle;position:relative;top:-1px">🏆</span> Individual Champion'+(tiedIndiv.length>1?'s':'')+': '+indivNames+' ('+fmtPar(indivData[0].netToPar)+')';
 
   // Best Round & Best Nine for banner
   let bestRoundList=[], bestNines=[];
