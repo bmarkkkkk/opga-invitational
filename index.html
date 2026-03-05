@@ -1512,7 +1512,8 @@ function renderIndivRecords(){
       for(let rn=1;rn<=4;rn++){
         const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
         if(res.netToPar<bestNetRound.val){bestNetRound={val:res.netToPar,details:[esc(p.name)+' · R'+rn+' · '+y]}}else if(res.netToPar===bestNetRound.val){bestNetRound.details.push(esc(p.name)+' · R'+rn+' · '+y)}
-        if(res.gross<bestGrossRound.val){bestGrossRound={val:res.gross,details:[esc(p.name)+' · R'+rn+' · '+y]}}else if(res.gross===bestGrossRound.val){bestGrossRound.details.push(esc(p.name)+' · R'+rn+' · '+y)}
+        const grossToPar=res.gross-recGetPar(rn,yd.courses,yd.roundMap);
+        if(grossToPar<bestGrossRound.val){bestGrossRound={val:grossToPar,details:[{text:esc(p.name)+' · R'+rn+' · '+y,gross:res.gross}]}}else if(grossToPar===bestGrossRound.val){bestGrossRound.details.push({text:esc(p.name)+' · R'+rn+' · '+y,gross:res.gross})}
       }
     }
     // Championship counts (only for complete years)
@@ -1541,7 +1542,11 @@ function renderIndivRecords(){
   const rows=[];
   if(bestTourn.details.length)rows.push({icon:'👑',label:'Best Tournament',value:fmtPar(bestTourn.val),detail:bestTourn.details.join('<br>')});
   if(bestNetRound.details.length)rows.push({icon:'🏆',label:'Best Net Round',value:fmtPar(bestNetRound.val),detail:bestNetRound.details.join('<br>')});
-  if(bestGrossRound.details.length)rows.push({icon:'💪',label:'Best Gross Round',value:String(bestGrossRound.val),detail:bestGrossRound.details.join('<br>')});
+  if(bestGrossRound.details.length){
+    const detail=bestGrossRound.details.map(d=>d.text+' ('+d.gross+')').join('<br>');
+    const displayVal=bestGrossRound.details.length===1?String(bestGrossRound.details[0].gross):fmtPar(bestGrossRound.val);
+    rows.push({icon:'💪',label:'Best Gross Round',value:displayVal,detail});
+  }
   // Most team championships
   const teamChampSorted=Object.entries(teamChampCounts).sort((a,b)=>b[1].length-a[1].length);
   if(teamChampSorted.length){const topCount=teamChampSorted[0][1].length;const tied=teamChampSorted.filter(e=>e[1].length===topCount);const detail=tied.map(tc=>esc(tc[0])+' ('+tc[1].join(', ')+')').join('<br>');rows.push({icon:'🥇',label:'Most Team Championships',value:String(topCount),detail})};
