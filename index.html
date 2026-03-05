@@ -290,12 +290,12 @@
     .tm-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.5rem; color:var(--cream); text-align:center; }
     .tm-subtitle { text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:2px; margin-bottom:16px; }
     .tm-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
-    .tm-member { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px; cursor:pointer; transition:background var(--transition); }
+    .tm-member { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px; cursor:pointer; transition:background var(--transition); position:relative; }
     .tm-member:hover { background:var(--surface-3); }
     .tm-member:last-child { margin-bottom:0; }
     .tm-member-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
     .tm-member-name { font-weight:600; font-size:0.92rem; color:var(--text-primary); }
-    .tm-member-hi { font-size:0.65rem; color:var(--text-muted); font-weight:500; }
+    .tm-member-hi { font-size:0.62rem; color:var(--text-muted); font-weight:500; position:absolute; top:8px; right:10px; }
     .tm-member-score { font-weight:700; font-size:1rem; }
     .tm-member-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
     .tm-ms { text-align:center; }
@@ -1209,8 +1209,8 @@ function openTeamModal(teamName){
 
   let html=isChamp?'<div class="champion-modal-label">🏆 Champions</div>':'';
   html+=`<div class="tm-title">${esc(teamName)}</div>`;
-  html+=`<div class="tm-subtitle">${currentView==='tournament'?'Tournament Overview':'Round '+currentView+' Overview'}</div>`;
-  if(currentView!=='tournament'){const cName=getCourseName(parseInt(currentView));if(cName)html+=`<div style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:2px;margin-bottom:4px">${esc(cName)}</div>`}
+  if(currentView!=='tournament'){const cName=getCourseName(parseInt(currentView));if(cName)html+=`<div class="tm-subtitle">${'Round '+currentView+' Overview'}<br><span style="font-size:0.85em;color:var(--text-muted)">${esc(cName)}</span></div>`; else html+=`<div class="tm-subtitle">Round ${currentView} Overview</div>`}
+  else html+=`<div class="tm-subtitle">Tournament Overview</div>`;
 
   // Summary stats
   const statAccent=isChamp?' champion-accent':'';
