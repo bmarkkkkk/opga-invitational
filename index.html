@@ -1543,9 +1543,13 @@ function renderIndivRecords(){
   if(bestTourn.details.length)rows.push({icon:'👑',label:'Best Tournament',value:fmtPar(bestTourn.val),detail:bestTourn.details.join('<br>')});
   if(bestNetRound.details.length)rows.push({icon:'🏆',label:'Best Net Round',value:fmtPar(bestNetRound.val),detail:bestNetRound.details.join('<br>')});
   if(bestGrossRound.details.length){
-    const detail=bestGrossRound.details.map(d=>d.text+' ('+d.gross+')').join('<br>');
-    const displayVal=bestGrossRound.details.length===1?String(bestGrossRound.details[0].gross):fmtPar(bestGrossRound.val);
-    rows.push({icon:'💪',label:'Best Gross Round',value:displayVal,detail});
+    if(bestGrossRound.details.length===1){
+      const d=bestGrossRound.details[0];
+      rows.push({icon:'💪',label:'Best Gross Round',value:String(d.gross),detail:d.text+' ('+fmtPar(bestGrossRound.val)+')'});
+    }else{
+      const detail=bestGrossRound.details.map(d=>d.text+' ('+d.gross+')').join('<br>');
+      rows.push({icon:'💪',label:'Best Gross Round',value:fmtPar(bestGrossRound.val),detail});
+    }
   }
   // Most team championships
   const teamChampSorted=Object.entries(teamChampCounts).sort((a,b)=>b[1].length-a[1].length);
