@@ -87,7 +87,7 @@
     .champion-margin { font-size:0.8rem; color:var(--text-secondary); margin-top:4px; }
     .champion-individual { font-size:0.82rem; color:var(--text-secondary); margin-top:10px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); }
     .champion-individual strong { color:var(--cream); font-weight:600; }
-    .champion-accolades { display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); font-size:0.78rem; color:var(--text-secondary); }
+    .champion-accolades { display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(201,168,76,0.15); font-size:0.68rem; color:var(--text-secondary); }
     .champion-accolades span { display:flex; flex-wrap:wrap; justify-content:center; gap:0 4px; text-align:center; }
     .champion-accolades strong { color:var(--cream); font-weight:600; }
 
@@ -718,7 +718,7 @@ function renderChampionState(complete){
   }
   const tiedIndiv=indivData.filter(d=>d.netToPar===indivData[0].netToPar&&d.net===indivData[0].net);
   const indivNames=tiedIndiv.map(d=>'<strong>'+esc(d.name)+'</strong>').join(' & ');
-  document.getElementById('champIndividual').innerHTML='Individual Champion'+(tiedIndiv.length>1?'s':'')+': '+indivNames+' ('+fmtPar(indivData[0].netToPar)+')';
+  document.getElementById('champIndividual').innerHTML='<span style="font-size:0.72em">🏆</span> Individual Champion'+(tiedIndiv.length>1?'s':'')+': '+indivNames+' ('+fmtPar(indivData[0].netToPar)+')';
 
   // Best Round & Best Nine for banner
   let bestRoundList=[], bestNines=[];
