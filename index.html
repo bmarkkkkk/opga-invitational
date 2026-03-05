@@ -280,7 +280,7 @@
     .modal-rounds-title { display:flex; align-items:center; gap:8px; font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
     .modal-rounds-title .mrt-line { flex:1; height:1px; background:var(--border-bright); }
     .modal-rounds-title .mrt-course { font-weight:500; letter-spacing:0.03em; text-transform:none; color:var(--text-secondary); font-size:0.75rem; }
-    .modal-round-row { display:flex; justify-content:space-between; padding:8px 0; font-size:0.85rem; border-bottom:1px solid var(--border); }
+    .modal-round-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; font-size:0.85rem; border-bottom:1px solid var(--border); }
     .modal-round-row:last-child { border-bottom:none; }
     .modal-round-label { color:var(--text-secondary); font-weight:500; }
     .modal-round-val { font-weight:600; font-variant-numeric:tabular-nums; }
@@ -333,7 +333,7 @@
     .champions-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .champ-card { background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:16px; position:relative; overflow:hidden; cursor:pointer; transition:background var(--transition); }
     .champ-card:hover { background:var(--surface-2); }
-    @media(hover:none){ .champ-card:hover { background:var(--surface-1); } }
+    @media(hover:none){ .champ-card:hover,.team-row:hover,.lb-row:hover,.tm-member:hover,.ctrl-btn:hover { background:none; } }
     .champ-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent); }
     .champ-year { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.3rem; color:var(--gold); margin-bottom:8px; }
     .champ-label { font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
@@ -749,6 +749,14 @@ function renderChampionState(complete){
   }
   document.getElementById('champAccolades').innerHTML=accoladesHtml;
 
+  // Make banner clickable to open winning team modal (only if single winner)
+  if(tiedTeams.length===1){
+    banner.style.cursor='pointer';
+    banner.dataset.champTeam=tiedTeams[0].name;
+  }else{
+    banner.style.cursor='default';
+    banner.dataset.champTeam='';
+  }
   banner.classList.add('show');
 }
 
@@ -1147,7 +1155,7 @@ function openPlayerModal(name){
   let roundsHtml='';
   if(currentView==='tournament'){
     document.getElementById('pmRoundsTitle').innerHTML='<span>Round Breakdown (Gross)</span>';
-    for(let rn=1;rn<=4;rn++){const res=calcPlayerRound(player,rn);roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Round ${rn}</span><span class="modal-round-val">${res&&res.thru>0?res.gross:'—'}</span></div>`}
+    for(let rn=1;rn<=4;rn++){const res=calcPlayerRound(player,rn);const cn=getCourseName(rn);roundsHtml+=`<div class="modal-round-row"><div><span class="modal-round-label">Round ${rn}</span>${cn?'<div style="font-size:0.72rem;color:var(--text-muted);margin-top:1px">'+esc(cn)+'</div>':''}</div><span class="modal-round-val">${res&&res.thru>0?res.gross:'—'}</span></div>`}
     document.getElementById('pmSummary').textContent=`Handicap Index: ${player.hi}`;
   }else{
     const rn=parseInt(currentView);
@@ -1607,6 +1615,7 @@ async function init(){
   // Records navigation
   document.getElementById('recordsLink').addEventListener('click',showRecordsPage);
   document.getElementById('recordsBack').addEventListener('click',hideRecordsPage);
+  document.getElementById('championBanner').addEventListener('click',function(){const t=this.dataset.champTeam;if(t)openTeamModal(t)});
   await load();
   // Retry if first load was rate-limited
   if(!players.length){for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,2000));await load();if(players.length)break}}
