@@ -708,7 +708,7 @@ function renderChampionState(complete){
   // Individual champion
   const indivData=players.map(p=>{const v=calcPlayerView(p,'tournament');return{name:p.name,netToPar:v.netToPar,net:v.net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
 
-  document.querySelector('.champion-label').textContent=`🏆 ${currentYear} Champions`;
+  document.querySelector('.champion-label').innerHTML=`<span style="font-size:1.6em;vertical-align:middle;position:relative;top:-1px">🏆</span> ${currentYear} Champions`;
   const tiedTeams=teamData.filter(t=>t.netToPar===teamData[0].netToPar);
   document.getElementById('champTeam').textContent=tiedTeams.map(t=>t.name).join(' & ');
   if(teamData.length>=2){
