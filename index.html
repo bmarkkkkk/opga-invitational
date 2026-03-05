@@ -1210,6 +1210,7 @@ function openTeamModal(teamName){
   let html=isChamp?'<div class="champion-modal-label">🏆 Champions</div>':'';
   html+=`<div class="tm-title">${esc(teamName)}</div>`;
   html+=`<div class="tm-subtitle">${currentView==='tournament'?'Tournament Overview':'Round '+currentView+' Overview'}</div>`;
+  if(currentView!=='tournament'){const cName=getCourseName(parseInt(currentView));if(cName)html+=`<div style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:2px;margin-bottom:4px">${esc(cName)}</div>`}
 
   // Summary stats
   const statAccent=isChamp?' champion-accent':'';
@@ -1240,7 +1241,8 @@ function openTeamModal(teamName){
   // Member cards
   for(const md of memberData){
     html+=`<div class="tm-member" data-player="${esc(md.player.name)}">`;
-    html+=`<div class="tm-member-head"><div class="tm-member-name">${esc(md.player.name)}</div><div class="tm-member-hi">HI ${md.player.hi}</div></div>`;
+    const hcLabel=currentView==='tournament'?'HI '+md.player.hi:'CH '+getCH(md.player.hi,parseInt(currentView));
+    html+=`<div class="tm-member-head"><div class="tm-member-name">${esc(md.player.name)}</div><div class="tm-member-hi">${hcLabel}</div></div>`;
     html+=`<div class="tm-member-stats">
       <div class="tm-ms"><div class="tm-ms-label">Net</div><div class="tm-ms-val">${md.net||'—'}</div></div>
       <div class="tm-ms"><div class="tm-ms-label">To Par</div><div class="tm-ms-val ${parClass(md.netToPar)}">${md.thru>0?fmtPar(md.netToPar):'—'}</div></div>
