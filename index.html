@@ -1221,7 +1221,7 @@ function renderChart(){
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       plugins:{
-        legend:{labels:{color:'#a8b5a0',font:{family:'Outfit',size:12},usePointStyle:true,pointStyle:'circle',boxWidth:8,boxHeight:8}},
+        legend:{labels:{color:'#a8b5a0',font:{family:'Outfit',size:12},boxWidth:12,boxHeight:12}},
         tooltip:{backgroundColor:'rgba(15,46,29,0.95)',borderColor:'rgba(245,240,232,0.15)',borderWidth:1,titleFont:{family:'Outfit',size:13},bodyFont:{family:'Outfit',size:12},titleColor:'#f5f0e8',bodyColor:'#a8b5a0',padding:10,cornerRadius:8,callbacks:{label:function(ctx){const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v===0?'E':(v>0?'+'+v:v)}`}}}
       },
       scales:{
@@ -1813,7 +1813,7 @@ function renderPlayerHistory(){
         ps.totalNtp+=res.netToPar;
         if(res.netToPar<ps.bestNetNtp){ps.bestNetNtp=res.netToPar;ps.bestNetGross=res.gross;ps.bestNetYears=[y]}else if(res.netToPar===ps.bestNetNtp){if(!ps.bestNetYears.includes(y))ps.bestNetYears.push(y)}
         const gtp=res.gross-recGetPar(rn,yd.courses,yd.roundMap);
-        if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossYears=[y]}else if(gtp===ps.bestGrossGtp){if(!ps.bestGrossYears.includes(y))ps.bestGrossYears.push(y)}
+        if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossNtp=res.netToPar;ps.bestGrossYears=[y]}else if(gtp===ps.bestGrossGtp){if(!ps.bestGrossYears.includes(y))ps.bestGrossYears.push(y)}
       }
       if(hasCompletedRoundThisYear)ps.tournaments++;
     }
@@ -1842,7 +1842,7 @@ function renderPlayerHistory(){
       <div class="ph-stats2">
         <div class="ph-stat"><div class="ph-stat-label">Avg Net</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
         <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val ${bestNetClass}">${ps.bestNetNtp===Infinity?'—':fmtPar(ps.bestNetNtp)}</div>${ps.bestNetYears.length?'<div class="ph-stat-sub">'+ps.bestNetGross+' gross · '+ps.bestNetYears.join(', ')+'</div>':''}</div>
-        <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossYears.length?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossGtp)+' · '+ps.bestGrossYears.join(', ')+'</div>':''}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossYears.length?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossNtp)+' net · '+ps.bestGrossYears.join(', ')+'</div>':''}</div>
       </div>
     </div>`;
   }).join('');
