@@ -361,7 +361,8 @@
     .course-hist-name-text { font-weight:600; font-size:0.95rem; color:var(--text-primary); }
     .course-hist-name-line { flex:1; height:1px; background:var(--border); }
     .course-hist-name-info { font-size:0.72rem; color:var(--text-muted); font-weight:400; white-space:nowrap; }
-    .course-hist-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .course-hist-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+    @media(max-width:480px){ .course-hist-stats{grid-template-columns:repeat(2,1fr)} }
     .course-hist-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 10px; text-align:center; display:flex; flex-direction:column; }
     .course-hist-stat-label { font-size:0.55rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
     .course-hist-stat-val { font-weight:700; font-size:0.95rem; color:var(--text-primary); flex:1; display:flex; align-items:center; justify-content:center; }
@@ -1875,7 +1876,7 @@ function renderCourseHistory(){
     const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
     return`<div class="course-hist-item">
       <div class="course-hist-name"><span class="course-hist-name-text">${esc(name)}</span><span class="course-hist-name-line"></span><span class="course-hist-name-info">Par ${d.par} / ${parseFloat(d.rating).toFixed(1)} / ${d.slope}</span></div>
-      <div class="course-hist-stats" style="grid-template-columns:repeat(4,1fr)">
+      <div class="course-hist-stats">
         <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestNetBys.length?`<div class="course-hist-stat-sub">${d.bestNetBys.join('<br>')}</div>`:''}</div>
