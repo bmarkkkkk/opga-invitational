@@ -1793,7 +1793,6 @@ function renderPlayerHistory(){
     for(const p of yd.players){
       if(!playerStats[p.name])playerStats[p.name]={wins:[],top3:[],roundsWon:0,totalNtp:0,completedRounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYears:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossYears:[],bestTournNtp:Infinity,bestTournYears:[],tournaments:0};
       const ps=playerStats[p.name];
-      ps.tournaments++;
       // Tournament finish
       if(yearComplete){
         const pr=indivRanked.find(d=>d.name===p.name);
@@ -1806,18 +1805,21 @@ function renderPlayerHistory(){
       // Rounds won
       ps.roundsWon+=(roundWinners[p.name]||0);
       // Per-round stats
+      let hasCompletedRoundThisYear=false;
       for(let rn=1;rn<=yTR;rn++){
         const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
+        hasCompletedRoundThisYear=true;
         ps.completedRounds++;
         ps.totalNtp+=res.netToPar;
         if(res.netToPar<ps.bestNetNtp){ps.bestNetNtp=res.netToPar;ps.bestNetGross=res.gross;ps.bestNetYears=[y]}else if(res.netToPar===ps.bestNetNtp){if(!ps.bestNetYears.includes(y))ps.bestNetYears.push(y)}
         const gtp=res.gross-recGetPar(rn,yd.courses,yd.roundMap);
         if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossYears=[y]}else if(gtp===ps.bestGrossGtp){if(!ps.bestGrossYears.includes(y))ps.bestGrossYears.push(y)}
       }
+      if(hasCompletedRoundThisYear)ps.tournaments++;
     }
   }
-  // Sort: championships desc, tournaments desc, top3 desc
-  const sorted=Object.entries(playerStats).sort((a,b)=>b[1].wins.length-a[1].wins.length||b[1].tournaments-a[1].tournaments||b[1].top3.length-a[1].top3.length);
+  // Filter out players with no completed rounds, then sort
+  const sorted=Object.entries(playerStats).filter(([,ps])=>ps.completedRounds>0).sort((a,b)=>b[1].wins.length-a[1].wins.length||b[1].tournaments-a[1].tournaments||b[1].top3.length-a[1].top3.length);
   if(!sorted.length){card.innerHTML='<div class="empty-state">No player data yet</div>';return}
   card.innerHTML=sorted.map(([name,ps])=>{
     const avgNtp=ps.completedRounds>0?(ps.totalNtp/ps.completedRounds):0;
