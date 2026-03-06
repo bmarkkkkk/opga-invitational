@@ -1275,7 +1275,7 @@ function openPlayerModal(name){
   let roundsHtml='';
   if(currentView==='tournament'){
     document.getElementById('pmRoundsTitle').innerHTML='<span>Round Breakdown (Gross)</span>';
-    for(let rn=1;rn<=totalRounds;rn++){const res=calcPlayerRound(player,rn);const cn=getCourseName(rn);roundsHtml+=`<div class="modal-round-row"><div><span class="modal-round-label">Round ${rn}</span>${cn?'<div style="font-size:0.72rem;color:var(--text-muted);margin-top:1px">'+esc(cn)+'</div>':''}</div><span class="modal-round-val">${res&&res.thru>0?res.gross:'—'}</span></div>`}
+    for(let rn=1;rn<=totalRounds;rn++){const res=calcPlayerRound(player,rn);const cn=getCourseName(rn);roundsHtml+=`<div class="modal-round-row" data-pm-round="${rn}" style="cursor:pointer"><div><span class="modal-round-label">Round ${rn}</span>${cn?'<div style="font-size:0.72rem;color:var(--text-muted);margin-top:1px">'+esc(cn)+'</div>':''}</div><span class="modal-round-val">${res&&res.thru>0?res.gross:'—'}</span></div>`}
     document.getElementById('pmSummary').textContent=`Handicap Index: ${player.hi}`;
   }else{
     const rn=parseInt(currentView);
@@ -1286,6 +1286,19 @@ function openPlayerModal(name){
     document.getElementById('pmSummary').textContent=`Course Handicap: ${getCH(player.hi,rn)}`;
   }
   document.getElementById('pmRounds').innerHTML=roundsHtml;
+  // Make round rows clickable (tournament view) — opens same player in that round's view
+  document.querySelectorAll('#pmRounds .modal-round-row[data-pm-round]').forEach(row=>{
+    row.addEventListener('click',()=>{
+      const rn=row.dataset.pmRound;
+      document.getElementById('playerModal').classList.remove('open');
+      currentView=rn;
+      currentSort='netToPar';
+      lastCSV='';
+      buildViewButtons();
+      render();
+      setTimeout(()=>openPlayerModal(name),200);
+    });
+  });
   document.getElementById('playerModal').classList.add('open');
 }
 
