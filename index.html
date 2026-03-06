@@ -828,12 +828,14 @@ function renderChampionState(complete){
       else{document.getElementById('champMargin').textContent='Won by '+spread+' stroke'+(spread!==1?'s':'')+' over '+teamData[1].name}
     }
     // Make banner clickable to open winning team modal (only if single winner)
-    if(tiedTeams.length===1){banner.style.cursor='pointer';banner.dataset.champTeam=tiedTeams[0].name}
-    else{banner.style.cursor='default';banner.dataset.champTeam=''}
+    if(tiedTeams.length===1){banner.style.cursor='pointer';banner.dataset.champTeam=tiedTeams[0].name;banner.dataset.champPlayer=''}
+    else{banner.style.cursor='default';banner.dataset.champTeam='';banner.dataset.champPlayer=''}
   }else{
     document.getElementById('champTeam').style.display='none';
     document.getElementById('champMargin').style.display='none';
-    banner.style.cursor='default';banner.dataset.champTeam='';
+    // Make banner clickable for individual champion (single winner only)
+    if(tiedIndiv.length===1){banner.style.cursor='pointer';banner.dataset.champTeam='';banner.dataset.champPlayer=tiedIndiv[0].name}
+    else{banner.style.cursor='default';banner.dataset.champTeam='';banner.dataset.champPlayer=''}
   }
 
   // Individual champion display
@@ -863,14 +865,14 @@ function renderChampionState(complete){
     const bestNtp=bestRoundList[0].ntp;
     const tiedBR=bestRoundList.filter(b=>b.ntp===bestNtp);
     const brNames=[...new Set(tiedBR.map(b=>esc(b.name)))].join(' & ');
-    accoladesHtml+=`<span>Best Round: <strong>${brNames}</strong> ${fmtPar(bestNtp)}${tiedBR.length===1?' · R'+tiedBR[0].rn:''}</span>`;
+    accoladesHtml+=`<span>Best Round: <strong>${brNames}</strong> ${tiedBR.length>1?'Tie ':''}${fmtPar(bestNtp)}${tiedBR.length===1?' · R'+tiedBR[0].rn:''}</span>`;
   }
   if(bestNines.length){
     bestNines.sort((a,b)=>a.score-b.score);
     const bestScore=bestNines[0].score;
     const tiedBN=bestNines.filter(b=>b.score===bestScore);
     const bnNames=[...new Set(tiedBN.map(b=>esc(b.name)))].join(' & ');
-    accoladesHtml+=`<span>Best Nine: <strong>${bnNames}</strong> ${fmtPar(bestScore)}${tiedBN.length===1?' · '+tiedBN[0].label:''}</span>`;
+    accoladesHtml+=`<span>Best Nine: <strong>${bnNames}</strong> ${tiedBN.length>1?'Tie ':''}${fmtPar(bestScore)}${tiedBN.length===1?' · '+tiedBN[0].label:''}</span>`;
   }
   document.getElementById('champAccolades').innerHTML=accoladesHtml;
 
@@ -1797,7 +1799,7 @@ async function init(){
   if(availableYears.length>1) document.getElementById('recordsLinkWrap').style.display='block';
   document.getElementById('recordsLink').addEventListener('click',showRecordsPage);
   document.getElementById('recordsBack').addEventListener('click',hideRecordsPage);
-  document.getElementById('championBanner').addEventListener('click',function(){const t=this.dataset.champTeam;if(t)openTeamModal(t)});
+  document.getElementById('championBanner').addEventListener('click',function(){const t=this.dataset.champTeam;if(t){openTeamModal(t);return}const p=this.dataset.champPlayer;if(p)openPlayerModal(p)});
   await load();
   if(!players.length){for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,2000));await load();if(players.length)break}}
   setInterval(load,POLL_SECONDS*1000);
