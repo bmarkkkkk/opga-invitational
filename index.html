@@ -1869,7 +1869,7 @@ function renderCourseHistory(){
       if(roundHasScores)courseData[cName].rounds++;
     }
   }
-  const sorted=Object.entries(courseData).sort((a,b)=>b[1].rounds-a[1].rounds);
+  const sorted=Object.entries(courseData).filter(([,d])=>d.rounds>0).sort((a,b)=>b[1].rounds-a[1].rounds);
   if(!sorted.length){card.innerHTML='<div class="empty-state">No course data yet</div>';return}
   card.innerHTML=sorted.map(([name,d],i)=>{
     const avgNtp=d.totalPlayers>0?(d.totalNtp/d.totalPlayers):0;
