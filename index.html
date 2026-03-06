@@ -1854,14 +1854,16 @@ function renderCourseHistory(){
     for(let rn=1;rn<=yTR;rn++){
       const cName=yd.roundMap[String(rn)];if(!cName)continue;
       const c=yd.courses[cName];if(!c)continue;
-      if(!courseData[cName])courseData[cName]={rounds:0,totalNtp:0,totalPlayers:0,bestNet:Infinity,bestBys:[],par:c.par,rating:c.rating,slope:c.slope};
+      if(!courseData[cName])courseData[cName]={rounds:0,totalNtp:0,totalPlayers:0,bestNet:Infinity,bestNetBys:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossBys:[],par:c.par,rating:c.rating,slope:c.slope};
       let roundHasScores=false;
       for(const p of yd.players){
         const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
         roundHasScores=true;
         courseData[cName].totalNtp+=res.netToPar;
         courseData[cName].totalPlayers++;
-        if(res.netToPar<courseData[cName].bestNet){courseData[cName].bestNet=res.netToPar;courseData[cName].bestBys=[esc(p.name)+' · R'+rn+' · '+y]}else if(res.netToPar===courseData[cName].bestNet){courseData[cName].bestBys.push(esc(p.name)+' · R'+rn+' · '+y)}
+        if(res.netToPar<courseData[cName].bestNet){courseData[cName].bestNet=res.netToPar;courseData[cName].bestNetBys=[esc(p.name)+' · '+y]}else if(res.netToPar===courseData[cName].bestNet){const entry=esc(p.name)+' · '+y;if(!courseData[cName].bestNetBys.includes(entry))courseData[cName].bestNetBys.push(entry)}
+        const gtp=res.gross-c.par;
+        if(gtp<courseData[cName].bestGrossGtp){courseData[cName].bestGrossGtp=gtp;courseData[cName].bestGrossScore=res.gross;courseData[cName].bestGrossBys=[esc(p.name)+' · '+y]}else if(gtp===courseData[cName].bestGrossGtp){const entry=esc(p.name)+' · '+y;if(!courseData[cName].bestGrossBys.includes(entry))courseData[cName].bestGrossBys.push(entry)}
       }
       if(roundHasScores)courseData[cName].rounds++;
     }
@@ -1871,14 +1873,13 @@ function renderCourseHistory(){
   card.innerHTML=sorted.map(([name,d],i)=>{
     const avgNtp=d.totalPlayers>0?(d.totalNtp/d.totalPlayers):0;
     const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
-    const avgClass=avgNtp<0?'under':(avgNtp>0?'over':'even');
-    const bestClass=d.bestNet<0?'under':(d.bestNet>0?'over':'even');
     return`<div class="course-hist-item">
       <div class="course-hist-name"><span class="course-hist-name-text">${esc(name)}</span><span class="course-hist-name-line"></span><span class="course-hist-name-info">Par ${d.par} / ${parseFloat(d.rating).toFixed(1)} / ${d.slope}</span></div>
-      <div class="course-hist-stats">
+      <div class="course-hist-stats" style="grid-template-columns:repeat(4,1fr)">
         <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
-        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestBys.length?`<div class="course-hist-stat-sub">${d.bestBys.join('<br>')}</div>`:''}</div>
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestNetBys.length?`<div class="course-hist-stat-sub">${d.bestNetBys.join('<br>')}</div>`:''}</div>
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Gross</div><div class="course-hist-stat-val">${d.bestGrossScore||'—'}</div>${d.bestGrossBys.length?`<div class="course-hist-stat-sub">${fmtPar(d.bestGrossGtp)} · ${d.bestGrossBys.join('<br>')}</div>`:''}</div>
       </div>
     </div>`;
   }).join('');
