@@ -368,6 +368,25 @@
     .course-hist-stat-sub { font-size:0.6rem; color:var(--text-secondary); margin-top:2px; }
     @media(max-width:480px){ .champions-grid{grid-template-columns:1fr} }
 
+    /* Player History */
+    .ph-item { padding:16px; }
+    .ph-item:not(:last-child) { border-bottom:1px solid var(--border); }
+    .ph-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:6px; }
+    .ph-name { font-weight:700; font-size:1.05rem; color:var(--text-primary); }
+    .ph-badges { display:flex; gap:6px; }
+    .ph-badge { font-size:0.58rem; font-weight:600; letter-spacing:0.05em; padding:2px 8px; border-radius:10px; }
+    .ph-badge-champ { background:rgba(201,168,76,0.15); color:var(--gold); }
+    .ph-badge-tourn { background:rgba(245,240,232,0.08); color:var(--text-secondary); }
+    .ph-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px; }
+    .ph-stats2 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .ph-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; }
+    .ph-stat-label { font-size:0.52rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+    .ph-stat-val { font-weight:700; font-size:0.9rem; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+    .ph-stat-val.under { color:var(--green-300); }
+    .ph-stat-val.over { color:var(--red); }
+    .ph-stat-val.gold { color:var(--gold); }
+    .ph-stat-sub { font-size:0.55rem; color:var(--text-muted); margin-top:2px; }
+
     /* Footer / Misc */
     .footer { text-align:center; padding:32px 0 20px; font-size:0.7rem; color:var(--text-muted); }
 
@@ -576,6 +595,14 @@
           <span class="section-line"></span>
         </div>
         <div class="card" id="indivRecordsCard"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <span class="section-title">Player History</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="card" id="playerHistoryCard"></div>
       </div>
 
       <div class="section">
@@ -1524,6 +1551,7 @@ function renderRecordsPage(){
   renderChampionsWall();
   if(anyTeams)renderTeamRecords();
   renderIndivRecords();
+  renderPlayerHistory();
   renderCourseHistory();
 }
 
@@ -1706,6 +1734,83 @@ function renderIndivRecords(){
   const indivChampSorted=Object.entries(indivChampCounts).sort((a,b)=>b[1].length-a[1].length);
   if(indivChampSorted.length){const topCount=indivChampSorted[0][1].length;const tied=indivChampSorted.filter(e=>e[1].length===topCount);const detail=tied.map(ic=>esc(ic[0])+' ('+ic[1].join(', ')+')').join('<br>');rows.push({icon:'🎖️',label:'Most Individual Championships',value:String(topCount),detail})};
   card.innerHTML=rows.length?rows.map((r,i)=>`<div class="rec-row"><div class="rec-icon">${r.icon}</div><div class="rec-info"><div class="rec-label">${r.label}</div><div class="rec-detail">${r.detail}</div></div><div class="rec-value">${r.value}</div></div>`).join(''):'<div class="empty-state">No records yet</div>';
+}
+
+function renderPlayerHistory(){
+  const card=document.getElementById('playerHistoryCard');
+  const playerStats={};
+  for(const y of availableYears){
+    const yd=allYearsData[y];if(!yd||!yd.players.length)continue;
+    const yTR=yd.totalRounds||4;
+    // Check if year is complete
+    let yearComplete=true;
+    for(const p of yd.players){for(let rn=1;rn<=yTR;rn++){const r=p.rounds[String(rn)];if(!r||!r.front||!r.back||r.front<=0||r.back<=0){yearComplete=false;break}}if(!yearComplete)break}
+    // Individual rankings for this year
+    let indivRanked=[];
+    if(yearComplete){
+      indivRanked=yd.players.map(p=>{let ntp=0,net=0;for(let rn=1;rn<=yTR;rn++){const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(res){ntp+=res.netToPar;net+=res.net}}return{name:p.name,netToPar:ntp,net}}).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
+      // Assign ranks with ties
+      indivRanked.forEach((d,i)=>{if(i>0&&d.netToPar===indivRanked[i-1].netToPar&&d.net===indivRanked[i-1].net){d.rank=indivRanked[i-1].rank}else{d.rank=i+1}});
+    }
+    // Round winners for this year
+    const roundWinners={};
+    for(let rn=1;rn<=yTR;rn++){
+      const roundData=yd.players.map(p=>{const res=recCalcRound(p,rn,yd.courses,yd.roundMap);return res&&res.thru===18?{name:p.name,netToPar:res.netToPar}:null}).filter(Boolean).sort((a,b)=>a.netToPar-b.netToPar);
+      if(roundData.length){const best=roundData[0].netToPar;roundData.filter(d=>d.netToPar===best).forEach(d=>{roundWinners[d.name]=(roundWinners[d.name]||0)+1})}
+    }
+    // Per-player stats
+    for(const p of yd.players){
+      if(!playerStats[p.name])playerStats[p.name]={wins:[],top3:[],roundsWon:0,totalNtp:0,completedRounds:0,bestNetNtp:Infinity,bestNetDetail:'',bestGrossGtp:Infinity,bestGrossScore:0,bestGrossDetail:'',tournaments:0};
+      const ps=playerStats[p.name];
+      ps.tournaments++;
+      // Tournament finish
+      if(yearComplete){
+        const pr=indivRanked.find(d=>d.name===p.name);
+        if(pr){
+          if(pr.rank===1)ps.wins.push(y);
+          if(pr.rank<=3)ps.top3.push(y);
+        }
+      }
+      // Rounds won
+      ps.roundsWon+=(roundWinners[p.name]||0);
+      // Per-round stats
+      for(let rn=1;rn<=yTR;rn++){
+        const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
+        ps.completedRounds++;
+        ps.totalNtp+=res.netToPar;
+        if(res.netToPar<ps.bestNetNtp){ps.bestNetNtp=res.netToPar;ps.bestNetGross=res.gross;ps.bestNetDetail='R'+rn+' · '+y}else if(res.netToPar===ps.bestNetNtp){ps.bestNetDetail+='<br>R'+rn+' · '+y}
+        const gtp=res.gross-recGetPar(rn,yd.courses,yd.roundMap);
+        if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossDetail='R'+rn+' · '+y}else if(gtp===ps.bestGrossGtp){ps.bestGrossDetail+='<br>R'+rn+' · '+y}
+      }
+    }
+  }
+  // Sort: championships desc, tournaments desc, top3 desc
+  const sorted=Object.entries(playerStats).sort((a,b)=>b[1].wins.length-a[1].wins.length||b[1].tournaments-a[1].tournaments||b[1].top3.length-a[1].top3.length);
+  if(!sorted.length){card.innerHTML='<div class="empty-state">No player data yet</div>';return}
+  card.innerHTML=sorted.map(([name,ps])=>{
+    const avgNtp=ps.completedRounds>0?(ps.totalNtp/ps.completedRounds):0;
+    const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
+    const avgClass=avgNtp<-0.05?'under':(avgNtp>0.05?'over':'');
+    const champBadge=ps.wins.length?`<span class="ph-badge ph-badge-champ">${ps.wins.length}× Champion</span>`:'';
+    const tournBadge=`<span class="ph-badge ph-badge-tourn">${ps.tournaments} Tournament${ps.tournaments!==1?'s':''}</span>`;
+    const winsYears=ps.wins.length?'<div class="ph-stat-sub">'+ps.wins.join(', ')+'</div>':'';
+    const top3Years=ps.top3.length?'<div class="ph-stat-sub">'+ps.top3.join(', ')+'</div>':'';
+    const bestNetClass=ps.bestNetNtp<0?'under':(ps.bestNetNtp>0?'over':'');
+    return`<div class="ph-item">
+      <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${champBadge}${tournBadge}</div></div>
+      <div class="ph-stats">
+        <div class="ph-stat"><div class="ph-stat-label">Wins</div><div class="ph-stat-val${ps.wins.length?' gold':''}">${ps.wins.length}</div>${winsYears}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Top 3</div><div class="ph-stat-val">${ps.top3.length}</div>${top3Years}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Rounds Won</div><div class="ph-stat-val">${ps.roundsWon}</div></div>
+        <div class="ph-stat"><div class="ph-stat-label">Avg Net</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
+      </div>
+      <div class="ph-stats2">
+        <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val ${bestNetClass}">${ps.bestNetNtp===Infinity?'—':fmtPar(ps.bestNetNtp)}</div>${ps.bestNetNtp!==Infinity?'<div class="ph-stat-sub">'+ps.bestNetGross+' gross · '+ps.bestNetDetail+'</div>':''}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossGtp!==Infinity?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossGtp)+' · '+ps.bestGrossDetail+'</div>':''}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Rounds Played</div><div class="ph-stat-val">${ps.completedRounds}</div></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderCourseHistory(){
