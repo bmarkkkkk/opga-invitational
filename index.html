@@ -1536,7 +1536,7 @@ function hideRecordsPage(){
   if(teamMode){document.getElementById('teamSection').style.display='block';document.getElementById('chartSection').style.display='block'}
   document.getElementById('championBanner').style.display='';
   document.getElementById('highlights').style.display='';
-  if(availableYears.length>1) document.getElementById('recordsLinkWrap').style.display='block';
+  document.getElementById('recordsLinkWrap').style.display='block';
   if(infoTabs.length) document.getElementById('infoTabsWrap').style.display='flex';
   lastCSV='';
   render();
@@ -1831,7 +1831,7 @@ function renderPlayerHistory(){
     const bestTournYearsStr=ps.bestTournYears.length?'<div class="ph-stat-sub">'+ps.bestTournYears.join(', ')+'</div>':'';
     return`<div class="ph-item">
       <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${champBadge}${tournBadge}</div></div>
-      <div class="ph-stats2">
+      <div class="ph-stats2" style="margin-bottom:8px">
         <div class="ph-stat"><div class="ph-stat-label">Wins</div><div class="ph-stat-val${ps.wins.length?' gold':''}">${ps.wins.length}</div>${winsYears}</div>
         <div class="ph-stat"><div class="ph-stat-label">Top 3</div><div class="ph-stat-val">${ps.top3.length}</div>${top3Years}</div>
         <div class="ph-stat"><div class="ph-stat-label">Best Final Score</div><div class="ph-stat-val ${bestTournClass}">${ps.bestTournNtp===Infinity?'—':fmtPar(ps.bestTournNtp)}</div>${bestTournYearsStr}</div>
@@ -1946,7 +1946,7 @@ async function init(){
 
   currentYear=availableYears[availableYears.length-1];
   renderYearSelector();
-  if(availableYears.length>1) document.getElementById('recordsLinkWrap').style.display='block';
+  document.getElementById('recordsLinkWrap').style.display='block';
   document.getElementById('recordsLink').addEventListener('click',showRecordsPage);
   document.getElementById('recordsBack').addEventListener('click',hideRecordsPage);
   document.getElementById('championBanner').addEventListener('click',function(){const t=this.dataset.champTeam;if(t){openTeamModal(t);return}const p=this.dataset.champPlayer;if(p)openPlayerModal(p)});
