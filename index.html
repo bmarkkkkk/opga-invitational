@@ -387,6 +387,12 @@
     .ph-stat-val.gold { color:var(--gold); }
     .ph-stat-sub { font-size:0.55rem; color:var(--text-muted); margin-top:2px; }
 
+    /* Collapsible sections (records page) */
+    .section-head.collapsible { cursor:pointer; user-select:none; }
+    .section-head.collapsible .section-chevron { font-size:0.7rem; color:var(--text-muted); transition:transform 0.2s ease; }
+    .section-head.collapsible.collapsed .section-chevron { transform:rotate(-90deg); }
+    .section-body.collapsed { display:none; }
+
     /* Footer / Misc */
     .footer { text-align:center; padding:32px 0 20px; font-size:0.7rem; color:var(--text-muted); }
 
@@ -574,43 +580,58 @@
       </div>
 
       <div class="section">
-        <div class="section-head">
+        <div class="section-head collapsible" data-collapse="championsWall">
           <span class="section-title">Champions Wall</span>
           <span class="section-line"></span>
+          <span class="section-chevron">▾</span>
         </div>
-        <div class="champions-grid" id="championsWall"></div>
+        <div class="section-body" id="championsWallBody">
+          <div class="champions-grid" id="championsWall"></div>
+        </div>
       </div>
 
       <div class="section" id="teamRecordsSection">
-        <div class="section-head">
+        <div class="section-head collapsible" data-collapse="teamRecordsCard">
           <span class="section-title">Team Records</span>
           <span class="section-line"></span>
+          <span class="section-chevron">▾</span>
         </div>
-        <div class="card" id="teamRecordsCard"></div>
+        <div class="section-body" id="teamRecordsBody">
+          <div class="card" id="teamRecordsCard"></div>
+        </div>
       </div>
 
       <div class="section">
-        <div class="section-head">
+        <div class="section-head collapsible" data-collapse="indivRecordsCard">
           <span class="section-title">Individual Records</span>
           <span class="section-line"></span>
+          <span class="section-chevron">▾</span>
         </div>
-        <div class="card" id="indivRecordsCard"></div>
+        <div class="section-body" id="indivRecordsBody">
+          <div class="card" id="indivRecordsCard"></div>
+        </div>
       </div>
 
       <div class="section">
-        <div class="section-head">
+        <div class="section-head collapsible" data-collapse="playerHistoryCard">
           <span class="section-title">Player History</span>
           <span class="section-line"></span>
+          <span class="section-chevron">▾</span>
         </div>
-        <div class="card" id="playerHistoryCard"></div>
+        <div class="section-body" id="playerHistoryBody">
+          <div class="card" id="playerHistoryCard"></div>
+        </div>
       </div>
 
       <div class="section">
-        <div class="section-head">
+        <div class="section-head collapsible" data-collapse="courseHistoryCard">
           <span class="section-title">Course History</span>
           <span class="section-line"></span>
+          <span class="section-chevron">▾</span>
         </div>
-        <div class="card" id="courseHistoryCard"></div>
+        <div class="section-body" id="courseHistoryBody">
+          <div class="card" id="courseHistoryCard"></div>
+        </div>
       </div>
     </div>
 
@@ -1438,6 +1459,15 @@ document.getElementById('playerModal').addEventListener('click',function(e){if(e
 document.getElementById('teamModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
 document.getElementById('infoModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
 
+/* ═══ COLLAPSIBLE SECTIONS ═══ */
+document.querySelectorAll('.section-head.collapsible').forEach(head=>{
+  head.addEventListener('click',()=>{
+    head.classList.toggle('collapsed');
+    const body=head.nextElementSibling;
+    if(body)body.classList.toggle('collapsed');
+  });
+});
+
 /* ═══ VIEW CONTROLS ═══ */
 document.querySelectorAll('#viewBtns .ctrl-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -1760,7 +1790,7 @@ function renderPlayerHistory(){
     }
     // Per-player stats
     for(const p of yd.players){
-      if(!playerStats[p.name])playerStats[p.name]={wins:[],top3:[],roundsWon:0,totalNtp:0,completedRounds:0,bestNetNtp:Infinity,bestNetDetail:'',bestGrossGtp:Infinity,bestGrossScore:0,bestGrossDetail:'',tournaments:0};
+      if(!playerStats[p.name])playerStats[p.name]={wins:[],top3:[],roundsWon:0,totalNtp:0,completedRounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYears:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossYears:[],tournaments:0};
       const ps=playerStats[p.name];
       ps.tournaments++;
       // Tournament finish
@@ -1778,9 +1808,9 @@ function renderPlayerHistory(){
         const res=recCalcRound(p,rn,yd.courses,yd.roundMap);if(!res||res.thru<18)continue;
         ps.completedRounds++;
         ps.totalNtp+=res.netToPar;
-        if(res.netToPar<ps.bestNetNtp){ps.bestNetNtp=res.netToPar;ps.bestNetGross=res.gross;ps.bestNetDetail='R'+rn+' · '+y}else if(res.netToPar===ps.bestNetNtp){ps.bestNetDetail+='<br>R'+rn+' · '+y}
+        if(res.netToPar<ps.bestNetNtp){ps.bestNetNtp=res.netToPar;ps.bestNetGross=res.gross;ps.bestNetYears=[y]}else if(res.netToPar===ps.bestNetNtp){if(!ps.bestNetYears.includes(y))ps.bestNetYears.push(y)}
         const gtp=res.gross-recGetPar(rn,yd.courses,yd.roundMap);
-        if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossDetail='R'+rn+' · '+y}else if(gtp===ps.bestGrossGtp){ps.bestGrossDetail+='<br>R'+rn+' · '+y}
+        if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossYears=[y]}else if(gtp===ps.bestGrossGtp){if(!ps.bestGrossYears.includes(y))ps.bestGrossYears.push(y)}
       }
     }
   }
@@ -1805,8 +1835,8 @@ function renderPlayerHistory(){
         <div class="ph-stat"><div class="ph-stat-label">Avg Net</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
       </div>
       <div class="ph-stats2">
-        <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val ${bestNetClass}">${ps.bestNetNtp===Infinity?'—':fmtPar(ps.bestNetNtp)}</div>${ps.bestNetNtp!==Infinity?'<div class="ph-stat-sub">'+ps.bestNetGross+' gross · '+ps.bestNetDetail+'</div>':''}</div>
-        <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossGtp!==Infinity?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossGtp)+' · '+ps.bestGrossDetail+'</div>':''}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val ${bestNetClass}">${ps.bestNetNtp===Infinity?'—':fmtPar(ps.bestNetNtp)}</div>${ps.bestNetYears.length?'<div class="ph-stat-sub">'+ps.bestNetGross+' gross · '+ps.bestNetYears.join(', ')+'</div>':''}</div>
+        <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossYears.length?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossGtp)+' · '+ps.bestGrossYears.join(', ')+'</div>':''}</div>
         <div class="ph-stat"><div class="ph-stat-label">Rounds Played</div><div class="ph-stat-val">${ps.completedRounds}</div></div>
       </div>
     </div>`;
