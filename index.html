@@ -1864,7 +1864,7 @@ function renderCourseHistory(){
         courseData[cName].totalPlayers++;
         if(res.netToPar<courseData[cName].bestNet){courseData[cName].bestNet=res.netToPar;courseData[cName].bestNetBys=[esc(p.name)+' · '+y]}else if(res.netToPar===courseData[cName].bestNet){const entry=esc(p.name)+' · '+y;if(!courseData[cName].bestNetBys.includes(entry))courseData[cName].bestNetBys.push(entry)}
         const gtp=res.gross-c.par;
-        if(gtp<courseData[cName].bestGrossGtp){courseData[cName].bestGrossGtp=gtp;courseData[cName].bestGrossScore=res.gross;courseData[cName].bestGrossBys=[esc(p.name)+' · '+y]}else if(gtp===courseData[cName].bestGrossGtp){const entry=esc(p.name)+' · '+y;if(!courseData[cName].bestGrossBys.includes(entry))courseData[cName].bestGrossBys.push(entry)}
+        if(gtp<courseData[cName].bestGrossGtp){courseData[cName].bestGrossGtp=gtp;courseData[cName].bestGrossScore=res.gross;courseData[cName].bestGrossBys=[{text:esc(p.name)+' · '+y,ntp:res.netToPar}]}else if(gtp===courseData[cName].bestGrossGtp){const entry=esc(p.name)+' · '+y;if(!courseData[cName].bestGrossBys.some(b=>b.text===entry))courseData[cName].bestGrossBys.push({text:entry,ntp:res.netToPar})}
       }
       if(roundHasScores)courseData[cName].rounds++;
     }
@@ -1880,7 +1880,7 @@ function renderCourseHistory(){
         <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestNetBys.length?`<div class="course-hist-stat-sub">${d.bestNetBys.join('<br>')}</div>`:''}</div>
-        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Gross</div><div class="course-hist-stat-val">${d.bestGrossScore||'—'}</div>${d.bestGrossBys.length?`<div class="course-hist-stat-sub">${fmtPar(d.bestGrossGtp)} · ${d.bestGrossBys.join('<br>')}</div>`:''}</div>
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Gross</div><div class="course-hist-stat-val">${d.bestGrossScore||'—'}</div>${d.bestGrossBys.length?`<div class="course-hist-stat-sub">${d.bestGrossBys.map(b=>fmtPar(b.ntp)+' · '+b.text).join('<br>')}</div>`:''}</div>
       </div>
     </div>`;
   }).join('');
