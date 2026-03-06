@@ -1831,17 +1831,15 @@ function renderPlayerHistory(){
     const bestTournYearsStr=ps.bestTournYears.length?'<div class="ph-stat-sub">'+ps.bestTournYears.join(', ')+'</div>':'';
     return`<div class="ph-item">
       <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${champBadge}${tournBadge}</div></div>
-      <div class="ph-stats">
+      <div class="ph-stats2">
         <div class="ph-stat"><div class="ph-stat-label">Wins</div><div class="ph-stat-val${ps.wins.length?' gold':''}">${ps.wins.length}</div>${winsYears}</div>
         <div class="ph-stat"><div class="ph-stat-label">Top 3</div><div class="ph-stat-val">${ps.top3.length}</div>${top3Years}</div>
-        <div class="ph-stat"><div class="ph-stat-label">Best Finish</div><div class="ph-stat-val ${bestTournClass}">${ps.bestTournNtp===Infinity?'—':fmtPar(ps.bestTournNtp)}</div>${bestTournYearsStr}</div>
-        <div class="ph-stat"><div class="ph-stat-label">Avg Net</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
+        <div class="ph-stat"><div class="ph-stat-label">Best Final Score</div><div class="ph-stat-val ${bestTournClass}">${ps.bestTournNtp===Infinity?'—':fmtPar(ps.bestTournNtp)}</div>${bestTournYearsStr}</div>
       </div>
-      <div class="ph-stats">
+      <div class="ph-stats2">
+        <div class="ph-stat"><div class="ph-stat-label">Avg Net</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
         <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val ${bestNetClass}">${ps.bestNetNtp===Infinity?'—':fmtPar(ps.bestNetNtp)}</div>${ps.bestNetYears.length?'<div class="ph-stat-sub">'+ps.bestNetGross+' gross · '+ps.bestNetYears.join(', ')+'</div>':''}</div>
         <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossYears.length?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossGtp)+' · '+ps.bestGrossYears.join(', ')+'</div>':''}</div>
-        <div class="ph-stat"><div class="ph-stat-label">Rounds Won</div><div class="ph-stat-val">${ps.roundsWon}</div></div>
-        <div class="ph-stat"><div class="ph-stat-label">Rounds Played</div><div class="ph-stat-val">${ps.completedRounds}</div></div>
       </div>
     </div>`;
   }).join('');
