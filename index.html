@@ -1395,16 +1395,22 @@ function renderHistory(){
       if(byNet.length>0){
         const bestNtp=byNet[0].netToPar;
         const tied1st=byNet.filter(p=>p.netToPar===bestNtp);
-        const label1=tied1st.length>1?'T1':'1st';
-        const names1=tied1st.map(p=>esc(p.name)).join(' & ');
-        html+=`<div class="history-place"><span><span class="history-medal gold">${label1}</span>${names1}</span><span class="history-place-score">${tied1st.length===1?tied1st[0].gross+' / ':'' }${fmtPar(bestNtp)}</span></div>`;
-        const rest=byNet.filter(p=>p.netToPar!==bestNtp);
-        if(rest.length>0){
-          const secondNtp=rest[0].netToPar;
-          const tied2nd=rest.filter(p=>p.netToPar===secondNtp);
-          const label2=tied2nd.length>1?'T2':'2nd';
-          const names2=tied2nd.map(p=>esc(p.name)).join(' & ');
-          html+=`<div class="history-place"><span><span class="history-medal silver">${label2}</span>${names2}</span><span class="history-place-score">${tied2nd.length===1?tied2nd[0].gross+' / ':''}${fmtPar(secondNtp)}</span></div>`;
+        if(tied1st.length>1){
+          tied1st.sort((a,b)=>a.gross-b.gross);
+          for(const p of tied1st){html+=`<div class="history-place"><span><span class="history-medal gold">T1</span>${esc(p.name)}</span><span class="history-place-score">${p.gross} / ${fmtPar(bestNtp)}</span></div>`}
+        }else{
+          html+=`<div class="history-place"><span><span class="history-medal gold">1st</span>${esc(tied1st[0].name)}</span><span class="history-place-score">${tied1st[0].gross} / ${fmtPar(bestNtp)}</span></div>`;
+          const rest=byNet.filter(p=>p.netToPar!==bestNtp);
+          if(rest.length>0){
+            const secondNtp=rest[0].netToPar;
+            const tied2nd=rest.filter(p=>p.netToPar===secondNtp);
+            if(tied2nd.length>1){
+              const names2=tied2nd.map(p=>esc(p.name)).join(' & ');
+              html+=`<div class="history-place"><span><span class="history-medal silver">T2</span>${names2}</span><span class="history-place-score">${fmtPar(secondNtp)}</span></div>`;
+            }else{
+              html+=`<div class="history-place"><span><span class="history-medal silver">2nd</span>${esc(rest[0].name)}</span><span class="history-place-score">${rest[0].gross} / ${fmtPar(secondNtp)}</span></div>`;
+            }
+          }
         }
       }
       if(!byNet.length&&rp.length)html+='<div class="history-upcoming">In progress…</div>';
