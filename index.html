@@ -1989,7 +1989,7 @@ function renderPlayerHistory(){
         <div class="ph-stat"><div class="ph-stat-label">Best Final Score</div><div class="ph-stat-val ${bestTournClass}">${ps.bestTournNtp===Infinity?'—':fmtPar(ps.bestTournNtp)}</div>${bestTournYearsStr}</div>
       </div>
       <div class="ph-stats2">
-        <div class="ph-stat"><div class="ph-stat-label">Avg Net</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
+        <div class="ph-stat"><div class="ph-stat-label">Avg Net Round</div><div class="ph-stat-val ${avgClass}">${avgStr}</div></div>
         <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val ${bestNetClass}">${ps.bestNetNtp===Infinity?'—':fmtPar(ps.bestNetNtp)}</div>${ps.bestNetYears.length?'<div class="ph-stat-sub">'+ps.bestNetGross+' gross · '+ps.bestNetYears.join(', ')+'</div>':''}</div>
         <div class="ph-stat"><div class="ph-stat-label">Best Gross</div><div class="ph-stat-val">${ps.bestGrossGtp===Infinity?'—':ps.bestGrossScore}</div>${ps.bestGrossYears.length?'<div class="ph-stat-sub">'+fmtPar(ps.bestGrossNtp)+' net · '+ps.bestGrossYears.join(', ')+'</div>':''}</div>
       </div>
@@ -2060,7 +2060,7 @@ async function openInfoModal(tabName){
     const title=(r[0]||'').trim();
     const body=(r[1]||'').trim();
     if(!title&&!body)continue;
-    html+=`<div class="info-item">${title?`<div class="info-item-title">${esc(title)}</div>`:''}${body?`<div class="info-item-body">${esc(body)}</div>`:''}</div>`;
+    html+=`<div class="info-item">${title?`<div class="info-item-title">${esc(title)}</div>`:''}${body?`<div class="info-item-body">${esc(body).replace(/\n/g,'<br>')}</div>`:''}</div>`;
   }
   document.getElementById('infoModalBody').innerHTML=html||'<div class="empty-state">No content</div>';
   const infoModalEl=document.getElementById('infoModal');
