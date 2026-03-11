@@ -1189,7 +1189,7 @@ function renderTeams(complete){
   const teamRankCounts={};teamData.forEach(t=>{teamRankCounts[t.rank]=(teamRankCounts[t.rank]||0)+1});
   teamData.forEach(t=>{t.tied=teamRankCounts[t.rank]>1});
   let html=teamData.map((t,i)=>{
-    const ln=t.lastNine!==null?` <span class="last-nine-badge ${parClass(t.lastNine)}">Last 9: ${fmtPar(t.lastNine)}</span>`:'';
+    const ln='';
     const champClass=isFinal&&t.rank===1?' champion':'';
     return`<div class="team-row${champClass}" data-team="${esc(t.name)}"><div class="team-rank rank-${t.rank}">${t.tied?'T':''}${t.rank}</div><div><div class="team-name">${esc(t.name)}</div><div class="team-thru">Thru ${t.thru}${ln}</div></div><div></div><div class="team-score ${t.thru>0?parClass(t.netToPar):''}">${t.thru>0?fmtPar(t.netToPar):'—'}</div></div>`;
   }).join('');
