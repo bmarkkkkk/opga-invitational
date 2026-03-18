@@ -1950,6 +1950,7 @@ function renderIndivRecords(){
       const d=bestGrossRound.details[0];
       rows.push({icon:'💪',label:'Best Gross Round',value:String(d.gross),detail:d.text+' ('+fmtPar(d.ntp)+' net)'});
     }else{
+      bestGrossRound.details.sort((a,b)=>a.ntp-b.ntp);
       const detail=bestGrossRound.details.map(d=>d.text+' ('+d.gross+' / '+fmtPar(d.ntp)+' net)').join('<br>');
       rows.push({icon:'💪',label:'Best Gross Round',value:String(bestGrossRound.details[0].gross),detail});
     }
@@ -2078,7 +2079,7 @@ function renderCourseHistory(){
         <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
         <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestNetBys.length?`<div class="course-hist-stat-sub">${d.bestNetBys.join('<br>')}</div>`:''}</div>
-        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Gross</div><div class="course-hist-stat-val">${d.bestGrossScore||'—'}</div>${d.bestGrossBys.length?`<div class="course-hist-stat-sub">${d.bestGrossBys.map(b=>fmtPar(b.ntp)+' · '+b.text).join('<br>')}</div>`:''}</div>
+        <div class="course-hist-stat"><div class="course-hist-stat-label">Best Gross</div><div class="course-hist-stat-val">${d.bestGrossScore||'—'}</div>${d.bestGrossBys.length?`<div class="course-hist-stat-sub">${d.bestGrossBys.sort((a,b)=>a.ntp-b.ntp).map(b=>fmtPar(b.ntp)+' · '+b.text).join('<br>')}</div>`:''}</div>
       </div>
     </div>`;
   }).join('');
