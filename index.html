@@ -266,7 +266,7 @@
 
     /* Chart */
     .chart-wrap { padding:16px; background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); }
-    .chart-inner { position:relative; height:200px; }
+    .chart-inner { position:relative; height:230px; }
     .chart-wrap canvas { width:100%!important; }
     .chart-hint { text-align:center; font-size:0.62rem; color:var(--text-muted); margin-top:8px; font-style:italic; }
 
@@ -702,8 +702,9 @@
 
     <div class="section" id="chartSection">
       <div class="section-head">
-        <span class="section-title">Team Lead Chart</span>
+        <span class="section-title">Lead Chart</span>
         <span class="section-line"></span>
+        <div class="view-toggle" id="chartToggle"><button class="vt-btn active" data-view="teams" onclick="setChartView('teams')">Teams</button><button class="vt-btn" data-view="individual" onclick="setChartView('individual')">Individual</button></div>
       </div>
       <div class="chart-wrap">
         <div class="chart-inner"><canvas id="leadChart"></canvas></div>
@@ -920,6 +921,8 @@ let totalRounds = 4;
 let teamMode = true;
 let prevRanks = {};
 let chartInstance = null;
+let chartView='teams';
+function setChartView(v){chartView=v;document.querySelectorAll('#chartToggle .vt-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderChart()}
 let lastCSV = '';
 let currentSort = 'netToPar';
 
@@ -1437,6 +1440,7 @@ function ranksThruRound(thru){
 
 /* ═══ CHART (Y-AXIS REVERSED) ═══ */
 function renderChart(){
+  if(chartView==='individual')return renderIndividualChart();
   const teamMap={};for(const p of players){if(!p.team)continue;if(!teamMap[p.team])teamMap[p.team]=[];teamMap[p.team].push(p)}
   const teamNames=Object.keys(teamMap);if(teamNames.length<2)return;
   const cps=[];for(let rn=1;rn<=totalRounds;rn++){cps.push({rn,half:'front',label:`R${rn} F9`});cps.push({rn,half:'back',label:`R${rn} B9`})}
@@ -1448,8 +1452,8 @@ function renderChart(){
       for(const m of teamMap[tName]){
         const r=m.rounds[String(cp.rn)];if(!r){ok=false;break}
         const val=cp.half==='front'?r.front:r.back;if(!val||val<=0){ok=false;break}
-        const ch=getCH(m.hi,cp.rn),fullPar=getCoursePar(cp.rn),par=cp.half==='front'?Math.ceil(fullPar/2):Math.floor(fullPar/2);
-        const hc=cp.half==='front'?Math.ceil(ch/2):Math.floor(ch/2);
+        const ps=getCourseParSplit(cp.rn);const par=cp.half==='front'?ps.front:ps.back;
+        const ch=getCH(m.hi,cp.rn);const hc=cp.half==='front'?Math.ceil(ch/2):Math.floor(ch/2);
         tp+=(val-hc-par);
       }
       if(!ok)break;scores[tName]=tp;
@@ -1464,13 +1468,13 @@ function renderChart(){
   if(chartInstance)chartInstance.destroy();
   chartInstance=new Chart(ctx,{
     type:'line',
-    data:{labels,datasets:teamNames.map((t,i)=>({label:t,data:datasets[t],borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'22',borderWidth:2.5,pointRadius:5,pointHoverRadius:7,pointBackgroundColor:colors[i%colors.length],tension:0.3,fill:false}))},
+    data:{labels,datasets:teamNames.map((t,i)=>({label:t,data:datasets[t],borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'22',borderWidth:2.5,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:colors[i%colors.length],tension:0.3,fill:false}))},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{labels:{color:'#a8b5a0',font:{family:'Outfit',size:12},boxWidth:12,boxHeight:12}},
-        tooltip:{backgroundColor:'rgba(15,46,29,0.95)',borderColor:'rgba(245,240,232,0.15)',borderWidth:1,titleFont:{family:'Outfit',size:13},bodyFont:{family:'Outfit',size:12},titleColor:'#f5f0e8',bodyColor:'#a8b5a0',padding:10,cornerRadius:8,callbacks:{label:function(ctx){const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v===0?'E':(v>0?'+'+v:v)}`}}}
+        tooltip:{backgroundColor:'rgba(15,46,29,0.95)',borderColor:'rgba(245,240,232,0.15)',borderWidth:1,titleFont:{family:'Outfit',size:13},bodyFont:{family:'Outfit',size:12},titleColor:'#f5f0e8',bodyColor:'#a8b5a0',padding:10,cornerRadius:8,itemSort:function(a,b){return a.parsed.y-b.parsed.y},callbacks:{label:function(ctx){const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v===0?'E':(v>0?'+'+v:v)}`}}}
       },
       scales:{
         x:{ticks:{color:'#6b7a64',font:{family:'Outfit',size:11}},grid:{color:'rgba(245,240,232,0.05)'}},
@@ -1478,12 +1482,58 @@ function renderChart(){
       }
     }
   });
-  // Dismiss tooltip on mobile tap-away (only add once)
   if(!ctx.canvas._chartTapHandler){
     ctx.canvas._chartTapHandler=function(e){
       if(!chartInstance)return;
       const pts=chartInstance.getElementsAtEventForMode(e,'index',{intersect:false},false);
-      if(!pts.length){chartInstance.tooltip.setActiveElements([]);chartInstance.update('none')}
+      if(!pts.length){chartInstance.tooltip.setActiveElements([]);chartInstance.setActiveElements([]);chartInstance.update()}
+    };
+    ctx.canvas.addEventListener('click',ctx.canvas._chartTapHandler);
+  }
+}
+function renderIndividualChart(){
+  const cps=[];for(let rn=1;rn<=totalRounds;rn++){cps.push({rn,half:'front',label:`R${rn} F9`});cps.push({rn,half:'back',label:`R${rn} B9`})}
+  const labels=[];const datasets={};const playerList=players.filter(p=>p.name);
+  playerList.forEach(p=>{datasets[p.name]=[]});
+  for(const cp of cps){
+    let allOk=true;const scores={};
+    for(const p of playerList){
+      const r=p.rounds[String(cp.rn)];if(!r){allOk=false;break}
+      const val=cp.half==='front'?r.front:r.back;if(!val||val<=0){allOk=false;break}
+      const ps=getCourseParSplit(cp.rn);const par=cp.half==='front'?ps.front:ps.back;
+      const ch=getCH(p.hi,cp.rn);const hc=cp.half==='front'?Math.ceil(ch/2):Math.floor(ch/2);
+      scores[p.name]=(val-hc-par);
+    }
+    if(!allOk)break;
+    if(!labels.length){labels.push('E');playerList.forEach(p=>{datasets[p.name].push(0)})}
+    labels.push(cp.label);
+    for(const p of playerList){const prev=datasets[p.name].length?datasets[p.name][datasets[p.name].length-1]:0;datasets[p.name].push(prev+scores[p.name])}
+  }
+  const colors=['#3eb97f','#c9a84c','#4a90d9','#e74c3c','#9b59b6','#e67e22','#1abc9c','#f06292','#7986cb','#aed581'];
+  const ctx=document.getElementById('leadChart').getContext('2d');
+  if(chartInstance)chartInstance.destroy();
+  const lastNames=playerList.map(p=>{const parts=p.name.split(' ');return parts.length>1?parts[parts.length-1]:p.name});const dupes=lastNames.filter((n,i)=>lastNames.indexOf(n)!==i);const chartLabel=p=>{const parts=p.name.split(' ');const ln=parts.length>1?parts[parts.length-1]:p.name;return dupes.includes(ln)?parts[0][0]+'. '+ln:ln};
+  chartInstance=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:playerList.map((p,i)=>({label:chartLabel(p),data:datasets[p.name],borderColor:colors[i%colors.length],backgroundColor:colors[i%colors.length]+'22',borderWidth:2,pointRadius:2.5,pointHoverRadius:5,pointBackgroundColor:colors[i%colors.length],tension:0.3,fill:false}))},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{labels:{color:'#a8b5a0',font:{family:'Outfit',size:11},boxWidth:10,boxHeight:10}},
+        tooltip:{backgroundColor:'rgba(15,46,29,0.95)',borderColor:'rgba(245,240,232,0.15)',borderWidth:1,titleFont:{family:'Outfit',size:13},bodyFont:{family:'Outfit',size:12},titleColor:'#f5f0e8',bodyColor:'#a8b5a0',padding:10,cornerRadius:8,itemSort:function(a,b){return a.parsed.y-b.parsed.y},callbacks:{label:function(ctx){const v=ctx.parsed.y;return` ${ctx.dataset.label}: ${v===0?'E':(v>0?'+'+v:v)}`}}}
+      },
+      scales:{
+        x:{ticks:{color:'#6b7a64',font:{family:'Outfit',size:11}},grid:{color:'rgba(245,240,232,0.05)'}},
+        y:{reverse:true,ticks:{color:'#6b7a64',font:{family:'Outfit',size:11},callback:function(v){return v>0?'+'+v:v}},grid:{color:'rgba(245,240,232,0.06)'},title:{display:true,text:'Cumulative Net to Par',color:'#6b7a64',font:{family:'Outfit',size:11}}}
+      }
+    }
+  });
+  if(!ctx.canvas._chartTapHandler){
+    ctx.canvas._chartTapHandler=function(e){
+      if(!chartInstance)return;
+      const pts=chartInstance.getElementsAtEventForMode(e,'index',{intersect:false},false);
+      if(!pts.length){chartInstance.tooltip.setActiveElements([]);chartInstance.setActiveElements([]);chartInstance.update()}
     };
     ctx.canvas.addEventListener('click',ctx.canvas._chartTapHandler);
   }
