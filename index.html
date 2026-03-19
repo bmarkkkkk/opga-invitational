@@ -1198,7 +1198,84 @@ function renderCourseInfo(){
 }
 
 /* ═══ HIGHLIGHTS ═══ */
-function renderHighlights(){document.getElementById('highlights').style.display='none'}
+function renderHighlights(complete){
+  const el=document.getElementById('highlights');
+  el.style.display='none';return;
+  const isTourn=currentView==='tournament';
+  const isFinal=complete&&isTourn;
+  const viewRn=isTourn?null:parseInt(currentView);
+
+  const data=players.map(p=>{const v=calcPlayerView(p,currentView);return{player:p,...v}}).filter(d=>d.thru>0);
+  if(!data.length||isFinal){el.style.display='none';return}
+  el.style.display='flex';
+  data.sort((a,b)=>a.netToPar-b.netToPar);
+
+  // Leader(s) — handle ties
+  const leaderScore=data[0].netToPar;
+  const leaders=data.filter(d=>d.netToPar===leaderScore);
+  const leaderNames=leaders.map(d=>esc(d.player.name)).join(' & ');
+  const leaderThru=leaders.map(d=>d.thru).join('/');
+
+  // Best Nine — filter by round if in round view
+  let bestNines=[];
+  const roundsToCheck=isTourn?Array.from({length:totalRounds},(_,i)=>i+1):[viewRn];
+  for(const p of players){
+    for(const rn of roundsToCheck){
+      const res=calcPlayerRound(p,rn);if(!res)continue;
+      const par=getCoursePar(rn);
+      const tmParSplit=getCourseParSplit(parseInt(currentView));
+      const frontPar=tmParSplit.front;const backPar=tmParSplit.back;
+      if(res.hasFront){bestNines.push({name:p.name,score:res.frontNet-frontPar,label:`R${rn} Front`,gross:p.rounds[String(rn)].front})}
+      if(res.hasBack){bestNines.push({name:p.name,score:res.backNet-backPar,label:`R${rn} Back`,gross:p.rounds[String(rn)].back})}
+    }
+  }
+  let bestNineCard='';
+  if(bestNines.length){
+    bestNines.sort((a,b)=>a.score-b.score);
+    const bestScore=bestNines[0].score;
+    const tied=bestNines.filter(b=>b.score===bestScore);
+    if(tied.length===1){
+      const b=tied[0];
+      bestNineCard=`<div class="hl-card hl-hot"><div class="hl-label">🔥 Best Nine</div><div class="hl-name">${esc(b.name)}</div><div class="hl-detail">${b.gross} gross (${fmtPar(b.score)}) · ${b.label}</div></div>`;
+    }else{
+      const names=[...new Set(tied.map(b=>esc(b.name)))].join(' & ');
+      bestNineCard=`<div class="hl-card hl-hot"><div class="hl-label">🔥 Best Nine</div><div class="hl-name">${names}</div><div class="hl-detail">Tie ${fmtPar(bestScore)} net-to-par</div></div>`;
+    }
+  }
+
+  // Best Round — best 18-hole net-to-par, filter by view, handle ties
+  let bestRoundList=[];
+  for(const d of data){
+    for(const rn of roundsToCheck){
+      const res=calcPlayerRound(d.player,rn);
+      if(res&&res.thru===18)bestRoundList.push({name:d.player.name,ntp:res.netToPar,gross:res.gross,round:rn});
+    }
+  }
+  let bestRoundCard='';
+  if(bestRoundList.length){
+    bestRoundList.sort((a,b)=>a.ntp-b.ntp);
+    const bestNtp=bestRoundList[0].ntp;
+    const tied=bestRoundList.filter(l=>l.ntp===bestNtp);
+    if(tied.length===1){
+      const g=tied[0];
+      bestRoundCard=`<div class="hl-card hl-low"><div class="hl-label">🏆 Best Round</div><div class="hl-name">${esc(g.name)}</div><div class="hl-detail">${fmtPar(g.ntp)} net · R${g.round}</div></div>`;
+    }else{
+      const names=[...new Set(tied.map(g=>esc(g.name)))].join(' & ');
+      bestRoundCard=`<div class="hl-card hl-low"><div class="hl-label">🏆 Best Round</div><div class="hl-name">${names}</div><div class="hl-detail">Tie ${fmtPar(bestNtp)} net</div></div>`;
+    }
+  }
+
+  // Team Lead
+  let marginCard='';
+  if(teamMode){
+    const tMap={};for(const p of players){if(!p.team)continue;if(!tMap[p.team])tMap[p.team]=0;tMap[p.team]+=calcPlayerView(p,currentView).netToPar}
+    const teams=Object.entries(tMap).sort((a,b)=>a[1]-b[1]);
+    if(teams.length>=2){const m=Math.abs(teams[0][1]-teams[1][1]);marginCard=`<div class="hl-card hl-margin"><div class="hl-label">Team Lead</div><div class="hl-name">${m===0?'Tied':esc(teams[0][0])}</div><div class="hl-detail">${m===0?'All square!':`by ${m} stroke${m!==1?'s':''}`}</div></div>`}
+  }
+
+  const leaderCard=isTourn&&!isFinal?`<div class="hl-card hl-mvp"><div class="hl-label">⛳ Leader</div><div class="hl-name">${leaderNames}</div><div class="hl-detail">${fmtPar(leaderScore)} · thru ${leaderThru}</div></div>`:'';
+  el.innerHTML=leaderCard+bestRoundCard+bestNineCard+(isFinal?'':marginCard);
+}
 
 /* ═══ TEAMS ═══ */
 function renderTeams(complete){
@@ -1342,8 +1419,10 @@ function computeArrows(sortedData){
     const rn=parseInt(currentView);if(rn<=1)return result;
     const prev=ranksThruRound(rn-1),curr=ranksThruRound(rn);
     for(const name of Object.keys(curr)){
-      if(prev[name]===undefined)continue;
-      const diff=prev[name]-curr[name];
+      const p=players.find(x=>x.name===name);if(!p)continue;
+      const rr=calcPlayerRound(p,rn);if(!rr||rr.thru<18)continue;
+      if(prev[name]!==undefined&&curr[name]!==undefined){
+        const diff=prev[name]-curr[name];
         if(diff>0)result[name]=`<span class="arrow up">▲${diff}</span>`;
         else if(diff<0)result[name]=`<span class="arrow down">▼${Math.abs(diff)}</span>`;
       }
@@ -1351,12 +1430,8 @@ function computeArrows(sortedData){
   }
   return result;
 }
-function ranksForSingleRound(rn){
-  const data=players.map(p=>{const res=calcPlayerRound(p,rn);if(!res||res.thru<18)return null;return{name:p.name,net:res.net,netToPar:res.netToPar}}).filter(Boolean).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
-  const ranks={};let rank=1;data.forEach((d,i)=>{if(i>0&&(d.netToPar!==data[i-1].netToPar||d.net!==data[i-1].net))rank=i+1;ranks[d.name]=rank});return ranks;
-}
 function ranksThruRound(thru){
-  const data=players.map(p=>{let net=0,ntp=0,th=0;const rr=calcPlayerRound(p,thru);if(!rr||rr.thru<18)return null;for(let rn=1;rn<=thru;rn++){const res=calcPlayerRound(p,rn);if(res){net+=res.net;ntp+=res.netToPar;th+=res.thru}}return{name:p.name,net,netToPar:ntp,thru:th}}).filter(Boolean).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
+  const data=players.map(p=>{let net=0,ntp=0,th=0;for(let rn=1;rn<=thru;rn++){const res=calcPlayerRound(p,rn);if(res){net+=res.net;ntp+=res.netToPar;th+=res.thru}}return{name:p.name,net,netToPar:ntp,thru:th}}).filter(d=>d.thru>0).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
   const ranks={};let rank=1;data.forEach((d,i)=>{if(i>0&&(d.netToPar!==data[i-1].netToPar||d.net!==data[i-1].net))rank=i+1;ranks[d.name]=rank});return ranks;
 }
 
