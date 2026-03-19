@@ -1402,17 +1402,19 @@ function renderIndividual(complete){
 function computeArrows(sortedData){
   const result={};
   if(currentView==='tournament'){
-    const cur={};sortedData.forEach((d,i)=>{cur[d.player.name]=i+1});
+    const latestComplete={};for(const d of sortedData){let maxR=0;for(let rn=1;rn<=totalRounds;rn++){const rr=calcPlayerRound(d.player,rn);if(rr&&rr.thru===18)maxR=rn}latestComplete[d.player.name]=maxR}
+    const maxRound=Math.max(...Object.values(latestComplete),0);if(maxRound<2)return result;
+    const allComplete=sortedData.every(d=>latestComplete[d.player.name]>=totalRounds);
+    if(allComplete)return result;
+    const prev=ranksThruRound(maxRound-1),curr=ranksThruRound(maxRound);
     for(const d of sortedData){
-      let comp=0;for(let rn=1;rn<=totalRounds;rn++){const rr=calcPlayerRound(d.player,rn);if(rr&&rr.thru===18)comp++}
-      if(comp<2)continue;
-      if(prevRanks[d.player.name]!==undefined){
-        const diff=prevRanks[d.player.name]-cur[d.player.name];
-        if(diff>0)result[d.player.name]=`<span class="arrow up">▲${diff}</span>`;
-        else if(diff<0)result[d.player.name]=`<span class="arrow down">▼${Math.abs(diff)}</span>`;
+      const name=d.player.name;if(latestComplete[name]<maxRound)continue;
+      if(prev[name]!==undefined&&curr[name]!==undefined){
+        const diff=prev[name]-curr[name];
+        if(diff>0)result[name]=`<span class="arrow up">▲${diff}</span>`;
+        else if(diff<0)result[name]=`<span class="arrow down">▼${Math.abs(diff)}</span>`;
       }
     }
-    Object.assign(prevRanks,cur);
   }else{
     const rn=parseInt(currentView);if(rn<=1)return result;
     const prev=ranksThruRound(rn-1),curr=ranksThruRound(rn);
