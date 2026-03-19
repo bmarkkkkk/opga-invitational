@@ -1583,9 +1583,9 @@ function openPlayerModal(name){
   }else{
     const rn=parseInt(currentView);
     const cName=getCourseName(rn);
-    document.getElementById('pmRoundsTitle').innerHTML=`<span>Round ${rn} Detail (Gross)</span>${cName?'<span class="mrt-line"></span><span class="mrt-course">'+esc(cName)+'</span>':''}`;
+    document.getElementById('pmRoundsTitle').innerHTML=`<span>Round ${rn} Detail</span>${cName?'<span class="mrt-line"></span><span class="mrt-course">'+esc(cName)+'</span>':''}`;
     const res=calcPlayerRound(player,rn);
-    if(res){roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Front Nine</span><span class="modal-round-val">${res.hasFront?res.frontGross:'—'}</span></div><div class="modal-round-row"><span class="modal-round-label">Back Nine</span><span class="modal-round-val">${res.hasBack?res.backGross:'—'}</span></div>`}
+    if(res){const ps=getCourseParSplit(rn);const fNtp=res.hasFront?(res.frontGross-Math.ceil(res.ch/2))-ps.front:null;const bNtp=res.hasBack?(res.backGross-Math.floor(res.ch/2))-ps.back:null;const fCol=fNtp===null?'':fNtp<0?'var(--green-300)':fNtp>0?'var(--red)':'var(--cream)';const bCol=bNtp===null?'':bNtp<0?'var(--green-300)':bNtp>0?'var(--red)':'var(--cream)';const fNtpStr=fNtp===null?'':fNtp<0?String(fNtp):fNtp>0?'+'+fNtp:'E';const bNtpStr=bNtp===null?'':bNtp<0?String(bNtp):bNtp>0?'+'+bNtp:'E';roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Front Nine</span><span class="modal-round-val">${res.hasFront?res.frontGross+' / <span style="color:'+fCol+'">'+fNtpStr+'</span>':'—'}</span></div><div class="modal-round-row"><span class="modal-round-label">Back Nine</span><span class="modal-round-val">${res.hasBack?res.backGross+' / <span style="color:'+bCol+'">'+bNtpStr+'</span>':'—'}</span></div>`}
     document.getElementById('pmSummary').textContent=`Course Handicap: ${getCH(player.hi,rn)}`;
   }
   document.getElementById('pmRounds').innerHTML=roundsHtml;
