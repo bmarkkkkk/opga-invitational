@@ -1432,7 +1432,7 @@ function computeArrows(sortedData){
 }
 function ranksThruRound(thru){
   const data=players.map(p=>{let net=0,ntp=0,th=0;for(let rn=1;rn<=thru;rn++){const res=calcPlayerRound(p,rn);if(res){net+=res.net;ntp+=res.netToPar;th+=res.thru}}return{name:p.name,net,netToPar:ntp,thru:th}}).filter(d=>d.thru>0).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
-  const ranks={};data.forEach((d,i)=>{ranks[d.name]=i+1});return ranks;
+  const ranks={};let rank=1;data.forEach((d,i)=>{if(i>0&&(d.netToPar!==data[i-1].netToPar||d.net!==data[i-1].net))rank=i+1;ranks[d.name]=rank});return ranks;
 }
 
 /* ═══ CHART (Y-AXIS REVERSED) ═══ */
