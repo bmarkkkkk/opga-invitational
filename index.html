@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Roboto+Condensed:wght@700&family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
@@ -142,7 +142,7 @@
 
     /* Team Standings */
     .team-row { display:grid; grid-template-columns:36px 1fr auto auto; align-items:center; gap:12px; padding:14px 16px; transition:background var(--transition); cursor:pointer; }
-    .team-row:hover { background:var(--surface-2); }
+    @media(hover:hover){.team-row:hover { background:var(--surface-2); }}
     .team-row:not(:last-child) { border-bottom:1px solid var(--border); }
     .team-rank { font-weight:700; font-size:1rem; text-align:center; }
     .team-rank.rank-1 { color:var(--gold); }
@@ -162,6 +162,52 @@
     .diff-bar { height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden; }
     .diff-bar-fill { height:100%; border-radius:3px; transition:width 0.6s ease; }
 
+
+    /* Scoreboard View */
+    .view-toggle { display:flex; gap:0; border-radius:6px; overflow:hidden; border:1px solid var(--border); margin-left:auto; }
+    .vt-btn { padding:4px 10px; font-family:'Outfit',sans-serif; font-size:0.58rem; font-weight:600; letter-spacing:0.04em; border:none; cursor:pointer; background:transparent; color:var(--text-muted); transition:all 0.15s; }
+    .vt-btn.active { background:rgba(201,168,76,0.15); color:var(--gold); }
+    .sb-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:var(--radius); display:none; background:var(--surface-1); }
+    .sb-wrap::-webkit-scrollbar { height:3px; }
+    .sb-wrap::-webkit-scrollbar-thumb { background:rgba(245,240,232,0.1); border-radius:2px; }
+    .sb-board { min-width:480px; padding:10px 0 6px; position:relative; }
+    .sb-title { text-align:center; font-family:'Oswald',sans-serif; font-weight:700; font-size:1.3rem; color:#f5f0d0; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:8px; position:relative; }
+    .sb-table { width:100%; border-collapse:collapse; position:relative; }
+    .sb-table th,.sb-table td { text-align:center; padding:3px 2px; font-family:'Roboto Condensed',sans-serif; vertical-align:middle; }
+    .sb-table .sb-rh th { font-size:0.4rem; color:var(--text-muted); font-weight:500; padding:2px 2px 0; text-transform:uppercase; opacity:0.5; }
+    .sb-table .sb-nh th { font-size:0.5rem; color:var(--text-muted); font-weight:700; padding:1px 2px 3px; }
+    .sb-table .sb-pr td { color:var(--text-muted); font-weight:700; font-size:0.58rem; }
+    .sb-table .sb-pr { border-bottom:1px solid var(--border); }
+    .sb-nm { text-align:left !important; padding-left:10px !important; position:sticky; left:0; z-index:2; background:var(--surface-1); }
+    .sb-table thead .sb-nm { color:var(--text-muted); font-size:0.5rem; }
+    .sb-table .sb-pr .sb-nm { font-family:'Oswald',sans-serif; font-size:0.58rem; color:var(--text-muted); letter-spacing:0.06em; }
+    .sb-table tbody .sb-nm { font-family:'Oswald',sans-serif; font-weight:600; font-size:0.68rem; color:#f5f0d0; letter-spacing:0.02em; text-transform:uppercase; white-space:nowrap; }
+    .sb-table tbody tr { border-top:1px solid var(--border); cursor:pointer; }
+    @media(hover:hover){.sb-table tbody tr:hover { background:var(--surface-2); }}
+    
+    .sb-table tbody .sb-nm:active { background:var(--surface-2); transition:background 0.1s; }
+    .sb-table .sb-break { border-top:1.5px solid rgba(245,240,232,0.12); }
+    .sb-sc { font-weight:700; font-size:0.68rem; min-width:24px; }
+    .sb-un { color:#e74c3c; }
+    .sb-ov { color:#f5f0d0; }
+    .sb-ev { color:var(--green-300); }
+    .sb-tc { font-weight:700; font-size:0.76rem; min-width:30px; border-left:1px solid var(--border); }
+    .sb-thru { font-size:0.5rem; color:var(--text-muted); min-width:22px; border-left:1px solid rgba(245,240,232,0.05); }
+    .sb-hint { text-align:center; font-size:0.52rem; color:var(--text-muted); margin-top:5px; font-style:italic; }
+
+    .hr-modal-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.2rem; color:var(--cream); margin-bottom:2px; }
+    .hr-modal-course { font-size:0.75rem; color:var(--text-muted); margin-bottom:16px; }
+    .hr-player-card { background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px; }
+    .hr-player-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .hr-player-name { font-weight:700; font-size:0.95rem; color:var(--cream); }
+    .hr-player-team { font-size:0.68rem; color:var(--text-muted); }
+    .hr-player-rank { font-size:0.72rem; font-weight:700; color:var(--gold); }
+    .hr-score-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px; }
+    .hr-score-box { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; }
+    .hr-score-label { font-size:0.5rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
+    .hr-score-val { font-weight:700; font-size:0.95rem; color:var(--text-primary); }
+    .history-card { cursor:pointer; transition:background 0.15s; }
+    @media(hover:hover){.history-card:hover { background:var(--surface-2); }}
     /* Individual Leaderboard */
     .lb-header { display:grid; grid-template-columns:32px 1fr 54px 62px 54px 40px; gap:4px; padding:10px 14px; font-size:0.62rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); background:var(--surface-2); border-bottom:1px solid var(--border); }
     .lb-header span { text-align:center; }
@@ -170,7 +216,7 @@
     .lb-header span.sortable:hover { color:var(--text-secondary); }
     .lb-header span.sortable.sort-active { color:var(--gold); }
     .lb-row { display:grid; grid-template-columns:32px 1fr 54px 62px 54px 40px; gap:4px; padding:12px 14px; align-items:center; cursor:pointer; transition:background var(--transition); }
-    .lb-row:hover { background:var(--surface-2); }
+    @media(hover:hover){.lb-row:hover { background:var(--surface-2); }}
     .lb-row:not(:last-child) { border-bottom:1px solid var(--border); }
     .lb-row.is-leader { background:rgba(201,168,76,0.04); }
     .lb-pos { font-weight:700; font-size:0.85rem; color:var(--text-secondary); text-align:center; }
@@ -291,7 +337,7 @@
     .tm-subtitle { text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:2px; margin-bottom:16px; }
     .tm-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:18px; }
     .tm-member { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:10px 14px 14px; margin-bottom:10px; cursor:pointer; transition:background var(--transition); position:relative; }
-    .tm-member:hover { background:var(--surface-3); }
+    @media(hover:hover){.tm-member:hover { background:var(--surface-3); }}
     .tm-member:last-child { margin-bottom:0; }
     .tm-member-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
     .tm-member-name { font-weight:600; font-size:0.92rem; color:var(--text-primary); }
@@ -332,7 +378,7 @@
     .records-subtitle { font-size:0.75rem; color:var(--text-muted); }
     .champions-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .champ-card { background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:16px; position:relative; overflow:hidden; cursor:pointer; transition:background var(--transition); }
-    .champ-card:hover { background:var(--surface-2); }
+    @media(hover:hover){.champ-card:hover { background:var(--surface-2); }}
     @media(hover:none){ .champ-card:hover,.team-row:hover,.lb-row:hover { background:transparent; } .tm-member:hover { background:var(--surface-2); } }
     .champ-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent); }
     .champ-year { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.3rem; color:var(--gold); margin-bottom:8px; }
@@ -400,7 +446,7 @@
     /* Info Tab Buttons */
     .info-tabs-wrap { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:24px; }
     .info-tab-btn { display:inline-block; font-size:0.82rem; font-weight:500; color:var(--text-secondary); cursor:pointer; letter-spacing:0.03em; padding:7px 18px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(245,240,232,0.04); transition:all var(--transition); }
-    .info-tab-btn:hover { background:rgba(245,240,232,0.08); color:var(--text-primary); }
+    @media(hover:hover){.info-tab-btn:hover { background:rgba(245,240,232,0.08); color:var(--text-primary); }}
 
     /* Info Modal Content */
     .info-modal-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.5rem; color:var(--cream); text-align:center; margin-bottom:16px; }
@@ -428,7 +474,7 @@
 
     /* ═══ SCORE ENTRY & ADMIN STYLES ═══ */
     .score-entry-fab { position:fixed; bottom:24px; right:20px; z-index:50; background:var(--green-500); color:var(--cream); border:none; border-radius:50px; padding:9px 16px; font-family:'Outfit',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:0.04em; cursor:pointer; box-shadow:0 4px 20px rgba(0,103,71,0.5); transition:all 0.2s; display:flex; align-items:center; gap:6px; }
-    .score-entry-fab:hover { background:var(--green-400); transform:translateY(-2px); }
+    @media(hover:hover){.score-entry-fab:hover { background:var(--green-400); transform:translateY(-2px); }}
     .score-entry-fab .fab-dot { width:6px; height:6px; background:var(--green-300); border-radius:50%; animation:pulse 2s ease-in-out infinite; }
     .pin-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:200; justify-content:center; align-items:flex-end; backdrop-filter:blur(6px); }
     .pin-modal-overlay.open { display:flex; }
@@ -682,6 +728,7 @@
       <div class="section-head">
         <span class="section-title">Individual Leaderboard</span>
         <span class="section-line"></span>
+        <div class="view-toggle" id="lbViewToggle"><button class="vt-btn active" data-view="table" onclick="setLbView('table',true)">Table</button><button class="vt-btn" data-view="board" onclick="setLbView('board',true)">Scoreboard</button></div>
       </div>
       <div class="course-info-card" id="courseInfoCard">
         <div><div class="course-info-name" id="ciName"></div><div class="course-info-round" id="ciRound"></div></div>
@@ -693,6 +740,8 @@
         </div>
         <div id="lbBody"><div class="loading-msg">Loading players…</div></div>
       </div>
+      <div class="sb-wrap" id="scoreboardWrap"><div class="sb-board"><div class="sb-title">Leaders</div><table class="sb-table"><thead id="sbHead"></thead><tbody id="sbBody"></tbody></table></div></div>
+      <div class="sb-hint" id="sbHint" style="display:none">Scroll sideways or rotate for full view</div>
     </div>
 
     <div class="section" id="historySection">
@@ -815,6 +864,14 @@
     </div>
   </div>
 
+
+  <!-- History Round Modal -->
+  <div class="modal-overlay" id="historyRoundModal">
+    <div class="modal-sheet">
+      <div id="historyRoundContent"></div>
+    </div>
+  </div>
+
   <!-- Info Modal -->
   <div class="modal-overlay" id="infoModal">
     <div class="modal-sheet">
@@ -915,7 +972,7 @@ async function load(){
   buildViewButtons();
   buildHcHeader();
   render();
-  document.getElementById('lastUpdate').textContent='Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('lastUpdate').textContent='Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});if(currentView==='tournament'){document.getElementById('lbViewToggle').style.display='flex';if(lbView==='board')renderScoreboard()}else{document.getElementById('lbViewToggle').style.display='none';document.getElementById('individualCard').style.display='block';document.getElementById('scoreboardWrap').style.display='none';document.getElementById('sbHint').style.display='none'}
 }
 
 function num(v){const n=parseFloat(v);return isNaN(n)?0:n}
@@ -1142,6 +1199,7 @@ function renderCourseInfo(){
 /* ═══ HIGHLIGHTS ═══ */
 function renderHighlights(complete){
   const el=document.getElementById('highlights');
+  el.style.display='none';return;
   const isTourn=currentView==='tournament';
   const isFinal=complete&&isTourn;
   const viewRn=isTourn?null:parseInt(currentView);
@@ -1429,12 +1487,14 @@ function renderChart(){
 }
 
 /* ═══ HISTORY ═══ */
+function openHistoryRoundModal(rn){const modal=document.getElementById('historyRoundModal');const content=document.getElementById('historyRoundContent');const cn=getCourseName(rn);const cp=getCoursePar(rn);const rp=players.map(p=>{const res=calcPlayerRound(p,rn);if(!res||res.thru<=0)return null;return{name:p.name,team:p.team,hi:p.hi,frontGross:res.frontGross,backGross:res.backGross,gross:res.gross,net:res.net,netToPar:res.netToPar,thru:res.thru,ch:res.ch}}).filter(Boolean);const byNet=rp.filter(p=>p.thru===18).sort((a,b)=>a.netToPar-b.netToPar);if(!byNet.length){content.innerHTML=`<div class="hr-modal-title">Round ${rn}</div>${cn?`<div class="hr-modal-course">${esc(cn)}</div>`:''}<div style="padding:20px;text-align:center;color:var(--text-muted)">No completed scores yet</div>`;modal.classList.add('open');return}const bestNtp=byNet[0].netToPar;const tied1st=byNet.filter(p=>p.netToPar===bestNtp);const rest=byNet.filter(p=>p.netToPar!==bestNtp);const secondNtp=rest.length?rest[0].netToPar:null;const tied2nd=secondNtp!==null?rest.filter(p=>p.netToPar===secondNtp):[];const showPlayers=[...tied1st.map(p=>({...p,rank:tied1st.length>1?'T1':'1st'})),...tied2nd.map(p=>({...p,rank:tied2nd.length>1?'T2':'2nd'}))];let h=`<div class="hr-modal-title">Round ${rn}</div>${cn?`<div class="hr-modal-course">${esc(cn)}</div>`:''}`;for(const p of showPlayers){const ntpColor=p.netToPar<0?'var(--green-300)':p.netToPar>0?'var(--red)':'var(--cream)';h+=`<div class="hr-player-card"><div class="hr-player-head"><div><div class="hr-player-name">${esc(p.name)}</div>${p.team?`<div class="hr-player-team">${esc(p.team)}</div>`:''}</div><div class="hr-player-rank">${p.rank}</div></div><div class="hr-score-grid"><div class="hr-score-box"><div class="hr-score-label">Front 9</div><div class="hr-score-val">${p.frontGross||'—'}</div></div><div class="hr-score-box"><div class="hr-score-label">Back 9</div><div class="hr-score-val">${p.backGross||'—'}</div></div><div class="hr-score-box"><div class="hr-score-label">Total Gross</div><div class="hr-score-val">${p.gross}</div></div><div class="hr-score-box"><div class="hr-score-label">Net to Par</div><div class="hr-score-val" style="color:${ntpColor}">${p.netToPar<0?p.netToPar:p.netToPar>0?'+'+p.netToPar:'E'}</div></div></div></div>`}content.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
+
 function renderHistory(){
   const grid=document.getElementById('historyGrid');let html='';
   for(let rn=1;rn<=totalRounds;rn++){
     const rp=players.map(p=>{const res=calcPlayerRound(p,rn);return res&&res.thru>0?{name:p.name,...res}:null}).filter(Boolean);
     const cn=getCourseName(rn);
-    html+=`<div class="history-card"><div class="history-card-head"><div class="history-card-title">Round ${rn}</div>${cn?`<div class="history-course">${esc(cn)}</div>`:''}</div>`;
+    html+=`<div class="history-card" onclick="openHistoryRoundModal(${rn})"><div class="history-card-head"><div class="history-card-title">Round ${rn}</div>${cn?`<div class="history-course">${esc(cn)}</div>`:''}</div>`;
     if(!rp.length){html+='<div class="history-upcoming">Upcoming</div>'}
     else{
       const byNet=rp.filter(p=>p.thru===18).sort((a,b)=>a.netToPar-b.netToPar);
@@ -1652,6 +1712,7 @@ function openTeamModal(teamName){
 document.getElementById('playerModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
 document.getElementById('teamModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
 document.getElementById('skinsModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+  document.getElementById('historyRoundModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('infoModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
 
 /* ═══ COLLAPSIBLE SECTIONS ═══ */
@@ -1731,7 +1792,7 @@ function hideRecordsPage(){
   document.querySelectorAll('#individualSection, #historySection, #coursesSection, #hcSection').forEach(el=>el.style.display='block');
   if(teamMode){document.getElementById('teamSection').style.display='block';document.getElementById('chartSection').style.display='block';if(skinsData.length)document.getElementById('skinsSection').style.display='block'}
   document.getElementById('championBanner').style.display='';
-  document.getElementById('highlights').style.display='';
+  document.getElementById('highlights').style.display='none';
   document.getElementById('recordsLinkWrap').style.display='block';
   document.getElementById('scoreEntryFab').style.display='flex';
   if(infoTabs.length) document.getElementById('infoTabsWrap').style.display='flex';
@@ -2239,6 +2300,17 @@ async function saveAllPlayers(){if(!gAuthToken){showAdminToast('Sign in with Goo
 function renderAdminScores(el){const teams=[...new Set(adminPlayersData.map(p=>p.team).filter(Boolean))];const done=adminPlayersData.filter(p=>{const s=adminScoresData[p.name]?.[adminActiveScoreRound];return s&&s.front&&s.back}).length;const tot=adminPlayersData.length;el.innerHTML=`<div class="admin-section-title">Scores — ${adminYear}</div><div class="admin-section-sub">Enter and review gross scores.</div><div class="admin-score-round-tabs">${Array.from({length:adminTotalRounds},(_,i)=>i+1).map(rn=>`<button class="admin-score-rtab ${rn===adminActiveScoreRound?'active':'inactive'}" onclick="adminActiveScoreRound=${rn};renderAdminTab('scores')">R${rn}</button>`).join('')}</div><div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><div class="admin-progress-bar"><div class="admin-progress-fill" style="width:${tot?done/tot*100:0}%"></div></div><span style="font-size:0.72rem;color:var(--text-muted)">${done}/${tot}</span></div><div class="admin-table-wrap"><div class="admin-table-head" style="grid-template-columns:1fr 90px 90px 70px"><span>Player</span><span style="text-align:center">Front</span><span style="text-align:center">Back</span><span style="text-align:center">Gross</span></div><div id="adminScoreRows"></div></div><div class="admin-actions-row"><button class="admin-btn admin-btn-secondary admin-btn-sm" onclick="repairZeros()">Repair Zeros</button><button class="admin-btn admin-btn-primary" onclick="saveAdminScores()">Save Scores</button><button class="admin-btn admin-btn-primary" onclick="saveAllAdmin()">Save All & Close</button></div>`;const c=document.getElementById('adminScoreRows');const rr=p=>{const s=adminScoresData[p.name]?.[adminActiveScoreRound]||{front:'',back:''};const gross=(s.front&&s.back)?parseInt(s.front)+parseInt(s.back):null;const complete=s.front&&s.back;return`<div class="admin-table-row" style="grid-template-columns:1fr 90px 90px 70px"><div style="display:flex;align-items:center;gap:6px">${complete?'<span style="color:var(--green-300);font-size:0.75rem">✓</span>':'<span style="color:var(--text-muted);font-size:0.75rem">○</span>'}<span style="font-size:0.85rem;font-weight:600;color:${complete?'var(--cream)':'var(--text-secondary)'}">${esc(p.name)}</span></div><div style="text-align:center"><input class="admin-score-input ${s.front?'has-val':''}" type="text" inputmode="numeric" value="${s.front}" placeholder="—" maxlength="2" onchange="updateAdminScore('${esc(p.name)}',${adminActiveScoreRound},'front',this.value)" /></div><div style="text-align:center"><input class="admin-score-input ${s.back?'has-val':''}" type="text" inputmode="numeric" value="${s.back}" placeholder="—" maxlength="2" onchange="updateAdminScore('${esc(p.name)}',${adminActiveScoreRound},'back',this.value)" /></div><div style="text-align:center;font-weight:700;color:${gross===null?'var(--text-muted)':'var(--text-primary)'}">${gross!==null?gross:'—'}</div></div>`};let h='';if(teams.length){for(const t of teams){h+=`<div style="padding:7px 14px;background:rgba(0,103,71,0.12);font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--border)">${esc(t)}</div>`;h+=adminPlayersData.filter(p=>p.team===t).map(rr).join('')}}else h=adminPlayersData.map(rr).join('');c.innerHTML=h||'<div style="padding:20px;text-align:center;color:var(--text-muted)">No players</div>'}
 function updateAdminScore(name,rn,half,v){if(!adminScoresData[name])adminScoresData[name]={};if(!adminScoresData[name][rn])adminScoresData[name][rn]={front:'',back:''};adminScoresData[name][rn][half]=v.replace(/\D/g,'').slice(0,2)}
 async function saveAdminScores(){await saveAllPlayers();showAdminToast('Scores saved')}
+/* ═══ SCOREBOARD VIEW ═══ */
+let lbView='table';let lbManualChoice=false;
+function setLbView(v,manual){lbView=v;if(manual)lbManualChoice=true;document.querySelectorAll('#lbViewToggle .vt-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===v));document.getElementById('individualCard').style.display=v==='table'?'block':'none';document.getElementById('scoreboardWrap').style.display=v==='board'?'block':'none';document.getElementById('sbHint').style.display=v==='board'?'block':'none';if(v==='board')renderScoreboard()}
+
+function renderScoreboard(){const head=document.getElementById('sbHead');const body=document.getElementById('sbBody');if(!players.length||currentView!=='tournament'){head.innerHTML='';body.innerHTML='';return}const rns=Object.keys(roundMap).map(Number).sort((a,b)=>a-b);const numR=rns.length;let rh='<tr class="sb-rh"><th class="sb-nm"></th>';let nh='<tr class="sb-nh"><th class="sb-nm"></th>';let pr='<tr class="sb-pr"><td class="sb-nm">PAR</td>';for(const rn of rns){rh+=`<th colspan="2">R${rn}</th>`;nh+='<th>F</th><th>B</th>';const cp=getCoursePar(rn);const fp=Math.ceil(cp/2);const bp=Math.floor(cp/2);pr+=`<td>${fp}</td><td>${bp}</td>`}rh+='<th></th><th></th></tr>';nh+='<th>Tot</th><th style="font-size:0.38rem;color:rgba(196,201,160,0.4)">Thru</th></tr>';pr+='<td class="sb-tc"></td><td class="sb-thru"></td></tr>';head.innerHTML=rh+nh+pr;const sorted=[...players].sort((a,b)=>{const aN=calcNtp(a);const bN=calcNtp(b);return aN-bN});let html='';let prevNtp=null;let groupIdx=0;sorted.forEach((p,pi)=>{const ntp=calcNtp(p);const showBreak=pi>0&&((prevNtp<0&&ntp>=0)||(prevNtp<=0&&ntp>0));const row=`<tr${showBreak?' class="sb-break"':''} onclick="openPlayerModal('${esc(p.name).replace(/'/g,"\\'")}')" style="cursor:pointer">`+`<td class="sb-nm">${esc(p.name.split(' ').pop())}</td>`;let cum=0;let cells='';let thruCount=0;for(const rn of rns){const r=p.rounds[String(rn)]||{};const cp=getCoursePar(rn);const fp=Math.ceil(cp/2);const bp=Math.floor(cp/2);const ch=getCH(p.hi,rn);const fStrokes=Math.ceil(ch/2);const bStrokes=Math.floor(ch/2);if(r.front>0){const fNet=r.front-fStrokes;const fNtp=fNet-fp;cum+=fNtp;thruCount+=9;const cls=cum<0?'sb-un':cum>0?'sb-ov':'sb-ev';cells+=`<td class="sb-sc ${cls}">${cum<0?cum:cum===0?'E':'+'+cum}</td>`}else{cells+='<td class="sb-sc" style="opacity:0.15">-</td>'}if(r.back>0){const bNet=r.back-bStrokes;const bNtp=bNet-bp;cum+=bNtp;thruCount+=9;const cls=cum<0?'sb-un':cum>0?'sb-ov':'sb-ev';cells+=`<td class="sb-sc ${cls}">${cum<0?cum:cum===0?'E':'+'+cum}</td>`}else{cells+='<td class="sb-sc" style="opacity:0.15">-</td>'}}const totCls=ntp<0?'sb-un':ntp>0?'sb-ov':'sb-ev';const totText=ntp<0?String(ntp):ntp===0?'E':'+'+ntp;const thruText=thruCount>=totalRounds*18?'F':String(thruCount);cells+=`<td class="sb-tc ${totCls}">${totText}</td>`;cells+=`<td class="sb-thru">${thruText}</td>`;html+=row+cells+'</tr>';prevNtp=ntp});body.innerHTML=html;const allNm=body.querySelectorAll('.sb-nm');if(allNm.length){const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');ctx.font="600 0.68rem 'Oswald',sans-serif";let maxW=30;allNm.forEach(el=>{const w=ctx.measureText(el.textContent).width;if(w>maxW)maxW=w});const colW=Math.ceil(maxW)+18;document.querySelectorAll('.sb-nm').forEach(el=>el.style.width=el.style.minWidth=colW+'px')}}
+
+function calcNtp(p){let ntp=0;for(const rn of Object.keys(roundMap)){const r=p.rounds[rn]||{};if(!r.front&&!r.back)continue;const cp=getCoursePar(parseInt(rn));const ch=getCH(p.hi,parseInt(rn));const fStrokes=Math.ceil(ch/2);const bStrokes=Math.floor(ch/2);const fp=Math.ceil(cp/2);const bp=Math.floor(cp/2);if(r.front>0)ntp+=(r.front-fStrokes)-fp;if(r.back>0)ntp+=(r.back-bStrokes)-bp}return ntp}
+
+window.addEventListener('orientationchange',function(){setTimeout(function(){const landscape=window.innerWidth>window.innerHeight;setLbView(landscape?'board':'table',false);lbManualChoice=false},200)});
+window.matchMedia('(orientation:landscape)').addEventListener('change',function(e){setLbView(e.matches?'board':'table',false);lbManualChoice=false});
+
 async function repairZeros(){if(!gAuthToken){showAdminToast('Sign in first',true);return}showAdminToast('Repairing…');const tab=`Scores ${adminYear}`;const scoresRaw=await fetchTab(tab);if(scoresRaw.length<=1){showAdminToast('No data found',true);return}const maxCol=scoresRaw[0].length;let fixed=0;const rows=[];for(let i=1;i<scoresRaw.length;i++){const r=scoresRaw[i];if(!r[0]||!r[0].trim()){rows.push(r);continue}const row=[...r];while(row.length<maxCol)row.push('0');for(let c=3;c<maxCol;c++){if(!row[c]||row[c].trim()===''||row[c].trim()==='-'){row[c]='0';fixed++}}rows.push(row)}if(fixed===0){showAdminToast('All cells already have values');return}const lc=String.fromCharCode(64+maxCol);const ok=await writeAdminToSheet(`${tab}!A2:${lc}${rows.length+1}`,rows);if(ok){showAdminToast(fixed+' empty cells filled with 0');if(adminYear===currentYear){lastCSV='';load()}await loadAdminYear(adminYear);renderAdminTab('scores')}else{showAdminToast('Repair failed',true)}}
 
 /* ═══ SKINS SYSTEM ═══ */
