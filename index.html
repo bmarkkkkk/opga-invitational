@@ -156,11 +156,11 @@
     .team-name { font-weight:600; font-size:0.95rem; color:var(--text-primary); }
     .team-thru { font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
     .team-score { font-weight:700; font-size:1.3rem; text-align:right; min-width:48px; }
-    .team-score.under { color:var(--under-par); }
+    .team-score.under { color:var(--under-par); font-weight:700; }
     .team-score.over { color:var(--over-par); }
     .team-score.even { color:var(--even-par); }
     .last-nine-badge { display:inline-block; font-size:0.62rem; font-weight:600; letter-spacing:0.05em; padding:2px 8px; border-radius:10px; white-space:nowrap; }
-    .last-nine-badge.under { background:var(--under-par-dim); color:var(--under-par); }
+    .last-nine-badge.under { background:var(--under-par-dim); color:var(--under-par); font-weight:700; }
     .last-nine-badge.over { background:var(--over-par-dim); color:var(--over-par); }
     .last-nine-badge.even { background:rgba(107,179,217,0.12); color:var(--even-par); }
     .diff-bar-wrap { padding:10px 16px 14px; border-top:1px solid var(--border); }
@@ -193,7 +193,7 @@
     .sb-table tbody .sb-nm:active { background:var(--surface-2); transition:background 0.1s; }
     .sb-table .sb-break { border-top:1.5px solid rgba(245,240,232,0.12); }
     .sb-sc { font-weight:600; min-width:22px; }
-    .sb-un { color:var(--under-par); }
+    .sb-un { color:var(--under-par); font-weight:700; }
     .sb-ov { color:var(--over-par); }
     .sb-ev { color:var(--even-par); }
     .sb-tc { font-weight:700; font-size:0.76rem; min-width:30px; border-left:1px solid var(--border); }
@@ -230,7 +230,7 @@
     .lb-team-tag { font-size:0.76rem; font-weight:500; color:var(--text-muted); margin-top:1px; }
     .lb-val { text-align:center; font-size:0.85rem; font-weight:500; font-variant-numeric:tabular-nums; }
     .lb-val.net-par { font-weight:700; }
-    .lb-val.net-par.under { color:var(--under-par); }
+    .lb-val.net-par.under { color:var(--under-par); font-weight:700; }
     .lb-val.net-par.over { color:var(--over-par); }
     .lb-val.net-par.even { color:var(--even-par); }
     .lb-thru { text-align:center; font-size:0.78rem; color:var(--text-muted); }
@@ -313,7 +313,7 @@
     .modal-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:10px 8px; text-align:center; }
     .modal-stat-label { font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
     .modal-stat-val { font-weight:700; font-size:1.05rem; color:var(--text-primary); }
-    .modal-stat-val.under { color:var(--under-par); }
+    .modal-stat-val.under { color:var(--under-par); font-weight:700; }
     .modal-stat-val.over { color:var(--over-par); }
     .modal-stat-val.even { color:var(--even-par); }
     .modal-perf-title { font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
@@ -325,7 +325,7 @@
     .modal-perf-bar.bad { background:var(--over-par); opacity:0.6; }
     .modal-perf-bar.ok { background:var(--text-secondary); opacity:0.5; }
     .modal-perf-val { font-size:0.75rem; font-weight:600; width:52px; text-align:right; font-variant-numeric:tabular-nums; flex-shrink:0; }
-    .modal-perf-val.under { color:var(--under-par); }
+    .modal-perf-val.under { color:var(--under-par); font-weight:700; }
     .modal-perf-val.over { color:var(--over-par); }
     .modal-perf-val.even { color:var(--text-primary); }
     .modal-divider { height:1px; background:var(--border); margin:14px 0; }
@@ -353,7 +353,7 @@
     .tm-ms { text-align:center; }
     .tm-ms-label { font-size:0.55rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2px; }
     .tm-ms-val { font-size:0.82rem; font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-primary); }
-    .tm-ms-val.under { color:var(--under-par); }
+    .tm-ms-val.under { color:var(--under-par); font-weight:700; }
     .tm-ms-val.over { color:var(--over-par); }
     .tm-ms-val.even { color:var(--even-par); }
     .tm-rounds-grid { display:grid; gap:0; margin-top:6px; font-size:0.72rem; }
@@ -436,7 +436,7 @@
     .ph-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; }
     .ph-stat-label { font-size:0.52rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
     .ph-stat-val { font-weight:700; font-size:0.9rem; color:var(--text-primary); font-variant-numeric:tabular-nums; }
-    .ph-stat-val.under { color:var(--under-par); }
+    .ph-stat-val.under { color:var(--under-par); font-weight:700; }
     .ph-stat-val.over { color:var(--over-par); }
     .ph-stat-val.gold { color:var(--gold); }
     .ph-stat-sub { font-size:0.55rem; color:var(--text-muted); margin-top:2px; }
@@ -1522,7 +1522,7 @@ function renderIndividualChart(){
     labels.push(cp.label);
     for(const p of playerList){const prev=datasets[p.name].length?datasets[p.name][datasets[p.name].length-1]:0;datasets[p.name].push(prev+scores[p.name])}
   }
-  const colors=['#3eb97f','#c9a84c','#4a90d9','#e74c3c','#9b59b6','#e67e22','#ff7043','#f06292','#7986cb','#aed581'];
+  const colors=['#e74c3c','#3498db','#f1c40f','#e67e22','#9b59b6','#1abc9c','#ff69b4','#dfe6e9','#a8e6cf','#fdcb6e'];
   const ctx=document.getElementById('leadChart').getContext('2d');
   if(chartInstance)chartInstance.destroy();
   const lastNames=playerList.map(p=>{const parts=p.name.split(' ');return parts.length>1?parts[parts.length-1]:p.name});const dupes=lastNames.filter((n,i)=>lastNames.indexOf(n)!==i);const chartLabel=p=>{const parts=p.name.split(' ');const ln=parts.length>1?parts[parts.length-1]:p.name;return dupes.includes(ln)?parts[0][0]+'. '+ln:ln};
