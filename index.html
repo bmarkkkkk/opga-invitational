@@ -1354,6 +1354,7 @@ function renderIndividual(complete){
   const scored=allData.filter(d=>d.thru>0).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
   const unscored=allData.filter(d=>d.thru===0);
   const arrows=computeArrows(scored);
+  const leadingTeam=(currentView==='tournament'&&teamMode&&teamData.length)?teamData[0].name:null;
   // Assign official rank with ties (scored only)
   scored.forEach((d,i)=>{
     if(i>0&&d.netToPar===scored[i-1].netToPar&&d.net===scored[i-1].net){d.rank=scored[i-1].rank}else{d.rank=i+1}
@@ -1394,7 +1395,7 @@ function renderIndividual(complete){
       }
     }
     return`<div class="lb-row${d.rank===1?' is-leader':''}${isFinal&&d.rank===1?' champion':''}" data-player="${esc(d.player.name)}">
-      <span class="lb-pos ${pos<=3?'top-3':''}">${d.tied?'T':''}${pos}</span>
+      <span class="lb-pos ${leadingTeam&&d.player.team===leadingTeam?'top-3':''}">${d.tied?'T':''}${pos}</span>
       <div class="lb-name-cell"><div class="lb-player-name">${esc(d.player.name)}${arrowHtml}</div>${teamMode?`<div class="lb-team-tag">${esc(d.player.team)} ${dotsHtml}</div>`:(dotsHtml?`<div class="lb-team-tag">${dotsHtml}</div>`:'')}</div>
       <span class="lb-val">${d.net}</span><span class="lb-val net-par ${parClass(d.netToPar)}">${fmtPar(d.netToPar)}</span><span class="lb-val">${d.gross}</span><span class="lb-thru">${d.thru}</span>
     </div>`;
