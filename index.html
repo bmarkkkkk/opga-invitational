@@ -147,7 +147,7 @@
     .hl-detail { font-size:0.72rem; color:var(--text-muted); margin-top:2px; }
 
     /* Team Standings */
-    .team-row { display:grid; grid-template-columns:36px auto 1fr auto; align-items:center; gap:12px; padding:14px 16px; transition:background var(--transition); cursor:pointer; }
+    .team-row { display:grid; grid-template-columns:36px 1fr auto auto; align-items:center; gap:12px; padding:14px 16px; transition:background var(--transition); cursor:pointer; }
     @media(hover:hover){.team-row:hover { background:var(--surface-2); }}
     .team-row:not(:last-child) { border-bottom:1px solid var(--border); }
     .team-rank { font-weight:700; font-size:1rem; text-align:center; }
@@ -1311,7 +1311,7 @@ function renderTeams(complete){
   let html=teamData.map((t,i)=>{
     const ln='';
     const champClass=isFinal&&t.rank===1?' champion':'';
-    const memberNtps=teamMap[t.name].map(m=>{const v=calcPlayerView(m,currentView);return{name:m.name.split(' ').pop(),ntp:v.netToPar,thru:v.thru}}).filter(m=>m.thru>0).sort((a,b)=>a.ntp-b.ntp);const breakdownHtml=memberNtps.length?'<div style="display:grid;grid-template-columns:auto auto;gap:0 10px;justify-content:end">'+memberNtps.map(m=>`<div style="white-space:nowrap;text-align:right">${esc(m.name)} ${fmtPar(m.ntp)}</div>`).join('')+'</div>':'';return`<div class="team-row${champClass}" data-team="${esc(t.name)}"><div class="team-rank rank-${t.rank}">${t.tied?'T':''}${t.rank}</div><div><div class="team-name">${esc(t.name)}</div><div class="team-thru">Thru ${t.thru}${ln}</div></div><div style="font-size:0.65rem;line-height:1.5;text-align:right;opacity:0.7">${breakdownHtml}</div><div class="team-score ${t.thru>0?parClass(t.netToPar):''}">${t.thru>0?fmtPar(t.netToPar):'—'}</div></div>`;
+    return`<div class="team-row${champClass}" data-team="${esc(t.name)}"><div class="team-rank rank-${t.rank}">${t.tied?'T':''}${t.rank}</div><div><div class="team-name">${esc(t.name)}</div><div class="team-thru">Thru ${t.thru}${ln}</div></div><div></div><div class="team-score ${t.thru>0?parClass(t.netToPar):''}">${t.thru>0?fmtPar(t.netToPar):'—'}</div></div>`;
   }).join('');
   if(teamData.length>=2){
     const spread=Math.abs(teamData[0].netToPar-teamData[1].netToPar);
