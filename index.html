@@ -11,10 +11,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
-      --green-900: #0a1f14;
-      --green-800: #0f2e1d;
-      --green-700: #143d27;
-      --green-600: #1a5235;
+      --green-900: #081a10;
+      --green-800: #0c2618;
+      --green-700: #103221;
+      --green-600: #16452d;
       --green-500: #006747;
       --green-400: #1e8a5e;
       --green-300: #3eb97f;
@@ -24,6 +24,11 @@
       --gold-light: #dfc373;
       --red: #d44;
       --red-dim: rgba(221,68,68,0.15);
+      --over-par: #f5f0d0;
+      --over-par-dim: rgba(245,240,208,0.12);
+      --under-par: #daa520;
+      --under-par-dim: rgba(218,165,32,0.15);
+      --even-par: #6bb3d9;
       --blue: #4a90d9;
       --blue-dim: rgba(74,144,217,0.15);
       --orange: #e8943a;
@@ -151,13 +156,13 @@
     .team-name { font-weight:600; font-size:0.95rem; color:var(--text-primary); }
     .team-thru { font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
     .team-score { font-weight:700; font-size:1.3rem; text-align:right; min-width:48px; }
-    .team-score.under { color:var(--green-300); }
-    .team-score.over { color:var(--red); }
-    .team-score.even { color:var(--text-primary); }
+    .team-score.under { color:var(--under-par); }
+    .team-score.over { color:var(--over-par); }
+    .team-score.even { color:var(--even-par); }
     .last-nine-badge { display:inline-block; font-size:0.62rem; font-weight:600; letter-spacing:0.05em; padding:2px 8px; border-radius:10px; white-space:nowrap; }
-    .last-nine-badge.under { background:rgba(62,185,127,0.15); color:var(--green-300); }
-    .last-nine-badge.over { background:var(--red-dim); color:var(--red); }
-    .last-nine-badge.even { background:rgba(245,240,232,0.08); color:var(--text-secondary); }
+    .last-nine-badge.under { background:var(--under-par-dim); color:var(--under-par); }
+    .last-nine-badge.over { background:var(--over-par-dim); color:var(--over-par); }
+    .last-nine-badge.even { background:rgba(107,179,217,0.12); color:var(--even-par); }
     .diff-bar-wrap { padding:10px 16px 14px; border-top:1px solid var(--border); }
     .diff-bar-label { font-size:0.78rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-secondary); margin-bottom:6px; text-align:center; }
     .diff-bar { height:6px; border-radius:3px; background:var(--surface-2); overflow:hidden; }
@@ -188,9 +193,9 @@
     .sb-table tbody .sb-nm:active { background:var(--surface-2); transition:background 0.1s; }
     .sb-table .sb-break { border-top:1.5px solid rgba(245,240,232,0.12); }
     .sb-sc { font-weight:600; min-width:22px; }
-    .sb-un { color:var(--green-300); }
-    .sb-ov { color:#e74c3c; }
-    .sb-ev { color:#f5f0d0; }
+    .sb-un { color:var(--under-par); }
+    .sb-ov { color:var(--over-par); }
+    .sb-ev { color:var(--even-par); }
     .sb-tc { font-weight:700; font-size:0.76rem; min-width:30px; border-left:1px solid var(--border); }
     .sb-thru { font-size:0.5rem; color:var(--text-muted); min-width:22px; border-left:1px solid rgba(245,240,232,0.05); }
     .sb-hint { text-align:center; font-size:0.52rem; color:var(--text-muted); margin-top:5px; font-style:italic; }
@@ -225,9 +230,9 @@
     .lb-team-tag { font-size:0.76rem; font-weight:500; color:var(--text-muted); margin-top:1px; }
     .lb-val { text-align:center; font-size:0.85rem; font-weight:500; font-variant-numeric:tabular-nums; }
     .lb-val.net-par { font-weight:700; }
-    .lb-val.net-par.under { color:var(--green-300); }
-    .lb-val.net-par.over { color:var(--red); }
-    .lb-val.net-par.even { color:var(--text-primary); }
+    .lb-val.net-par.under { color:var(--under-par); }
+    .lb-val.net-par.over { color:var(--over-par); }
+    .lb-val.net-par.even { color:var(--even-par); }
     .lb-thru { text-align:center; font-size:0.78rem; color:var(--text-muted); }
     .arrow { display:inline-block; font-size:0.7rem; margin-left:4px; vertical-align:middle; }
     .arrow.up { color:var(--green-300); }
@@ -308,19 +313,20 @@
     .modal-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:10px 8px; text-align:center; }
     .modal-stat-label { font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
     .modal-stat-val { font-weight:700; font-size:1.05rem; color:var(--text-primary); }
-    .modal-stat-val.under { color:var(--green-300); }
-    .modal-stat-val.over { color:var(--red); }
+    .modal-stat-val.under { color:var(--under-par); }
+    .modal-stat-val.over { color:var(--over-par); }
+    .modal-stat-val.even { color:var(--even-par); }
     .modal-perf-title { font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
     .modal-perf-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
     .modal-perf-label { font-size:0.78rem; font-weight:500; color:var(--text-secondary); width:52px; flex-shrink:0; }
     .modal-perf-bar-wrap { flex:1; height:18px; background:var(--surface-2); border-radius:4px; overflow:hidden; }
     .modal-perf-bar { height:100%; border-radius:4px; transition:width 0.5s ease; min-width:2px; }
-    .modal-perf-bar.good { background:var(--green-300); opacity:0.7; }
-    .modal-perf-bar.bad { background:var(--red); opacity:0.6; }
+    .modal-perf-bar.good { background:var(--under-par); opacity:0.7; }
+    .modal-perf-bar.bad { background:var(--over-par); opacity:0.6; }
     .modal-perf-bar.ok { background:var(--text-secondary); opacity:0.5; }
     .modal-perf-val { font-size:0.75rem; font-weight:600; width:52px; text-align:right; font-variant-numeric:tabular-nums; flex-shrink:0; }
-    .modal-perf-val.under { color:var(--green-300); }
-    .modal-perf-val.over { color:var(--red); }
+    .modal-perf-val.under { color:var(--under-par); }
+    .modal-perf-val.over { color:var(--over-par); }
     .modal-perf-val.even { color:var(--text-primary); }
     .modal-divider { height:1px; background:var(--border); margin:14px 0; }
     .modal-rounds-title { display:flex; align-items:center; gap:8px; font-size:0.68rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; }
@@ -347,8 +353,9 @@
     .tm-ms { text-align:center; }
     .tm-ms-label { font-size:0.55rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2px; }
     .tm-ms-val { font-size:0.82rem; font-weight:600; font-variant-numeric:tabular-nums; color:var(--text-primary); }
-    .tm-ms-val.under { color:var(--green-300); }
-    .tm-ms-val.over { color:var(--red); }
+    .tm-ms-val.under { color:var(--under-par); }
+    .tm-ms-val.over { color:var(--over-par); }
+    .tm-ms-val.even { color:var(--even-par); }
     .tm-rounds-grid { display:grid; gap:0; margin-top:6px; font-size:0.72rem; }
     .tm-rg-cell { padding:4px 6px; text-align:center; font-variant-numeric:tabular-nums; border-bottom:1px solid var(--border); }
     .tm-rg-cell:first-child { text-align:left; }
@@ -429,8 +436,8 @@
     .ph-stat { background:var(--surface-2); border-radius:var(--radius-sm); padding:8px 6px; text-align:center; }
     .ph-stat-label { font-size:0.52rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:3px; }
     .ph-stat-val { font-weight:700; font-size:0.9rem; color:var(--text-primary); font-variant-numeric:tabular-nums; }
-    .ph-stat-val.under { color:var(--green-300); }
-    .ph-stat-val.over { color:var(--red); }
+    .ph-stat-val.under { color:var(--under-par); }
+    .ph-stat-val.over { color:var(--over-par); }
     .ph-stat-val.gold { color:var(--gold); }
     .ph-stat-sub { font-size:0.55rem; color:var(--text-muted); margin-top:2px; }
 
@@ -1364,7 +1371,7 @@ function renderIndividual(complete){
   if(!scored.length&&!unscored.length){body.innerHTML='<div class="empty-state">No scores yet</div>';return}
   let html=scored.map((d,i)=>{
     const pos=d.rank,arrowHtml=arrows[d.player.name]||'';
-    let dotsHtml='';
+    let dotsHtml='';const _skipDots=true;
     if(currentView==='tournament'){
       const rScores=[];
       let allDone=true;
@@ -1381,9 +1388,9 @@ function renderIndividual(complete){
           if(i>0&&s.ntp===sorted[i-1].ntp){colorMap[s.rn]=colorMap[sorted[i-1].rn]}
           else{colorMap[s.rn]=rankColors[Math.min(i,rankColors.length-1)]}
         });
-        dotsHtml='<span class="round-dots">';
+        if(!_skipDots){dotsHtml='<span class="round-dots">';
         for(let rn=1;rn<=totalRounds;rn++){dotsHtml+=`<span class="round-dot ${colorMap[rn]}"></span>`}
-        dotsHtml+='</span>';
+        dotsHtml+='</span>';}
       }
     }
     return`<div class="lb-row${d.rank===1?' is-leader':''}${isFinal&&d.rank===1?' champion':''}" data-player="${esc(d.player.name)}">
@@ -1410,6 +1417,7 @@ function renderIndividual(complete){
 function computeArrows(sortedData){
   const result={};
   if(currentView==='tournament'){
+    return result;
     const latestComplete={};for(const d of sortedData){let maxR=0;for(let rn=1;rn<=totalRounds;rn++){const rr=calcPlayerRound(d.player,rn);if(rr&&rr.thru===18)maxR=rn}latestComplete[d.player.name]=maxR}
     const maxRound=Math.max(...Object.values(latestComplete),0);if(maxRound<2)return result;
     const allComplete=sortedData.every(d=>latestComplete[d.player.name]>=totalRounds);
@@ -1514,7 +1522,7 @@ function renderIndividualChart(){
     labels.push(cp.label);
     for(const p of playerList){const prev=datasets[p.name].length?datasets[p.name][datasets[p.name].length-1]:0;datasets[p.name].push(prev+scores[p.name])}
   }
-  const colors=['#3eb97f','#c9a84c','#4a90d9','#e74c3c','#9b59b6','#e67e22','#1abc9c','#f06292','#7986cb','#aed581'];
+  const colors=['#3eb97f','#c9a84c','#4a90d9','#e74c3c','#9b59b6','#e67e22','#ff7043','#f06292','#7986cb','#aed581'];
   const ctx=document.getElementById('leadChart').getContext('2d');
   if(chartInstance)chartInstance.destroy();
   const lastNames=playerList.map(p=>{const parts=p.name.split(' ');return parts.length>1?parts[parts.length-1]:p.name});const dupes=lastNames.filter((n,i)=>lastNames.indexOf(n)!==i);const chartLabel=p=>{const parts=p.name.split(' ');const ln=parts.length>1?parts[parts.length-1]:p.name;return dupes.includes(ln)?parts[0][0]+'. '+ln:ln};
@@ -1545,7 +1553,7 @@ function renderIndividualChart(){
 }
 
 /* ═══ HISTORY ═══ */
-function openHistoryRoundModal(rn){const modal=document.getElementById('historyRoundModal');const content=document.getElementById('historyRoundContent');const cn=getCourseName(rn);const cp=getCoursePar(rn);const rp=players.map(p=>{const res=calcPlayerRound(p,rn);if(!res||res.thru<=0)return null;return{name:p.name,team:p.team,hi:p.hi,frontGross:res.frontGross,backGross:res.backGross,gross:res.gross,net:res.net,netToPar:res.netToPar,thru:res.thru,ch:res.ch}}).filter(Boolean);const byNet=rp.filter(p=>p.thru===18).sort((a,b)=>a.netToPar-b.netToPar);if(!byNet.length){content.innerHTML=`<div class="hr-modal-title">Round ${rn}</div>${cn?`<div class="hr-modal-course">${esc(cn)}</div>`:''}<div style="padding:20px;text-align:center;color:var(--text-muted)">No completed scores yet</div>`;modal.classList.add('open');return}const bestNtp=byNet[0].netToPar;const tied1st=byNet.filter(p=>p.netToPar===bestNtp);const rest=byNet.filter(p=>p.netToPar!==bestNtp);const secondNtp=rest.length?rest[0].netToPar:null;const tied2nd=secondNtp!==null?rest.filter(p=>p.netToPar===secondNtp):[];const showPlayers=[...tied1st.map(p=>({...p,rank:tied1st.length>1?'T1':'1st'})),...tied2nd.map(p=>({...p,rank:tied2nd.length>1?'T2':'2nd'}))];let h=`<div class="hr-modal-title">Round ${rn}</div>${cn?`<div class="hr-modal-course">${esc(cn)}</div>`:''}`;for(const p of showPlayers){const ntpColor=p.netToPar<0?'var(--green-300)':p.netToPar>0?'var(--red)':'var(--cream)';h+=`<div class="hr-player-card"><div class="hr-player-head"><div><div class="hr-player-name">${esc(p.name)}</div>${p.team?`<div class="hr-player-team">${esc(p.team)}</div>`:''}</div><div class="hr-player-rank">${p.rank}</div></div><div class="hr-score-grid"><div class="hr-score-box"><div class="hr-score-label">Front 9</div><div class="hr-score-val">${p.frontGross||'—'}</div></div><div class="hr-score-box"><div class="hr-score-label">Back 9</div><div class="hr-score-val">${p.backGross||'—'}</div></div><div class="hr-score-box"><div class="hr-score-label">Total Gross</div><div class="hr-score-val">${p.gross}</div></div><div class="hr-score-box"><div class="hr-score-label">Net to Par</div><div class="hr-score-val" style="color:${ntpColor}">${p.netToPar<0?p.netToPar:p.netToPar>0?'+'+p.netToPar:'E'}</div></div></div></div>`}content.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
+function openHistoryRoundModal(rn){const modal=document.getElementById('historyRoundModal');const content=document.getElementById('historyRoundContent');const cn=getCourseName(rn);const cp=getCoursePar(rn);const rp=players.map(p=>{const res=calcPlayerRound(p,rn);if(!res||res.thru<=0)return null;return{name:p.name,team:p.team,hi:p.hi,frontGross:res.frontGross,backGross:res.backGross,gross:res.gross,net:res.net,netToPar:res.netToPar,thru:res.thru,ch:res.ch}}).filter(Boolean);const byNet=rp.filter(p=>p.thru===18).sort((a,b)=>a.netToPar-b.netToPar);if(!byNet.length){content.innerHTML=`<div class="hr-modal-title">Round ${rn}</div>${cn?`<div class="hr-modal-course">${esc(cn)}</div>`:''}<div style="padding:20px;text-align:center;color:var(--text-muted)">No completed scores yet</div>`;modal.classList.add('open');return}const bestNtp=byNet[0].netToPar;const tied1st=byNet.filter(p=>p.netToPar===bestNtp);const rest=byNet.filter(p=>p.netToPar!==bestNtp);const secondNtp=rest.length?rest[0].netToPar:null;const tied2nd=secondNtp!==null?rest.filter(p=>p.netToPar===secondNtp):[];const showPlayers=[...tied1st.map(p=>({...p,rank:tied1st.length>1?'T1':'1st'})),...tied2nd.map(p=>({...p,rank:tied2nd.length>1?'T2':'2nd'}))];let h=`<div class="hr-modal-title">Round ${rn}</div>${cn?`<div class="hr-modal-course">${esc(cn)}</div>`:''}`;for(const p of showPlayers){const ntpColor=p.netToPar<0?'var(--under-par)':p.netToPar>0?'var(--over-par)':'var(--even-par)';h+=`<div class="hr-player-card"><div class="hr-player-head"><div><div class="hr-player-name">${esc(p.name)}</div>${p.team?`<div class="hr-player-team">${esc(p.team)}</div>`:''}</div><div class="hr-player-rank">${p.rank}</div></div><div class="hr-score-grid"><div class="hr-score-box"><div class="hr-score-label">Front 9</div><div class="hr-score-val">${p.frontGross||'—'}</div></div><div class="hr-score-box"><div class="hr-score-label">Back 9</div><div class="hr-score-val">${p.backGross||'—'}</div></div><div class="hr-score-box"><div class="hr-score-label">Total Gross</div><div class="hr-score-val">${p.gross}</div></div><div class="hr-score-box"><div class="hr-score-label">Net to Par</div><div class="hr-score-val" style="color:${ntpColor}">${p.netToPar<0?p.netToPar:p.netToPar>0?'+'+p.netToPar:'E'}</div></div></div></div>`}content.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
 
 function renderHistory(){
   const grid=document.getElementById('historyGrid');let html='';
@@ -1642,7 +1650,7 @@ function openPlayerModal(name){
     const cName=getCourseName(rn);
     document.getElementById('pmRoundsTitle').innerHTML=`<span>Round ${rn} Detail (Gross / Net to Par)</span>${cName?'<span class="mrt-line"></span><span class="mrt-course">'+esc(cName)+'</span>':''}`;
     const res=calcPlayerRound(player,rn);
-    if(res){const ps=getCourseParSplit(rn);const fNtp=res.hasFront?(res.frontGross-Math.ceil(res.ch/2))-ps.front:null;const bNtp=res.hasBack?(res.backGross-Math.floor(res.ch/2))-ps.back:null;const fCol=fNtp===null?'':fNtp<0?'var(--green-300)':fNtp>0?'var(--red)':'var(--cream)';const bCol=bNtp===null?'':bNtp<0?'var(--green-300)':bNtp>0?'var(--red)':'var(--cream)';const fNtpStr=fNtp===null?'':fNtp<0?String(fNtp):fNtp>0?'+'+fNtp:'E';const bNtpStr=bNtp===null?'':bNtp<0?String(bNtp):bNtp>0?'+'+bNtp:'E';roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Front Nine</span><span class="modal-round-val">${res.hasFront?res.frontGross+' / <span style="color:'+fCol+'">'+fNtpStr+'</span>':'—'}</span></div><div class="modal-round-row"><span class="modal-round-label">Back Nine</span><span class="modal-round-val">${res.hasBack?res.backGross+' / <span style="color:'+bCol+'">'+bNtpStr+'</span>':'—'}</span></div>`}
+    if(res){const ps=getCourseParSplit(rn);const fNtp=res.hasFront?(res.frontGross-Math.ceil(res.ch/2))-ps.front:null;const bNtp=res.hasBack?(res.backGross-Math.floor(res.ch/2))-ps.back:null;const fCol=fNtp===null?'':fNtp<0?'var(--under-par)':fNtp>0?'var(--over-par)':'var(--even-par)';const bCol=bNtp===null?'':bNtp<0?'var(--under-par)':bNtp>0?'var(--over-par)':'var(--even-par)';const fNtpStr=fNtp===null?'':fNtp<0?String(fNtp):fNtp>0?'+'+fNtp:'E';const bNtpStr=bNtp===null?'':bNtp<0?String(bNtp):bNtp>0?'+'+bNtp:'E';roundsHtml+=`<div class="modal-round-row"><span class="modal-round-label">Front Nine</span><span class="modal-round-val">${res.hasFront?res.frontGross+' / <span style="color:'+fCol+'">'+fNtpStr+'</span>':'—'}</span></div><div class="modal-round-row"><span class="modal-round-label">Back Nine</span><span class="modal-round-val">${res.hasBack?res.backGross+' / <span style="color:'+bCol+'">'+bNtpStr+'</span>':'—'}</span></div>`}
     document.getElementById('pmSummary').textContent=`Course Handicap: ${getCH(player.hi,rn)}`;
   }
   document.getElementById('pmRounds').innerHTML=roundsHtml;
@@ -2140,13 +2148,13 @@ function renderPlayerHistory(){
   card.innerHTML=sorted.map(([name,ps])=>{
     const avgNtp=ps.completedRounds>0?(ps.totalNtp/ps.completedRounds):0;
     const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
-    const avgClass=avgNtp<-0.05?'under':(avgNtp>0.05?'over':'');
+    const avgClass='';
     const champBadge=ps.wins.length?`<span class="ph-badge ph-badge-champ">${ps.wins.length}× Champion</span>`:'';
     const tournBadge=`<span class="ph-badge ph-badge-tourn">${ps.tournaments} Tournament${ps.tournaments!==1?'s':''}</span>`;
     const winsYears=ps.wins.length?'<div class="ph-stat-sub">'+ps.wins.join(', ')+'</div>':'';
     const top3Years=ps.top3.length?'<div class="ph-stat-sub">'+ps.top3.join(', ')+'</div>':'';
-    const bestNetClass=ps.bestNetNtp<0?'under':(ps.bestNetNtp>0?'over':'');
-    const bestTournClass=ps.bestTournNtp<0?'under':(ps.bestTournNtp>0?'over':'');
+    const bestNetClass='';
+    const bestTournClass='';
     const bestTournYearsStr=ps.bestTournYears.length?'<div class="ph-stat-sub">'+ps.bestTournYears.join(', ')+'</div>':'';
     return`<div class="ph-item">
       <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${champBadge}${tournBadge}</div></div>
@@ -2382,7 +2390,7 @@ function getTeamSkinsTotals(roundFilter){const teams=[...new Set(players.map(p=>
 
 function renderSkinsSection(){const el=document.getElementById('skinsSection');const sum=document.getElementById('skinsSummary');if(document.getElementById('recordsPage').style.display==='block'){el.style.display='none';return}if(!teamMode||!skinsActive||!skinsData.length){el.style.display='none';return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);if(!totals){el.style.display='none';return}const allZero=Object.values(totals).every(v=>v===0);const teamNames=[...new Set(players.map(p=>p.team).filter(Boolean))];const teams=teamNames.map(t=>[t,totals[t]||0]);const total=teams.reduce((s,t)=>s+t[1],0);const diff=teams[0][1]-teams[1][1];const absDiff=Math.abs(diff);const leader=diff>0?teams[0][0]:diff<0?teams[1][0]:null;const pct=total>0?(teams[0][1]/total*100):50;const barColor=allZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)';const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');el.style.display='block';let h='<div class="skins-team-row">';h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[0][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[0][1]>teams[1][1]?'var(--gold)':teams[0][1]<teams[1][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[1][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[1][1]>teams[0][1]?'var(--gold)':teams[1][1]<teams[0][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const hasMatchups=roundNum?skinsData.some(s=>s.round===roundNum&&(s.p1||s.p3)):skinsData.some(s=>s.p1||s.p3);const dollarDiff=absDiff*skinsPerSkin;const isComplete=(isTournComplete||isRoundComplete);const dollarText=skinsPerSkin>0&&absDiff>0?' ($'+dollarDiff+')':'';const label=allZero?(hasMatchups?'Matchups set — no scores yet':'Matchups not set yet'):diff===0?'Skins tied':(esc(leader)+' '+(isComplete?(isPlural?'won':'won'):verb)+' '+absDiff+' skin'+(absDiff!==1?'s':'')+dollarText);const leadColor=allZero?'var(--text-muted)':diff===0?'var(--text-muted)':isComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-bar-wrap"><div class="skins-lead-text" style="color:${leadColor}">${label}</div><div class="skins-bar"><div class="skins-bar-fill" style="width:${pct}%;background:${barColor}"></div></div></div>`;if(skinsPerSkin>0&&!allZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-top:4px">$${skinsPerSkin}/skin</div>`}h+=`<div class="skins-tap-hint">Tap for full skins breakdown</div>`;sum.innerHTML=h}
 function getMatchStrokes(m,rn){const lps=[m.p1,m.p2].filter(Boolean).map(n=>players.find(p=>p.name===n));const rps=[m.p3,m.p4].filter(Boolean).map(n=>players.find(p=>p.name===n));const lCH=lps.reduce((s,p)=>s+(p?getCH(p.hi,rn):0),0);const rCH=rps.reduce((s,p)=>s+(p?getCH(p.hi,rn):0),0);const diff=Math.abs(lCH-rCH);if(diff===0)return{text:'Even match — no strokes given',strokes:0};const receiverPair=lCH>rCH?[m.p1,m.p2]:[m.p3,m.p4];const names=receiverPair.filter(Boolean).map(n=>n.split(' ')[0]);const receiver=names.length===2?names[0]+' and '+names[1]:names[0]||'Side';return{text:receiver+' get'+(names.length===1?'s':'')+' '+diff+' stroke'+(diff!==1?'s':''),strokes:diff}}
-function openSkinsModal(){if(!skinsData.length)return;const modal=document.getElementById('skinsModal');const body=document.getElementById('skinsModalBody');const teams=[...new Set(players.map(p=>p.team).filter(Boolean))];if(teams.length<2){body.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">No team data</div>';modal.classList.add('open');return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);const tArr=teams.map(t=>[t,totals[t]||0]);const total=tArr.reduce((s,t)=>s+t[1],0);const diff=tArr[0][1]-tArr[1][1];const absDiff=Math.abs(diff);const leader=diff>0?tArr[0][0]:diff<0?tArr[1][0]:null;const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');let h=`<div style="text-align:center;font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">${isRoundView?'Round '+roundNum+' Skins':'Tournament Skins'}</div>`;h+='<div class="skins-team-row" style="margin-bottom:16px">';const mAllZero=total===0;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[0][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[0][1]>tArr[1][1]?'var(--gold)':tArr[0][1]<tArr[1][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[1][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[1][1]>tArr[0][1]?'var(--gold)':tArr[1][1]<tArr[0][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const mDollarDiff=absDiff*skinsPerSkin;const mIsComplete=(isTournComplete||isRoundComplete);const mDollarText=skinsPerSkin>0&&absDiff>0?' ($'+mDollarDiff+')':'';if(mAllZero)h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Matchups set — no scores yet</div>`;else if(absDiff>0){const mLeadColor=mIsComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-lead-text" style="color:${mLeadColor};margin-bottom:6px">${esc(leader)} ${mIsComplete?(isPlural?'won':'won'):verb} ${absDiff} skin${absDiff!==1?'s':''}${mDollarText}</div>`}else h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Tied</div>`;h+=`<div class="skins-bar" style="margin-bottom:4px"><div class="skins-bar-fill" style="width:${total>0?(tArr[0][1]/total*100):50}%;background:${mAllZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)'}"></div></div>`;if(skinsPerSkin>0&&!mAllZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-bottom:16px">$${skinsPerSkin}/skin</div>`}else{h+=`<div style="margin-bottom:16px"></div>`}const rounds=isRoundView?[roundNum]:[...new Set(skinsData.map(s=>s.round))].sort((a,b)=>a-b);for(const rn of rounds){const rMatches=skinsData.filter(s=>s.round===rn);if(!rMatches.length)continue;const cn=getCourseName(rn);let rT1=0,rT2=0;rMatches.forEach(m=>{const s1t=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const s1isT0=s1t.includes(teams[0]);if(s1isT0){rT1+=m.t1f+m.t1b;rT2+=m.t2f+m.t2b}else{rT2+=m.t1f+m.t1b;rT1+=m.t2f+m.t2b}});h+=`<div class="skins-round-card"><div class="skins-round-head"><div style="display:flex;align-items:center;gap:8px"><span style="background:var(--green-500);color:var(--cream);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:700">R${rn}</span><span style="font-size:0.8rem;color:var(--text-secondary)">${cn?esc(cn):''}</span></div><div style="display:flex;gap:14px;font-size:0.82rem;font-weight:700"><span style="color:${rT1>rT2?'var(--green-300)':rT1<rT2?'var(--red)':'var(--cream)'}">${rT1}</span><span style="color:${rT2>rT1?'var(--green-300)':rT2<rT1?'var(--red)':'var(--cream)'}">${rT2}</span></div></div><div class="skins-round-body">`;for(const m of rMatches){const side1Teams=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const side1IsTeam0=side1Teams.includes(teams[0]);const isFlipped=!side1IsTeam0;const leftPlayers=isFlipped?[m.p3,m.p4].filter(Boolean):[m.p1,m.p2].filter(Boolean);const rightPlayers=isFlipped?[m.p1,m.p2].filter(Boolean):[m.p3,m.p4].filter(Boolean);const lf=isFlipped?m.t2f:m.t1f;const lb=isFlipped?m.t2b:m.t1b;const rf=isFlipped?m.t1f:m.t2f;const rb=isFlipped?m.t1b:m.t2b;const lt=lf+lb;const rt=rf+rb;h+=`<div class="skins-match-title">Match ${m.match}</div>`;h+=`<div class="skins-match-players"><div>${leftPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div><div style="font-size:0.65rem;color:var(--text-muted);align-self:center;font-weight:600">vs</div><div style="text-align:right">${rightPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div></div>`;const mStrokes=getMatchStrokes(m,rn);h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin:4px 0 10px">${mStrokes.text}</div>`;h+=`<div class="skins-grid"><div class="skins-grid-head">${esc(teams[0])}</div><div></div><div class="skins-grid-head" style="text-align:right">${esc(teams[1])}</div>`;h+=`<div style="font-weight:700;color:${lf>rf?'var(--green-300)':lf<rf?'var(--red)':'var(--cream)'}">${lf}</div><div class="skins-grid-label">Front 9</div><div style="font-weight:700;text-align:right;color:${rf>lf?'var(--green-300)':rf<lf?'var(--red)':'var(--cream)'}">${rf}</div>`;h+=`<div style="font-weight:700;color:${lb>rb?'var(--green-300)':lb<rb?'var(--red)':'var(--cream)'}">${lb}</div><div class="skins-grid-label">Back 9</div><div style="font-weight:700;text-align:right;color:${rb>lb?'var(--green-300)':rb<lb?'var(--red)':'var(--cream)'}">${rb}</div>`;h+=`<div class="skins-grid-total" style="font-weight:700;color:${lt>rt?'var(--gold)':lt<rt?'var(--cream)':'var(--cream)'}">${lt}</div><div class="skins-grid-total skins-grid-label" style="font-weight:600">Total</div><div class="skins-grid-total" style="font-weight:700;text-align:right;color:${rt>lt?'var(--gold)':rt<lt?'var(--cream)':'var(--cream)'}">${rt}</div>`;h+=`</div>`}h+=`</div></div>`}body.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
+function openSkinsModal(){if(!skinsData.length)return;const modal=document.getElementById('skinsModal');const body=document.getElementById('skinsModalBody');const teams=[...new Set(players.map(p=>p.team).filter(Boolean))];if(teams.length<2){body.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">No team data</div>';modal.classList.add('open');return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);const tArr=teams.map(t=>[t,totals[t]||0]);const total=tArr.reduce((s,t)=>s+t[1],0);const diff=tArr[0][1]-tArr[1][1];const absDiff=Math.abs(diff);const leader=diff>0?tArr[0][0]:diff<0?tArr[1][0]:null;const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');let h=`<div style="text-align:center;font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">${isRoundView?'Round '+roundNum+' Skins':'Tournament Skins'}</div>`;h+='<div class="skins-team-row" style="margin-bottom:16px">';const mAllZero=total===0;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[0][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[0][1]>tArr[1][1]?'var(--gold)':tArr[0][1]<tArr[1][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[1][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[1][1]>tArr[0][1]?'var(--gold)':tArr[1][1]<tArr[0][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const mDollarDiff=absDiff*skinsPerSkin;const mIsComplete=(isTournComplete||isRoundComplete);const mDollarText=skinsPerSkin>0&&absDiff>0?' ($'+mDollarDiff+')':'';if(mAllZero)h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Matchups set — no scores yet</div>`;else if(absDiff>0){const mLeadColor=mIsComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-lead-text" style="color:${mLeadColor};margin-bottom:6px">${esc(leader)} ${mIsComplete?(isPlural?'won':'won'):verb} ${absDiff} skin${absDiff!==1?'s':''}${mDollarText}</div>`}else h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Tied</div>`;h+=`<div class="skins-bar" style="margin-bottom:4px"><div class="skins-bar-fill" style="width:${total>0?(tArr[0][1]/total*100):50}%;background:${mAllZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)'}"></div></div>`;if(skinsPerSkin>0&&!mAllZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-bottom:16px">$${skinsPerSkin}/skin</div>`}else{h+=`<div style="margin-bottom:16px"></div>`}const rounds=isRoundView?[roundNum]:[...new Set(skinsData.map(s=>s.round))].sort((a,b)=>a-b);for(const rn of rounds){const rMatches=skinsData.filter(s=>s.round===rn);if(!rMatches.length)continue;const cn=getCourseName(rn);let rT1=0,rT2=0;rMatches.forEach(m=>{const s1t=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const s1isT0=s1t.includes(teams[0]);if(s1isT0){rT1+=m.t1f+m.t1b;rT2+=m.t2f+m.t2b}else{rT2+=m.t1f+m.t1b;rT1+=m.t2f+m.t2b}});h+=`<div class="skins-round-card"><div class="skins-round-head"><div style="display:flex;align-items:center;gap:8px"><span style="background:var(--green-500);color:var(--cream);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:700">R${rn}</span><span style="font-size:0.8rem;color:var(--text-secondary)">${cn?esc(cn):''}</span></div><div style="display:flex;gap:14px;font-size:0.82rem;font-weight:700"><span style="color:${rT1>rT2?'var(--gold)':rT1<rT2?'var(--cream)':'var(--cream)'}">${rT1}</span><span style="color:${rT2>rT1?'var(--gold)':rT2<rT1?'var(--cream)':'var(--cream)'}">${rT2}</span></div></div><div class="skins-round-body">`;for(const m of rMatches){const side1Teams=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const side1IsTeam0=side1Teams.includes(teams[0]);const isFlipped=!side1IsTeam0;const leftPlayers=isFlipped?[m.p3,m.p4].filter(Boolean):[m.p1,m.p2].filter(Boolean);const rightPlayers=isFlipped?[m.p1,m.p2].filter(Boolean):[m.p3,m.p4].filter(Boolean);const lf=isFlipped?m.t2f:m.t1f;const lb=isFlipped?m.t2b:m.t1b;const rf=isFlipped?m.t1f:m.t2f;const rb=isFlipped?m.t1b:m.t2b;const lt=lf+lb;const rt=rf+rb;h+=`<div class="skins-match-title">Match ${m.match}</div>`;h+=`<div class="skins-match-players"><div>${leftPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div><div style="font-size:0.65rem;color:var(--text-muted);align-self:center;font-weight:600">vs</div><div style="text-align:right">${rightPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div></div>`;const mStrokes=getMatchStrokes(m,rn);h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin:4px 0 10px">${mStrokes.text}</div>`;h+=`<div class="skins-grid"><div class="skins-grid-head">${esc(teams[0])}</div><div></div><div class="skins-grid-head" style="text-align:right">${esc(teams[1])}</div>`;h+=`<div style="font-weight:700;color:${lf>rf?'var(--gold)':lf<rf?'var(--cream)':'var(--cream)'}">${lf}</div><div class="skins-grid-label">Front 9</div><div style="font-weight:700;text-align:right;color:${rf>lf?'var(--gold)':rf<lf?'var(--cream)':'var(--cream)'}">${rf}</div>`;h+=`<div style="font-weight:700;color:${lb>rb?'var(--gold)':lb<rb?'var(--cream)':'var(--cream)'}">${lb}</div><div class="skins-grid-label">Back 9</div><div style="font-weight:700;text-align:right;color:${rb>lb?'var(--gold)':rb<lb?'var(--cream)':'var(--cream)'}">${rb}</div>`;h+=`<div class="skins-grid-total" style="font-weight:700;color:${lt>rt?'var(--gold)':lt<rt?'var(--cream)':'var(--cream)'}">${lt}</div><div class="skins-grid-total skins-grid-label" style="font-weight:600">Total</div><div class="skins-grid-total" style="font-weight:700;text-align:right;color:${rt>lt?'var(--gold)':rt<lt?'var(--cream)':'var(--cream)'}">${rt}</div>`;h+=`</div>`}h+=`</div></div>`}body.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
 /* ═══ SCORER SKINS MODE ═══ */
 function switchScorerMode(mode){scorerMode=mode;document.getElementById('scorerModeScores').className='scorer-rtab '+(mode==='scores'?'active':'inactive');document.getElementById('scorerModeSkins').className='scorer-rtab '+(mode==='skins'?'active':'inactive');if(mode==='scores'){document.getElementById('scorerRoundTabs').style.display='';document.querySelector('.scorer-progress-row').style.display='';renderScorerModal()}else{document.getElementById('scorerRoundTabs').style.display='';document.querySelector('.scorer-progress-row').style.display='none';renderScorerSkinsMode()}}
 
