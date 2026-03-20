@@ -1354,7 +1354,7 @@ function renderIndividual(complete){
   const scored=allData.filter(d=>d.thru>0).sort((a,b)=>a.netToPar-b.netToPar||a.net-b.net);
   const unscored=allData.filter(d=>d.thru===0);
   const arrows=computeArrows(scored);
-  const leadingTeam=(currentView==='tournament'&&teamMode&&teamData.length)?teamData[0].name:null;
+  let leadingTeam=null;if(currentView==='tournament'&&teamMode){const ltMap={};for(const p of players){if(!p.team)continue;if(!ltMap[p.team])ltMap[p.team]=0;ltMap[p.team]+=calcPlayerView(p,'tournament').netToPar}const ltArr=Object.entries(ltMap).sort((a,b)=>a[1]-b[1]);if(ltArr.length>=2&&ltArr[0][1]<ltArr[1][1])leadingTeam=ltArr[0][0]}
   // Assign official rank with ties (scored only)
   scored.forEach((d,i)=>{
     if(i>0&&d.netToPar===scored[i-1].netToPar&&d.net===scored[i-1].net){d.rank=scored[i-1].rank}else{d.rank=i+1}
