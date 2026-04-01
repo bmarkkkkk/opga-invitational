@@ -1184,9 +1184,13 @@ function renderCourseInfo(){
   const card=document.getElementById('courseInfoCard');
   const isTourn=currentView==='tournament';
 
-  // Course card above leaderboard (round views only)
   if(isTourn){
-    card.classList.remove('show');
+    const courseNames=new Set();for(let rn=1;rn<=totalRounds;rn++){const cn=getCourseName(rn);if(cn)courseNames.add(cn)}
+    if(courseNames.size===1){const cName=[...courseNames][0];const c=courses[cName];if(c){document.getElementById('ciName').textContent=cName;document.getElementById('ciRound').textContent=totalRounds===1?'1 Round':'All '+totalRounds+' Rounds';document.getElementById('ciStats').innerHTML=`
+        <div class="course-info-stat"><div class="course-info-stat-label">Par</div><div class="course-info-stat-val">${c.par}</div></div>
+        <div class="course-info-stat"><div class="course-info-stat-label">Rating</div><div class="course-info-stat-val">${parseFloat(c.rating).toFixed(1)}</div></div>
+        <div class="course-info-stat"><div class="course-info-stat-label">Slope</div><div class="course-info-stat-val">${c.slope}</div></div>`;card.classList.add('show')}else{card.classList.remove('show')}}
+    else{card.classList.remove('show')}
   }else{
     const rn=parseInt(currentView);
     const cName=getCourseName(rn);
@@ -1694,7 +1698,7 @@ function openTeamModal(teamName){
     const v=calcPlayerView(m,currentView);
     teamNTP+=v.netToPar;teamGross+=v.gross;teamNet+=v.net;teamThru+=v.thru;
     return{player:m,...v};
-  }).sort((a,b)=>a.netToPar-b.netToPar||a.player.hi-b.player.hi);
+  }).sort((a,b)=>{const aHas=a.thru>0?0:1;const bHas=b.thru>0?0:1;if(aHas!==bHas)return aHas-bHas;if(aHas===0)return a.netToPar-b.netToPar||a.net-b.net||a.player.hi-b.player.hi;return a.player.hi-b.player.hi});
 
   // Find best single round on team (respect current view)
   let bestRoundNtp=Infinity, bestRounds=[];
