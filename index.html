@@ -1012,7 +1012,7 @@ function startCountdown(){
   if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}
   const banner=document.getElementById('countdownBanner');
   const liveBanner=document.getElementById('countdownLive');
-  if(!tournamentStartTime||countdownDismissed){banner.classList.remove('show');liveBanner.classList.remove('show');return}
+  liveBanner.classList.remove('show');if(!tournamentStartTime||countdownDismissed){banner.classList.remove('show');return}
   const r1Course=getCourseName(1);
   document.getElementById('countdownCourse').textContent=r1Course||'';
   const opts={weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/Los_Angeles'};
@@ -1143,7 +1143,7 @@ function isTournamentComplete(){
 function render(){
   if(recordsOpen)return;
   const anyScores=players.some(p=>Object.values(p.rounds).some(r=>r.front>0||r.back>0));
-  if(anyScores){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null};countdownDismissed=true}else if(currentView!=='tournament'){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show')}else if(!countdownDismissed){if(tournamentStartTime&&new Date()>=tournamentStartTime&&!countdownInterval){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.add('show')}else{startCountdown()}}
+  if(anyScores){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null};countdownDismissed=true}else if(currentView!=='tournament'){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show')}else if(!countdownDismissed&&tournamentStartTime){const now=new Date();if(now>=tournamentStartTime){if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.add('show')}else{document.getElementById('countdownLive').classList.remove('show');startCountdown()}}else if(!tournamentStartTime){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}}
   // Show/hide team sections based on teamMode
   document.getElementById('teamSection').style.display=teamMode?'block':'none';
   document.getElementById('chartSection').style.display=teamMode?'block':'none';
