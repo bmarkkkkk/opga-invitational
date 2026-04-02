@@ -1033,7 +1033,7 @@ function startCountdown(){
     document.getElementById('cdHours').textContent=h;
     document.getElementById('cdMins').textContent=String(m).padStart(2,'0');
     document.getElementById('cdSecs').textContent=String(s).padStart(2,'0');
-    banner.classList.add('show');
+    if(currentView==='tournament')banner.classList.add('show');else banner.classList.remove('show');
   }
   tick();
   countdownInterval=setInterval(tick,1000);
@@ -1257,7 +1257,7 @@ function renderChampionState(complete){
   }
   document.getElementById('champAccolades').innerHTML=accoladesHtml;
 
-  banner.classList.add('show');
+  if(currentView==='tournament')banner.classList.add('show');else banner.classList.remove('show');
 }
 
 /* ═══ COURSE INFO ═══ */
