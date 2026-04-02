@@ -1023,7 +1023,6 @@ function startCountdown(){
       clearInterval(countdownInterval);countdownInterval=null;
       banner.classList.remove('show');
       liveBanner.classList.add('show');
-      setTimeout(()=>{liveBanner.classList.remove('show');countdownDismissed=true},5000);
       return;
     }
     const d=Math.floor(diff/86400000);
@@ -1144,7 +1143,7 @@ function isTournamentComplete(){
 function render(){
   if(recordsOpen)return;
   const anyScores=players.some(p=>Object.values(p.rounds).some(r=>r.front>0||r.back>0));
-  if(anyScores||currentView!=='tournament'){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}}else if(!countdownDismissed){startCountdown()}
+  if(anyScores){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null};countdownDismissed=true}else if(currentView!=='tournament'){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show')}else if(!countdownDismissed){if(tournamentStartTime&&new Date()>=tournamentStartTime&&!countdownInterval){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.add('show')}else{startCountdown()}}
   // Show/hide team sections based on teamMode
   document.getElementById('teamSection').style.display=teamMode?'block':'none';
   document.getElementById('chartSection').style.display=teamMode?'block':'none';
