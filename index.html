@@ -1680,10 +1680,26 @@ function renderHistory(){
 
 /* ═══ HANDICAPS ═══ */
 function renderHandicaps(){
-  document.getElementById('hcBody').innerHTML=[...players].sort((a,b)=>a.hi-b.hi).map(p=>{
-    const chs=Array.from({length:totalRounds},(_,i)=>i+1).map(rn=>{const cName=getCourseName(rn);return`<td class="hc-val">${cName&&courses[cName]?getCH(p.hi,rn):'—'}</td>`}).join('');
-    return`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
-  }).join('');
+  const allTeamed=teamMode&&players.length>0&&players.every(p=>p.team);
+  const sorted=[...players].sort((a,b)=>a.hi-b.hi);
+  if(allTeamed){
+    const teamGroups={};for(const p of sorted){if(!teamGroups[p.team])teamGroups[p.team]=[];teamGroups[p.team].push(p)}
+    const teamNames=Object.keys(teamGroups).sort();
+    let html='';
+    for(const tn of teamNames){
+      html+=`<tr><td colspan="${2+totalRounds}" style="padding:12px 10px 6px;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);border-bottom:1px solid var(--border)">${esc(tn)}</td></tr>`;
+      for(const p of teamGroups[tn]){
+        const chs=Array.from({length:totalRounds},(_,i)=>i+1).map(rn=>{const cName=getCourseName(rn);return`<td class="hc-val">${cName&&courses[cName]?getCH(p.hi,rn):'—'}</td>`}).join('');
+        html+=`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
+      }
+    }
+    document.getElementById('hcBody').innerHTML=html;
+  }else{
+    document.getElementById('hcBody').innerHTML=sorted.map(p=>{
+      const chs=Array.from({length:totalRounds},(_,i)=>i+1).map(rn=>{const cName=getCourseName(rn);return`<td class="hc-val">${cName&&courses[cName]?getCH(p.hi,rn):'—'}</td>`}).join('');
+      return`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
+    }).join('');
+  }
 }
 
 /* ═══ PLAYER MODAL ═══ */
