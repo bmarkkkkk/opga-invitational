@@ -2216,9 +2216,13 @@ function renderPlayerHistory(){
       const roundData=yd.players.map(p=>{const res=recCalcRound(p,rn,yd.courses,yd.roundMap);return res&&res.thru===18?{name:p.name,netToPar:res.netToPar}:null}).filter(Boolean).sort((a,b)=>a.netToPar-b.netToPar);
       if(roundData.length){const best=roundData[0].netToPar;roundData.filter(d=>d.netToPar===best).forEach(d=>{roundWinners[d.name]=(roundWinners[d.name]||0)+1})}
     }
+    // Winning team(s) for this year
+    const yrTeamMap={};if(yd.players.some(p=>!!p.team)){for(const p of yd.players){if(!p.team)continue;if(!yrTeamMap[p.team])yrTeamMap[p.team]=[];yrTeamMap[p.team].push(p)}}
+    const yrTeams=Object.keys(yrTeamMap).length?Object.entries(yrTeamMap).map(([name,members])=>{let ntp=0;for(const m of members){for(let rn=1;rn<=yTR;rn++){const res=recCalcRound(m,rn,yd.courses,yd.roundMap);if(res)ntp+=res.netToPar}}return{name,netToPar:ntp}}).sort((a,b)=>a.netToPar-b.netToPar):[];
+    const winningTeams=yearComplete&&yrTeams.length?yrTeams.filter(t=>t.netToPar===yrTeams[0].netToPar).map(t=>t.name):[];
     // Per-player stats
     for(const p of yd.players){
-      if(!playerStats[p.name])playerStats[p.name]={wins:[],top3:[],roundsWon:0,totalNtp:0,completedRounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYears:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossYears:[],bestTournNtp:Infinity,bestTournYears:[],tournaments:0};
+      if(!playerStats[p.name])playerStats[p.name]={wins:[],teamWins:[],top3:[],roundsWon:0,totalNtp:0,completedRounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYears:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossYears:[],bestTournNtp:Infinity,bestTournYears:[],tournaments:0};
       const ps=playerStats[p.name];
       // Tournament finish
       if(yearComplete){
@@ -2243,16 +2247,17 @@ function renderPlayerHistory(){
         if(gtp<ps.bestGrossGtp){ps.bestGrossGtp=gtp;ps.bestGrossScore=res.gross;ps.bestGrossNtp=res.netToPar;ps.bestGrossYears=[y]}else if(gtp===ps.bestGrossGtp){if(!ps.bestGrossYears.includes(y))ps.bestGrossYears.push(y)}
       }
       if(hasCompletedRoundThisYear)ps.tournaments++;
+      if(yearComplete&&p.team&&winningTeams.includes(p.team)&&!ps.teamWins.includes(y))ps.teamWins.push(y);
     }
   }
   // Filter out players with no completed rounds, then sort
-  const sorted=Object.entries(playerStats).filter(([,ps])=>ps.completedRounds>0).sort((a,b)=>b[1].wins.length-a[1].wins.length||b[1].tournaments-a[1].tournaments||b[1].top3.length-a[1].top3.length||a[1].bestTournNtp-b[1].bestTournNtp);
+  const sorted=Object.entries(playerStats).filter(([,ps])=>ps.completedRounds>0).sort((a,b)=>b[1].wins.length-a[1].wins.length||b[1].top3.length-a[1].top3.length||b[1].teamWins.length-a[1].teamWins.length||b[1].tournaments-a[1].tournaments||a[1].bestTournNtp-b[1].bestTournNtp);
   if(!sorted.length){card.innerHTML='<div class="empty-state">No player data yet</div>';return}
   card.innerHTML=sorted.map(([name,ps])=>{
     const avgNtp=ps.completedRounds>0?(ps.totalNtp/ps.completedRounds):0;
     const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
     const avgClass='';
-    const champBadge=ps.wins.length?`<span class="ph-badge ph-badge-champ">${ps.wins.length}× Champion</span>`:'';
+    const champBadge=ps.wins.length?`<span class="ph-badge ph-badge-champ">${ps.wins.length}× Individual Champion</span>`:'';const teamChampBadge=ps.teamWins.length?`<span class="ph-badge ph-badge-champ">${ps.teamWins.length}× Team Champion</span>`:'';
     const tournBadge=`<span class="ph-badge ph-badge-tourn">${ps.tournaments} Tournament${ps.tournaments!==1?'s':''}</span>`;
     const winsYears=ps.wins.length?'<div class="ph-stat-sub">'+ps.wins.join(', ')+'</div>':'';
     const top3Years=ps.top3.length?'<div class="ph-stat-sub">'+ps.top3.join(', ')+'</div>':'';
@@ -2260,7 +2265,7 @@ function renderPlayerHistory(){
     const bestTournClass='';
     const bestTournYearsStr=ps.bestTournYears.length?'<div class="ph-stat-sub">'+ps.bestTournYears.join(', ')+'</div>':'';
     return`<div class="ph-item">
-      <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${champBadge}${tournBadge}</div></div>
+      <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${champBadge}${teamChampBadge}${tournBadge}</div></div>
       <div class="ph-stats2" style="margin-bottom:8px">
         <div class="ph-stat"><div class="ph-stat-label">Wins</div><div class="ph-stat-val${ps.wins.length?' gold':''}">${ps.wins.length}</div>${winsYears}</div>
         <div class="ph-stat"><div class="ph-stat-label">Top 3</div><div class="ph-stat-val">${ps.top3.length}</div>${top3Years}</div>
