@@ -3354,7 +3354,7 @@ function renderLgMatches(){
     const frontHalved=9-m.t1fw-m.t2fw;const backHalved=9-m.t1bw-m.t2bw;
 
     h+=`<div class="lg-match-card">`;
-    h+=`<div class="lg-match-header"><div class="lg-match-round">Round ${m.round}</div><div class="lg-match-course">${m.course?esc(m.course)+(courses[m.course]?' · Par '+courses[m.course].par+' / '+parseFloat(courses[m.course].rating).toFixed(1)+' / '+courses[m.course].slope:''):'TBD'}</div></div>`;
+    h+=`<div class="lg-match-header"><div class="lg-match-round">Round ${m.round}</div><div class="lg-match-course">${m.course?'<span style="font-size:0.72rem">'+esc(m.course)+'</span>'+(courses[m.course]?' &nbsp;·&nbsp; Par '+courses[m.course].par+' / '+parseFloat(courses[m.course].rating).toFixed(1)+' / '+courses[m.course].slope:''):'TBD'}</div></div>`;
 
     if(hasScores){
       const t1Won=t1w>t2w;const t2Won=t2w>t1w;const tied=t1w===t2w;
