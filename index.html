@@ -100,6 +100,52 @@
     .countdown-live::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, var(--gold), transparent); }
     .countdown-live.show { display:block; animation:fadeUp 0.4s ease both; }
     .countdown-live-text { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.3rem; color:var(--gold); }
+
+    /* ── Mode Switcher ── */
+    .mode-switcher { display:flex; gap:0; padding:8px 16px 0; }
+    .mode-btn { padding:8px 16px; font-family:'Outfit',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; background:transparent; color:var(--text-muted); border:none; border-bottom:2px solid transparent; cursor:pointer; transition:all 0.2s; }
+    .mode-btn.active { color:var(--cream); border-bottom-color:var(--gold); }
+    @media(hover:hover){.mode-btn:not(.active):hover { color:var(--text-secondary); }}
+
+    /* ── League Styles ── */
+    #leaguePage { display:none; }
+    #leaguePage.show { display:block; }
+    .league-header { text-align:center; padding:36px 0 20px; }
+    .league-header h1 { font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:700; color:var(--cream); margin:0 0 4px; }
+    .league-header-sub { font-size:0.72rem; color:var(--text-muted); }
+
+    .lg-standings-row { display:grid; grid-template-columns:28px 1fr repeat(4,minmax(32px,auto)); align-items:center; gap:8px; padding:12px 14px; cursor:pointer; transition:background var(--transition); }
+    @media(hover:hover){.lg-standings-row:hover { background:var(--surface-1); }}
+    .lg-standings-row.header { cursor:default; padding:8px 14px; border-bottom:1px solid var(--border); }
+    .lg-standings-row.header .stat-lbl { text-align:center; }
+    @media(hover:hover){.lg-standings-row.header:hover { background:transparent; }}
+    .lg-standings-row .rank { font-family:'Outfit',sans-serif; font-weight:700; font-size:0.85rem; color:var(--text-muted); text-align:center; }
+    .lg-standings-row.rank-1 { border-left:3px solid var(--gold); box-shadow:inset 3px 0 8px -3px rgba(201,168,76,0.15); }
+    .lg-standings-row .team-nm { font-family:'Outfit',sans-serif; font-weight:600; font-size:0.88rem; color:var(--cream); }
+    .lg-standings-row .team-sub { font-size:0.62rem; color:var(--text-muted); margin-top:1px; }
+    .lg-standings-row .stat { font-family:'Outfit',sans-serif; font-weight:600; font-size:0.82rem; color:var(--cream); text-align:center; min-width:32px; }
+    .lg-standings-row .stat-lbl { font-family:'Outfit',sans-serif; font-weight:600; font-size:0.6rem; color:var(--text-muted); text-align:center; letter-spacing:0.06em; text-transform:uppercase; }
+
+    .lg-match-card { background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:12px; }
+    .lg-match-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .lg-match-round { font-size:0.6rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); }
+    .lg-match-course { font-size:0.65rem; color:var(--text-muted); }
+    .lg-match-teams { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; text-align:center; margin-bottom:8px; }
+    .lg-match-team-name { font-family:'Outfit',sans-serif; font-weight:600; font-size:0.9rem; color:var(--cream); }
+    .lg-match-vs { font-size:0.65rem; color:var(--text-muted); font-weight:600; }
+    .lg-match-score { font-family:'Outfit',sans-serif; font-weight:700; font-size:1.1rem; }
+    .lg-match-detail { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; font-size:0.68rem; color:var(--text-muted); text-align:center; }
+    .lg-match-detail-header { font-weight:600; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
+
+    .lg-player-row { display:grid; grid-template-columns:1fr auto auto auto auto; gap:6px; padding:6px 0; font-size:0.75rem; align-items:center; }
+    .lg-player-row.header { font-size:0.6rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border); padding-bottom:4px; margin-bottom:2px; }
+    .lg-player-row.header div:not(:first-child) { text-align:center; }
+    .lg-player-name { font-weight:600; color:var(--cream); }
+    .lg-player-stat { text-align:center; color:var(--text-secondary); min-width:36px; }
+
+    /* League Admin */
+    .lg-admin-match { background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); padding:12px; margin-bottom:10px; }
+
     .champion-banner { display:none; text-align:center; padding:20px 16px; margin-bottom:24px; background:linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(201,168,76,0.04) 100%); border:1px solid rgba(201,168,76,0.3); border-radius:var(--radius); position:relative; overflow:hidden; }
     .champion-banner::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, transparent, var(--gold), transparent); }
     .champion-banner.show { display:block; animation:fadeUp 0.4s ease both; }
@@ -393,7 +439,7 @@
     .records-link:hover { background:rgba(245,240,232,0.08); color:var(--text-primary); }
 
     /* Records Page */
-    .records-header { text-align:center; margin-bottom:24px; }
+    .records-header { text-align:center; margin-bottom:24px; padding-top:0; }
     .records-back { display:inline-block; font-size:0.72rem; font-weight:500; color:var(--text-secondary); cursor:pointer; margin-bottom:16px; padding:5px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(245,240,232,0.04); transition:all var(--transition); }
     .records-back:hover { background:rgba(245,240,232,0.08); color:var(--text-primary); }
     .records-title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.8rem; color:var(--cream); margin:4px 0; }
@@ -691,11 +737,16 @@
       </div>
       <div class="setup-note">For detailed instructions on Google Sheet structure, tab layouts, and deployment, see the README on GitHub.</div>
     </div>
-    <header class="header">
+    <nav class="mode-switcher" id="modeSwitcher" style="display:none">
+      <button class="mode-btn active" data-mode="invitational">Invitational</button>
+      <button class="mode-btn" data-mode="league">League</button>
+    </nav>
+    <header class="header" id="mainHeader">
       <div class="header-badge"><span class="live-dot"></span>Live Scoring</div>
       <h1 id="siteName">OPGA Invitational</h1>
       <div class="header-sub" id="lastUpdate">Connecting…</div>
-      <div class="records-link-wrap" id="recordsLinkWrap" style="display:none"><span class="records-link" id="recordsLink">All-Time Records <span style="color:var(--gold)">→</span></span></div>
+  
+    <div class="records-link-wrap" id="recordsLinkWrap" style="display:none"><span class="records-link" id="recordsLink">All-Time Records <span style="color:var(--gold)">→</span></span></div>
     </header>
 
     <div class="controls" id="yearControls" style="display:none">
@@ -821,6 +872,122 @@
           <thead id="hcHead"><tr><th>Player</th><th>HI</th></tr></thead>
           <tbody id="hcBody"></tbody>
         </table>
+      </div>
+    </div>
+
+
+    <!-- ══════ LEAGUE PAGE ══════ -->
+    <div id="leaguePage" style="display:none">
+      <div class="league-header">
+        <div class="header-badge" id="lgBadge"><span class="live-dot"></span>Live Scoring</div>
+        <h1 id="leagueName">OPGA Round Robin</h1>
+        <div class="league-header-sub" id="leagueSubtitle">Round Robin · Match Play</div>
+        <div class="records-link-wrap" id="lgRecordsLinkWrap" style="display:none"><span class="records-link" id="lgRecordsLink">League Records <span style="color:var(--gold)">→</span></span></div>
+      </div>
+
+      <!-- League Year Selector -->
+      <div class="controls" id="lgYearControls" style="display:none"><div class="ctrl-group" id="lgYearBtns"></div></div>
+
+      <!-- League View Controls -->
+      <div class="controls" id="lgViewControls"><div class="ctrl-group" id="lgViewBtns"></div></div>
+
+      <!-- League Champion Banner -->
+      <div class="champion-banner" id="lgChampBanner" style="cursor:pointer">
+        <div class="champion-label" id="lgChampLabel"></div>
+        <div class="champion-team" id="lgChampTeam"></div>
+        <div class="champion-individual" id="lgChampIndiv"></div>
+        <div class="champion-margin" id="lgChampMargin"></div>
+        <div id="lgChampStats" class="champion-accolades"></div>
+      </div>
+
+      <!-- League Standings -->
+      <div class="section" id="lgStandingsSection">
+        <div class="section-head">
+          <span class="section-title">Standings</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="card" id="lgStandings"></div>
+      </div>
+
+      <!-- League Match Results -->
+      <div class="section" id="lgMatchesSection">
+        <div class="section-head">
+          <span class="section-title" id="lgMatchesTitle">Results</span>
+          <span class="section-line"></span>
+        </div>
+        <div id="lgMatches"></div>
+      </div>
+
+
+
+
+      <!-- League Handicaps -->
+      <div class="section" id="lgHcSection">
+        <div class="section-head">
+          <span class="section-title">Course Handicaps</span>
+          <span class="section-line"></span>
+        </div>
+        <div class="card" style="overflow-x:auto">
+          <table class="hc-table">
+            <thead id="lgHcHead"><tr><th>Player</th></tr></thead>
+            <tbody id="lgHcBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- League Admin Overlay -->
+      <div class="admin-overlay" id="lgAdminOverlay">
+        <div class="admin-panel">
+          <div class="admin-topbar">
+            <div class="admin-topbar-left"><div><div class="admin-brand" id="lgAdminBrandName">League Admin</div><div class="admin-brand-sub">Round Robin Dashboard</div></div></div>
+            <button class="admin-close-btn" id="lgAdminClose">← Back to League</button>
+          </div>
+          <div class="admin-tabs" id="lgAdminTabs">
+            <button class="admin-tab active" data-lgtab="config">Config</button>
+            <button class="admin-tab" data-lgtab="teams">Teams</button>
+            <button class="admin-tab" data-lgtab="schedule">Schedule</button>
+            <button class="admin-tab" data-lgtab="scores">Scores</button>
+          </div>
+          <div class="admin-content" id="lgAdminContent"></div>
+        </div>
+      </div>
+
+      <!-- League Score Entry FAB -->
+      <button class="score-entry-fab" id="lgScorerFab" style="display:none" onclick="openLgScorerModal()"><span class="fab-dot"></span> Enter Scores</button>
+
+      <!-- League Admin FAB -->
+      <div class="admin-fab" id="lgAdminFab" style="display:none" onclick="openLgAdmin()">⚙</div>
+
+      <!-- League Footer -->
+      <footer class="footer" id="lgFooter"></footer>
+
+      <!-- League Records Page -->
+      <div id="lgRecordsPage" style="display:none">
+        <div class="records-header">
+          <span class="records-back" id="lgRecordsBack">← Back to League</span>
+          <h2 class="records-title" id="lgRecordsTitle">League Records</h2>
+          <div class="records-subtitle" id="lgRecordsSubtitle">Across all league seasons</div>
+        </div>
+        <div id="lgRecordsContent"></div>
+      </div>
+    </div>
+
+
+
+    <!-- League Team Modal -->
+    <div class="modal-overlay" id="lgTeamModal">
+      <div class="modal-sheet">
+        <div id="lgTeamModalContent"></div>
+      </div>
+    </div>
+    <!-- League Scorer Modal -->
+    <div class="modal-overlay" id="lgScorerModal">
+      <div class="modal-sheet" style="max-width:480px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.2rem;color:var(--cream)">Enter Scores</div>
+          <button class="admin-close" onclick="document.getElementById('lgScorerModal').classList.remove('open')">✕</button>
+        </div>
+        <div id="lgScorerContent"></div>
       </div>
     </div>
 
@@ -1141,7 +1308,7 @@ function isTournamentComplete(){
 }
 
 function render(){
-  if(recordsOpen)return;
+  if(recordsOpen||lgMode==='league')return;
   const anyScores=players.some(p=>Object.values(p.rounds).some(r=>r.front>0||r.back>0));
   if(anyScores){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null};countdownDismissed=true}else if(currentView!=='tournament'){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show')}else if(!countdownDismissed&&tournamentStartTime){const now=new Date();if(now>=tournamentStartTime){if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.add('show')}else{document.getElementById('countdownLive').classList.remove('show');startCountdown()}}else if(!tournamentStartTime){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}}
   // Show/hide team sections based on teamMode
@@ -1159,7 +1326,7 @@ function render(){
 }
 
 function renderChampionState(complete){
-  const badge=document.querySelector('.header-badge');
+  const badge=document.querySelector('#mainHeader .header-badge');
   const banner=document.getElementById('championBanner');
 
   // Badge: "Final Results" if full tournament complete, or current round is complete for all players
@@ -1882,6 +2049,10 @@ document.getElementById('teamModal').addEventListener('click',function(e){if(e.t
 document.getElementById('skinsModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('historyRoundModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('infoModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+  document.getElementById('lgScorerModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+  document.getElementById('lgTeamModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+  document.getElementById('lgRecordsLink').addEventListener('click',showLgRecordsPage);
+  document.getElementById('lgRecordsBack').addEventListener('click',hideLgRecordsPage);
 
 /* ═══ COLLAPSIBLE SECTIONS ═══ */
 document.querySelectorAll('.section-head.collapsible').forEach(head=>{
@@ -1940,19 +2111,22 @@ let allYearsData = {}; // {year: {players, courses, roundMap}}
 let recordsOpen = false;
 
 function showRecordsPage(){
+  if(lgMode==='league')return;
   recordsOpen = true;
   // Clear current year cache so we get fresh live data
   delete allYearsData[currentYear];
   // Hide main content sections and records link
-  document.querySelectorAll('#yearControls, .controls, #championBanner, #highlights, #teamSection, #chartSection, #skinsSection, #individualSection, #historySection, #coursesSection, #hcSection, #infoTabsWrap, #countdownBanner, #countdownLive').forEach(el=>el.style.display='none');
+  document.querySelectorAll('#yearControls, .controls, #championBanner, #highlights, #teamSection, #chartSection, #skinsSection, #individualSection, #historySection, #coursesSection, #hcSection, #infoTabsWrap, #countdownBanner, #countdownLive, #courseInfoCard').forEach(el=>el.style.display='none');
   document.getElementById('recordsLinkWrap').style.display='none';
   document.getElementById('scoreEntryFab').style.display='none';
+  document.getElementById('leaguePage').style.display='none';
   document.getElementById('recordsPage').style.display='block';
   loadAllYearsAndRender();
   window.scrollTo(0,0);
 }
 
 function hideRecordsPage(){
+  if(lgMode==='league')return;
   recordsOpen = false;
   document.getElementById('recordsPage').style.display='none';
   // Restore main content
@@ -1962,14 +2136,17 @@ function hideRecordsPage(){
   if(teamMode){document.getElementById('teamSection').style.display='block';document.getElementById('chartSection').style.display='block';if(skinsData.length)document.getElementById('skinsSection').style.display='block'}
   document.getElementById('championBanner').style.display='';document.getElementById('countdownBanner').style.display='';document.getElementById('countdownLive').style.display='';
   document.getElementById('highlights').style.display='none';
+  document.getElementById('leaguePage').style.display='none';
   document.getElementById('recordsLinkWrap').style.display='block';
   document.getElementById('scoreEntryFab').style.display='flex';
+  checkLeagueExists();
   if(infoTabs.length) document.getElementById('infoTabsWrap').style.display='flex';
   lastCSV='';
   render();
   window.scrollTo(0,0);
 }
 
+async function checkLeagueExists(){try{const r=await fetchTab('League Config');if(r&&r.length>1){document.getElementById('modeSwitcher').style.display='flex'}else{document.getElementById('modeSwitcher').style.display='none'}}catch(e){document.getElementById('modeSwitcher').style.display='none'}}
 async function loadAllYearsAndRender(){
   for(const y of availableYears){
     if(allYearsData[y]) continue;
@@ -2390,6 +2567,8 @@ async function init(){
   document.getElementById('recordsLinkWrap').style.display='block';
   document.getElementById('recordsLink').addEventListener('click',showRecordsPage);
   document.getElementById('recordsBack').addEventListener('click',hideRecordsPage);
+  initModeSwitcher();
+  checkLeagueExists();
   document.getElementById('championBanner').addEventListener('click',function(){const t=this.dataset.champTeam;if(t){openTeamModal(t);return}const p=this.dataset.champPlayer;if(p)openPlayerModal(p)});
   loadPINsFromConfig(configRows);
   await load();
@@ -2397,7 +2576,7 @@ async function init(){
   window._pollTimer=setInterval(load,POLL_SECONDS*1000);
   showScoreFAB();
   setupAdminHeaderBtn();
-  if(gAuthToken){openAdminPanel();showAdminToast('Signed in with Google')}
+  if(gAuthToken){if(window._authState==='league_auth'){setTimeout(()=>{document.querySelector('.mode-btn[data-mode="league"]').click();setTimeout(()=>{lgAdminAuthenticated();showAdminToast('Signed in with Google')},500)},200)}else{openAdminPanel();showAdminToast('Signed in with Google')}}
 }
 init();
 
@@ -2497,7 +2676,7 @@ async function loadSkins(){skinsData=[];skinsActive=false;try{const raw=await fe
 
 function getTeamSkinsTotals(roundFilter){const teams=[...new Set(players.map(p=>p.team).filter(Boolean))];if(teams.length<2)return null;const totals={};teams.forEach(t=>totals[t]=0);const data=roundFilter?skinsData.filter(s=>s.round===roundFilter):skinsData;for(const s of data){const s1t=[s.p1,s.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const s2t=[s.p3,s.p4].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const t1team=s1t[0];const t2team=s2t[0];if(t1team)totals[t1team]=(totals[t1team]||0)+s.t1f+s.t1b;if(t2team)totals[t2team]=(totals[t2team]||0)+s.t2f+s.t2b}return totals}
 
-function renderSkinsSection(){const el=document.getElementById('skinsSection');const sum=document.getElementById('skinsSummary');if(document.getElementById('recordsPage').style.display==='block'){el.style.display='none';return}if(!teamMode||!skinsActive||!skinsData.length){el.style.display='none';return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);if(!totals){el.style.display='none';return}const allZero=Object.values(totals).every(v=>v===0);const teamNames=[...new Set(players.map(p=>p.team).filter(Boolean))];const teams=teamNames.map(t=>[t,totals[t]||0]);const total=teams.reduce((s,t)=>s+t[1],0);const diff=teams[0][1]-teams[1][1];const absDiff=Math.abs(diff);const leader=diff>0?teams[0][0]:diff<0?teams[1][0]:null;const pct=total>0?(teams[0][1]/total*100):50;const barColor=allZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)';const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');el.style.display='block';let h='<div class="skins-team-row">';h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[0][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[0][1]>teams[1][1]?'var(--gold)':teams[0][1]<teams[1][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[1][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[1][1]>teams[0][1]?'var(--gold)':teams[1][1]<teams[0][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const hasMatchups=roundNum?skinsData.some(s=>s.round===roundNum&&(s.p1||s.p3)):skinsData.some(s=>s.p1||s.p3);const dollarDiff=absDiff*skinsPerSkin;const isComplete=(isTournComplete||isRoundComplete);const dollarText=skinsPerSkin>0&&absDiff>0?' ($'+dollarDiff+')':'';const label=allZero?(hasMatchups?'Matchups set — no scores yet':'Matchups not set yet'):diff===0?'Skins tied':(esc(leader)+' '+(isComplete?(isPlural?'won':'won'):verb)+' '+absDiff+' skin'+(absDiff!==1?'s':'')+dollarText);const leadColor=allZero?'var(--text-muted)':diff===0?'var(--text-muted)':isComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-bar-wrap"><div class="skins-lead-text" style="color:${leadColor}">${label}</div><div class="skins-bar"><div class="skins-bar-fill" style="width:${pct}%;background:${barColor}"></div></div></div>`;if(skinsPerSkin>0&&!allZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-top:4px">$${skinsPerSkin}/skin</div>`}h+=`<div class="skins-tap-hint">Tap for full skins breakdown</div>`;sum.innerHTML=h}
+function renderSkinsSection(){if(lgMode==='league')return;const el=document.getElementById('skinsSection');const sum=document.getElementById('skinsSummary');if(document.getElementById('recordsPage').style.display==='block'){el.style.display='none';return}if(!teamMode||!skinsActive||!skinsData.length){el.style.display='none';return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);if(!totals){el.style.display='none';return}const allZero=Object.values(totals).every(v=>v===0);const teamNames=[...new Set(players.map(p=>p.team).filter(Boolean))];const teams=teamNames.map(t=>[t,totals[t]||0]);const total=teams.reduce((s,t)=>s+t[1],0);const diff=teams[0][1]-teams[1][1];const absDiff=Math.abs(diff);const leader=diff>0?teams[0][0]:diff<0?teams[1][0]:null;const pct=total>0?(teams[0][1]/total*100):50;const barColor=allZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)';const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');el.style.display='block';let h='<div class="skins-team-row">';h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[0][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[0][1]>teams[1][1]?'var(--gold)':teams[0][1]<teams[1][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[1][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[1][1]>teams[0][1]?'var(--gold)':teams[1][1]<teams[0][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const hasMatchups=roundNum?skinsData.some(s=>s.round===roundNum&&(s.p1||s.p3)):skinsData.some(s=>s.p1||s.p3);const dollarDiff=absDiff*skinsPerSkin;const isComplete=(isTournComplete||isRoundComplete);const dollarText=skinsPerSkin>0&&absDiff>0?' ($'+dollarDiff+')':'';const label=allZero?(hasMatchups?'Matchups set — no scores yet':'Matchups not set yet'):diff===0?'Skins tied':(esc(leader)+' '+(isComplete?(isPlural?'won':'won'):verb)+' '+absDiff+' skin'+(absDiff!==1?'s':'')+dollarText);const leadColor=allZero?'var(--text-muted)':diff===0?'var(--text-muted)':isComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-bar-wrap"><div class="skins-lead-text" style="color:${leadColor}">${label}</div><div class="skins-bar"><div class="skins-bar-fill" style="width:${pct}%;background:${barColor}"></div></div></div>`;if(skinsPerSkin>0&&!allZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-top:4px">$${skinsPerSkin}/skin</div>`}h+=`<div class="skins-tap-hint">Tap for full skins breakdown</div>`;sum.innerHTML=h}
 function getMatchStrokes(m,rn){const lps=[m.p1,m.p2].filter(Boolean).map(n=>players.find(p=>p.name===n));const rps=[m.p3,m.p4].filter(Boolean).map(n=>players.find(p=>p.name===n));const lCH=lps.reduce((s,p)=>s+(p?getCH(p.hi,rn):0),0);const rCH=rps.reduce((s,p)=>s+(p?getCH(p.hi,rn):0),0);const diff=Math.abs(lCH-rCH);if(diff===0)return{text:'Even match — no strokes given',strokes:0};const receiverPair=lCH>rCH?[m.p1,m.p2]:[m.p3,m.p4];const names=receiverPair.filter(Boolean).map(n=>n.split(' ')[0]);const receiver=names.length===2?names[0]+' and '+names[1]:names[0]||'Side';return{text:receiver+' get'+(names.length===1?'s':'')+' '+diff+' stroke'+(diff!==1?'s':''),strokes:diff}}
 function openSkinsModal(){if(!skinsData.length)return;const modal=document.getElementById('skinsModal');const body=document.getElementById('skinsModalBody');const teams=[...new Set(players.map(p=>p.team).filter(Boolean))];if(teams.length<2){body.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">No team data</div>';modal.classList.add('open');return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);const tArr=teams.map(t=>[t,totals[t]||0]);const total=tArr.reduce((s,t)=>s+t[1],0);const diff=tArr[0][1]-tArr[1][1];const absDiff=Math.abs(diff);const leader=diff>0?tArr[0][0]:diff<0?tArr[1][0]:null;const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');let h=`<div style="text-align:center;font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">${isRoundView?'Round '+roundNum+' Skins':'Tournament Skins'}</div>`;h+='<div class="skins-team-row" style="margin-bottom:16px">';const mAllZero=total===0;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[0][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[0][1]>tArr[1][1]?'var(--gold)':tArr[0][1]<tArr[1][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[1][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[1][1]>tArr[0][1]?'var(--gold)':tArr[1][1]<tArr[0][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const mDollarDiff=absDiff*skinsPerSkin;const mIsComplete=(isTournComplete||isRoundComplete);const mDollarText=skinsPerSkin>0&&absDiff>0?' ($'+mDollarDiff+')':'';if(mAllZero)h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Matchups set — no scores yet</div>`;else if(absDiff>0){const mLeadColor=mIsComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-lead-text" style="color:${mLeadColor};margin-bottom:6px">${esc(leader)} ${mIsComplete?(isPlural?'won':'won'):verb} ${absDiff} skin${absDiff!==1?'s':''}${mDollarText}</div>`}else h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Tied</div>`;h+=`<div class="skins-bar" style="margin-bottom:4px"><div class="skins-bar-fill" style="width:${total>0?(tArr[0][1]/total*100):50}%;background:${mAllZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)'}"></div></div>`;if(skinsPerSkin>0&&!mAllZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-bottom:16px">$${skinsPerSkin}/skin</div>`}else{h+=`<div style="margin-bottom:16px"></div>`}const rounds=isRoundView?[roundNum]:[...new Set(skinsData.map(s=>s.round))].sort((a,b)=>a-b);for(const rn of rounds){const rMatches=skinsData.filter(s=>s.round===rn);if(!rMatches.length)continue;const cn=getCourseName(rn);let rT1=0,rT2=0;rMatches.forEach(m=>{const s1t=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const s1isT0=s1t.includes(teams[0]);if(s1isT0){rT1+=m.t1f+m.t1b;rT2+=m.t2f+m.t2b}else{rT2+=m.t1f+m.t1b;rT1+=m.t2f+m.t2b}});h+=`<div class="skins-round-card"><div class="skins-round-head"><div style="display:flex;align-items:center;gap:8px"><span style="background:var(--green-500);color:var(--cream);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:700">R${rn}</span><span style="font-size:0.8rem;color:var(--text-secondary)">${cn?esc(cn):''}</span></div><div style="display:flex;gap:14px;font-size:0.82rem;font-weight:700"><span style="color:${rT1>rT2?'var(--gold)':rT1<rT2?'var(--cream)':'var(--cream)'}">${rT1}</span><span style="color:${rT2>rT1?'var(--gold)':rT2<rT1?'var(--cream)':'var(--cream)'}">${rT2}</span></div></div><div class="skins-round-body">`;for(const m of rMatches){const side1Teams=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const side1IsTeam0=side1Teams.includes(teams[0]);const isFlipped=!side1IsTeam0;const leftPlayers=isFlipped?[m.p3,m.p4].filter(Boolean):[m.p1,m.p2].filter(Boolean);const rightPlayers=isFlipped?[m.p1,m.p2].filter(Boolean):[m.p3,m.p4].filter(Boolean);const lf=isFlipped?m.t2f:m.t1f;const lb=isFlipped?m.t2b:m.t1b;const rf=isFlipped?m.t1f:m.t2f;const rb=isFlipped?m.t1b:m.t2b;const lt=lf+lb;const rt=rf+rb;h+=`<div class="skins-match-title">Match ${m.match}</div>`;h+=`<div class="skins-match-players"><div>${leftPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div><div style="font-size:0.65rem;color:var(--text-muted);align-self:center;font-weight:600">vs</div><div style="text-align:right">${rightPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div></div>`;const mStrokes=getMatchStrokes(m,rn);h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin:4px 0 10px">${mStrokes.text}</div>`;h+=`<div class="skins-grid"><div class="skins-grid-head">${esc(teams[0])}</div><div></div><div class="skins-grid-head" style="text-align:right">${esc(teams[1])}</div>`;h+=`<div style="font-weight:700;color:${lf>rf?'var(--gold)':lf<rf?'var(--cream)':'var(--cream)'}">${lf}</div><div class="skins-grid-label">Front 9</div><div style="font-weight:700;text-align:right;color:${rf>lf?'var(--gold)':rf<lf?'var(--cream)':'var(--cream)'}">${rf}</div>`;h+=`<div style="font-weight:700;color:${lb>rb?'var(--gold)':lb<rb?'var(--cream)':'var(--cream)'}">${lb}</div><div class="skins-grid-label">Back 9</div><div style="font-weight:700;text-align:right;color:${rb>lb?'var(--gold)':rb<lb?'var(--cream)':'var(--cream)'}">${rb}</div>`;h+=`<div class="skins-grid-total" style="font-weight:700;color:${lt>rt?'var(--gold)':lt<rt?'var(--cream)':'var(--cream)'}">${lt}</div><div class="skins-grid-total skins-grid-label" style="font-weight:600">Total</div><div class="skins-grid-total" style="font-weight:700;text-align:right;color:${rt>lt?'var(--gold)':rt<lt?'var(--cream)':'var(--cream)'}">${rt}</div>`;h+=`</div>`}h+=`</div></div>`}body.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
 /* ═══ SCORER SKINS MODE ═══ */
@@ -2530,9 +2709,1095 @@ async function saveInfoTab(){if(!adminInfoActiveTab){showAdminToast('No tab sele
 /* ═══ GOOGLE OAUTH ═══ */
 let googleClientId='181776945321-257almdmhts5sbgnj3a3q6p8bcn2dvat.apps.googleusercontent.com';
 const GOOGLE_SCOPE='https://www.googleapis.com/auth/spreadsheets';
+function startLgGoogleAuth(){const params=new URLSearchParams({client_id:googleClientId,redirect_uri:window.location.origin+window.location.pathname,response_type:'token',scope:GOOGLE_SCOPE,include_granted_scopes:'true',state:'league_auth'});window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+params.toString()}
 function startGoogleAuth(){const params=new URLSearchParams({client_id:googleClientId,redirect_uri:window.location.origin+window.location.pathname,response_type:'token',scope:GOOGLE_SCOPE,include_granted_scopes:'true',state:'admin_auth'});window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+params.toString()}
-function handleOAuthCallback(){const hash=window.location.hash;if(!hash||!hash.includes('access_token'))return;const params=new URLSearchParams(hash.slice(1));const token=params.get('access_token');const state=params.get('state');if(token&&state==='admin_auth'){gAuthToken=token;history.replaceState(null,'',window.location.pathname+window.location.search)}}
+function handleOAuthCallback(){const hash=window.location.hash;if(!hash||!hash.includes('access_token'))return;const params=new URLSearchParams(hash.slice(1));const token=params.get('access_token');const state=params.get('state');if(token&&(state==='admin_auth'||state==='league_auth')){gAuthToken=token;window._authState=state;history.replaceState(null,'',window.location.pathname+window.location.search)}}
 handleOAuthCallback();
+
+// ══════════════════════════════════════════════════════════════
+// LEAGUE MODULE
+// ══════════════════════════════════════════════════════════════
+
+let lgMode='invitational';
+let lgYears=[];let lgCurrentYear='';let lgCurrentView='league';
+let lgTeams=[];let lgMatches=[];let lgName='OPGA Round Robin';
+let lgLastCSV='';let lgPollInterval=null;
+
+// ── Data Structures ──
+// lgTeams: [{label:'A', p1:'Brian', p2:'Alex', name:'Brian/Alex', p1hi:[12.5,12.3,12.1], p2hi:[8.2,8.0,7.9]}]
+// lgMatches: [{round:1, match:'A vs B', course:'Rustic Canyon', t1:'A', t2:'B',
+//   t1fw:4, t2fw:3, t1bw:5, t2bw:2,
+//   p1f:42, p1b:40, p2f:38, p2b:41, p3f:44, p3b:39, p4f:43, p4b:42, row:2}]
+
+function initModeSwitcher(){
+  const sw=document.getElementById('modeSwitcher');
+  sw.querySelectorAll('.mode-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const mode=btn.dataset.mode;if(mode===lgMode)return;
+      sw.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      lgMode=mode;
+      if(mode==='league'){
+        // Hide all invitational elements
+        document.querySelectorAll('#mainHeader,#yearControls,#courseInfoCard,#championBanner,#countdownBanner,#countdownLive,#highlights,#teamSection,#chartSection,#skinsSection,#individualSection,#historySection,#coursesSection,#hcSection,#infoTabsWrap,#recordsLinkWrap,#siteFooter,#recordsPage,#lgYearControls').forEach(el=>{if(el)el.style.display='none'});
+        recordsOpen=false;
+        document.querySelectorAll('.controls').forEach(el=>el.style.display='none');
+        document.getElementById('scoreEntryFab').style.display='none';
+        const invAdminFab=document.querySelector('.admin-fab:not(#lgAdminFab)');if(invAdminFab)invAdminFab.style.display='none';
+        document.getElementById('leaguePage').style.display='block';
+        document.getElementById('lgScorerFab').style.display='';
+        document.getElementById('lgAdminFab').style.display='';
+        if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}
+        if(!lgYears.length)loadLeague();else renderLeague();
+        startLgPolling();
+      }else{
+        document.getElementById('leaguePage').style.display='none';
+        document.getElementById('lgChampBanner').classList.remove('show');
+        document.getElementById('lgRecordsPage').style.display='none';lgRecordsOpen=false;
+        document.getElementById('lgScorerFab').style.display='none';
+        document.getElementById('lgAdminFab').style.display='none';
+        document.getElementById('lgAdminOverlay').classList.remove('open');
+        // Restore all invitational elements
+        document.getElementById('recordsPage').style.display='none';
+        recordsOpen=false;
+        document.getElementById('mainHeader').style.display='';
+        document.getElementById('siteFooter').style.display='';
+        document.getElementById('championBanner').style.display='';
+        document.getElementById('countdownBanner').style.display='';
+        document.getElementById('countdownLive').style.display='';
+        document.getElementById('courseInfoCard').style.display='';
+        document.getElementById('highlights').style.display='';
+        document.querySelectorAll('.controls').forEach(el=>el.style.display='flex');
+        if(availableYears.length>1)document.getElementById('yearControls').style.display='flex';
+        document.querySelectorAll('#individualSection,#historySection,#coursesSection,#hcSection').forEach(el=>el.style.display='block');
+        if(teamMode){document.getElementById('teamSection').style.display='block';document.getElementById('chartSection').style.display='block'}
+        document.getElementById('recordsLinkWrap').style.display='block';
+        document.getElementById('scoreEntryFab').style.display='flex';
+        if(infoTabs.length)document.getElementById('infoTabsWrap').style.display='flex';
+        stopLgPolling();
+        lastCSV='';load();
+      }
+    });
+  });
+}
+
+// ── Load League Data ──
+async function loadLeague(){
+  const configRows=await fetchTab('League Config');
+  if(!configRows||configRows.length<2){return}
+  lgYears=[];
+  for(let i=1;i<configRows.length;i++){const v=(configRows[i][0]||'').trim();if(v)lgYears.push(v)}
+  if(configRows[1]&&configRows[1][1])lgName=(configRows[1][1]||'OPGA Round Robin').trim();
+  document.getElementById('leagueName').textContent=lgName;
+  document.getElementById('lgFooter').innerHTML=esc(lgName)+' &middot; Round Robin';
+  if(!lgCurrentYear&&lgYears.length)lgCurrentYear=lgYears[lgYears.length-1];
+  renderLgYearSelector();
+  await loadLgYear();
+}
+
+async function loadLgYear(){
+  const teamsRaw=await fetchTab('League Teams '+lgCurrentYear);
+  const scoresRaw=await fetchTab('League Scores '+lgCurrentYear);
+  const csv=JSON.stringify(scoresRaw);
+  if(csv===lgLastCSV&&lgTeams.length){renderLeague();return}
+  lgLastCSV=csv;
+
+  // Parse teams
+  lgTeams=[];
+  if(teamsRaw&&teamsRaw.length>1){
+    for(let i=1;i<teamsRaw.length;i++){
+      const r=teamsRaw[i];if(!r[0])continue;
+      const label=(r[0]||'').trim();
+      const p1=(r[1]||'').trim();const p2=(r[2]||'').trim();
+      const nameOverride=(r[3]||'').trim();
+      const name=nameOverride||(p1&&p2?p1.split(' ')[0]+'/'+p2.split(' ')[0]:(p1||p2||'Team '+label));
+      const p1hi=[];const p2hi=[];for(let ri=4;ri<7&&ri<r.length;ri++)p1hi.push(parseFloat(r[ri])||0);for(let ri=7;ri<10&&ri<r.length;ri++)p2hi.push(parseFloat(r[ri])||0);
+      lgTeams.push({label,p1,p2,name,p1hi,p2hi});
+    }
+  }
+
+  // Parse matches
+  lgMatches=[];
+  if(scoresRaw&&scoresRaw.length>1){
+    for(let i=1;i<scoresRaw.length;i++){
+      const r=scoresRaw[i];if(!r[0])continue;
+      const round=parseInt(r[0])||0;
+      const matchStr=(r[1]||'').trim();
+      const parts=matchStr.split(/\s*vs\s*/i);
+      const t1=(parts[0]||'').trim();const t2=(parts[1]||'').trim();
+      const course=(r[2]||'').trim();
+      lgMatches.push({
+        round, match:matchStr, course, t1, t2,
+        t1fw:parseInt(r[3])||0, t2fw:parseInt(r[4])||0,
+        t1bw:parseInt(r[5])||0, t2bw:parseInt(r[6])||0,
+        p1f:parseInt(r[7])||0, p1b:parseInt(r[8])||0,
+        p2f:parseInt(r[9])||0, p2b:parseInt(r[10])||0,
+        p3f:parseInt(r[11])||0, p3b:parseInt(r[12])||0,
+        p4f:parseInt(r[13])||0, p4b:parseInt(r[14])||0,
+        row:i+1
+      });
+    }
+  }
+  renderLeague();
+}
+
+function startLgPolling(){stopLgPolling();lgPollInterval=setInterval(()=>{if(lgMode==='league')loadLgYear()},5000)}
+function stopLgPolling(){if(lgPollInterval){clearInterval(lgPollInterval);lgPollInterval=null}}
+
+// ── Helpers ──
+function lgTeamByLabel(label){return lgTeams.find(t=>t.label===label)}
+function lgTeamName(label){const t=lgTeamByLabel(label);return t?t.name:label}
+function lgGetCH(hi,courseName){const c=courses[courseName];if(!c)return 0;return Math.round(hi*(c.slope/113)+(parseFloat(c.rating)-c.par))}
+function lgTotalRounds(){return lgMatches.length?Math.max(...lgMatches.map(m=>m.round)):0}
+function lgMatchHasScores(m){return(m.t1fw+m.t2fw+m.t1bw+m.t2bw)>0}
+
+function lgCalcStandings(){
+  const stats={};
+  for(const t of lgTeams){stats[t.label]={label:t.label,name:t.name,won:0,lost:0,halved:0,ntp:0,played:0}}
+  for(const m of lgMatches){
+    if(!lgMatchHasScores(m))continue;
+    const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;
+    const totalPlayed=9+9;const halved=totalPlayed-t1w-t2w;
+    if(stats[m.t1]){stats[m.t1].won+=t1w;stats[m.t1].lost+=t2w;stats[m.t1].halved+=halved;stats[m.t1].played++}
+    if(stats[m.t2]){stats[m.t2].won+=t2w;stats[m.t2].lost+=t1w;stats[m.t2].halved+=halved;stats[m.t2].played++}
+    // NTP tiebreaker - calculate team net scores
+    const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
+    if(t1Team&&m.course){
+      const rIdx=m.round-1;
+      const p1ch=lgGetCH(t1Team.p1hi[rIdx]||0,m.course);const p2ch=lgGetCH(t1Team.p2hi[rIdx]||0,m.course);
+      const crs=courses[m.course];if(crs){
+        const p1net=(m.p1f+m.p1b)-p1ch;const p2net=(m.p2f+m.p2b)-p2ch;
+        const teamNet=p1net+p2net-crs.par*2;
+        if(m.p1f>0||m.p1b>0||m.p2f>0||m.p2b>0)stats[m.t1].ntp+=teamNet;
+      }
+    }
+    if(t2Team&&m.course){
+      const rIdx=m.round-1;
+      const p3ch=lgGetCH(t2Team.p1hi[rIdx]||0,m.course);const p4ch=lgGetCH(t2Team.p2hi[rIdx]||0,m.course);
+      const crs=courses[m.course];if(crs){
+        const p3net=(m.p3f+m.p3b)-p3ch;const p4net=(m.p4f+m.p4b)-p4ch;
+        const teamNet=p3net+p4net-crs.par*2;
+        if(m.p3f>0||m.p3b>0||m.p4f>0||m.p4b>0)stats[m.t2].ntp+=teamNet;
+      }
+    }
+  }
+  return Object.values(stats).sort((a,b)=>b.won-a.won||a.lost-b.lost||a.ntp-b.ntp);
+}
+
+// ── Year Selector ──
+function renderLgYearSelector(){
+  const wrap=document.getElementById('lgYearControls');
+  const c=document.getElementById('lgYearBtns');
+  wrap.style.display=lgYears.length?'flex':'none'
+  c.innerHTML=lgYears.map(y=>`<button class="ctrl-btn${y===lgCurrentYear?' active':''}" data-lgyear="${y}">${y}</button>`).join('');
+  c.querySelectorAll('.ctrl-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const y=btn.dataset.lgyear;if(y===lgCurrentYear)return;
+      c.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      lgCurrentYear=y;lgCurrentView='league';lgLastCSV='';lgTeams=[];lgMatches=[];
+      loadLgYear();
+    });
+  });
+}
+
+// ── View Controls ──
+function renderLgViewControls(){
+  document.getElementById('lgViewControls').style.display='';
+  const maxR=lgTotalRounds();
+  const btns=document.getElementById('lgViewBtns');
+  let h=`<button class="ctrl-btn${lgCurrentView==='league'?' active':''}" data-lgview="league">League</button>`;
+  for(let r=1;r<=maxR;r++){
+    h+=`<button class="ctrl-btn${lgCurrentView==='R'+r?' active':''}" data-lgview="R${r}">R${r}</button>`;
+  }
+  btns.innerHTML=h;
+  btns.querySelectorAll('.ctrl-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const v=btn.dataset.lgview;if(v===lgCurrentView)return;
+      btns.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      lgCurrentView=v;
+      renderLeague();
+    });
+  });
+}
+
+
+
+function renderLgHandicaps(){
+  if(!lgTeams.length){document.getElementById('lgHcSection').style.display='none';return}
+  document.getElementById('lgHcSection').style.display='block';
+  const maxR=lgTotalRounds()||3;
+  // Build header
+  let hdr='<tr><th class="hc-name" style="text-align:left">Player</th>';
+  for(let r=1;r<=maxR;r++){
+    const roundMatches=lgMatches.filter(m=>m.round===r);
+    hdr+=`<th class="hc-val">R${r}</th>`;
+  }
+  hdr+='</tr>';
+  document.getElementById('lgHcHead').innerHTML=hdr;
+  // Build body grouped by team
+  const sortedTeams=[...lgTeams].sort((a,b)=>a.name.localeCompare(b.name));
+  let body='';
+  for(const t of sortedTeams){
+    body+=`<tr><td colspan="${1+maxR}" style="padding:10px 10px 4px;font-size:0.65rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);border-bottom:1px solid var(--border)">${esc(t.name)}</td></tr>`;
+    const members=[{name:t.p1,hi:t.p1hi},{name:t.p2,hi:t.p2hi}];
+    for(const m of members){
+      if(!m.name)continue;
+      let row=`<tr><td class="hc-name">${esc(m.name)}</td>`;
+      for(let r=0;r<maxR;r++){
+        const roundMatches=lgMatches.filter(mt=>mt.round===r+1);
+        const courseName=roundMatches.length?roundMatches[0].course:'';
+        const hi=m.hi[r]||0;
+        const ch=courseName?lgGetCH(hi,courseName):0;
+        row+=`<td class="hc-val">${courseName&&hi?ch:'—'}</td>`;
+      }
+      row+='</tr>';
+      body+=row;
+    }
+  }
+  document.getElementById('lgHcBody').innerHTML=body;
+}
+
+
+function renderLgChampion(){
+  const banner=document.getElementById('lgChampBanner');
+  banner.style.display='';
+  if(lgCurrentView!=='league'){banner.classList.remove('show');return}
+  const standings=lgCalcStandings();
+  const totalMatches=lgTeams.length>0?(lgTeams.length-1):0;
+  const allComplete=standings.length>0&&standings.every(s=>s.played>=totalMatches)&&totalMatches>0;
+  if(!allComplete||!standings.length){banner.classList.remove('show');return}
+  const best=standings[0];
+  const tied=standings.filter(s=>s.won===best.won&&s.lost===best.lost);
+  if(tied.length>1){
+    document.getElementById('lgChampLabel').innerHTML='<span style="font-size:1.4em;vertical-align:middle">🏆</span> '+lgCurrentYear+' League Champions';
+    document.getElementById('lgChampTeam').textContent=tied.map(t=>t.name).join(' & ');
+    const tiedPlayers=tied.map(t=>{const tm=lgTeamByLabel(t.label);return tm?tm.p1+' & '+tm.p2:''}).filter(Boolean).join(' · ');
+    document.getElementById('lgChampIndiv').innerHTML=tiedPlayers?'<div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:4px">'+esc(tiedPlayers)+'</div>':'';document.getElementById('lgChampMargin').textContent='Tied';
+  }else{
+    document.getElementById('lgChampLabel').innerHTML='<span style="font-size:1.4em;vertical-align:middle">🏆</span> '+lgCurrentYear+' League Champion';
+    document.getElementById('lgChampTeam').textContent=best.name;
+    const champTeam=lgTeamByLabel(best.label);
+    document.getElementById('lgChampIndiv').innerHTML=champTeam?'<div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:4px">'+esc(champTeam.p1)+' &amp; '+esc(champTeam.p2)+'</div>':'';
+    const second=standings[1];
+    const diff=best.won-second.won;
+    document.getElementById('lgChampMargin').textContent='Won by '+diff+' hole'+(diff!==1?'s':'')+' over '+second.name;
+  }
+  document.getElementById('lgChampStats').textContent=best.won+' holes won, '+best.lost+' lost, '+best.halved+' halved';
+  banner.classList.add('show');
+  banner.onclick=()=>{if(tied.length===1)openLgTeamModal(best.label)};
+}
+
+
+let lgRecordsOpen=false;
+
+function showLgRecordsPage(){
+  lgRecordsOpen=true;
+  document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap').forEach(el=>el.style.display='none');
+  document.getElementById('lgScorerFab').style.display='none';
+  document.getElementById('lgAdminFab').style.display='none';
+  document.getElementById('lgRecordsPage').style.display='block';
+  renderLgRecordsPage();
+  window.scrollTo(0,0);
+}
+
+function hideLgRecordsPage(){
+  lgRecordsOpen=false;
+  document.getElementById('lgRecordsPage').style.display='none';
+  document.getElementById('lgScorerFab').style.display='';
+  document.getElementById('lgAdminFab').style.display='';
+  document.getElementById('lgRecordsLinkWrap').style.display='';
+  document.getElementById('lgViewControls').style.display='';
+  document.getElementById('lgStandingsSection').style.display='';
+  document.getElementById('lgMatchesSection').style.display='';
+  document.getElementById('lgHcSection').style.display='';
+  if(lgYears.length>1)document.getElementById('lgYearControls').style.display='flex';
+  lgLastCSV='';renderLeague();
+}
+
+async function renderLgRecordsPage(){
+  const content=document.getElementById('lgRecordsContent');
+  document.getElementById('lgRecordsTitle').textContent=lgName+' Records';
+  document.getElementById('lgRecordsSubtitle').textContent='Across all '+lgName+' seasons';
+
+  const allLgData={};
+  for(const y of lgYears){
+    const teamsRaw=await fetchTab('League Teams '+y);
+    const scoresRaw=await fetchTab('League Scores '+y);
+    const teams=[];
+    if(teamsRaw&&teamsRaw.length>1){
+      for(let i=1;i<teamsRaw.length;i++){
+        const r=teamsRaw[i];if(!r[0])continue;
+        const label=(r[0]||'').trim();const p1=(r[1]||'').trim();const p2=(r[2]||'').trim();
+        const nameOverride=(r[3]||'').trim();
+        const name=nameOverride||(p1&&p2?p1.split(' ')[0]+'/'+p2.split(' ')[0]:(p1||p2||'Team '+label));
+        const p1hi=[];const p2hi=[];for(let ri=4;ri<7&&ri<r.length;ri++)p1hi.push(parseFloat(r[ri])||0);for(let ri=7;ri<10&&ri<r.length;ri++)p2hi.push(parseFloat(r[ri])||0);
+        teams.push({label,p1,p2,name,p1hi,p2hi});
+      }
+    }
+    const matches=[];
+    if(scoresRaw&&scoresRaw.length>1){
+      for(let i=1;i<scoresRaw.length;i++){
+        const r=scoresRaw[i];if(!r[0])continue;
+        const round=parseInt(r[0])||0;const matchStr=(r[1]||'').trim();
+        const parts=matchStr.split(/\s*vs\s*/i);
+        const t1=(parts[0]||'').trim();const t2=(parts[1]||'').trim();
+        const course=(r[2]||'').trim();
+        matches.push({round,t1,t2,course,t1fw:parseInt(r[3])||0,t2fw:parseInt(r[4])||0,t1bw:parseInt(r[5])||0,t2bw:parseInt(r[6])||0,
+          p1f:parseInt(r[7])||0,p1b:parseInt(r[8])||0,p2f:parseInt(r[9])||0,p2b:parseInt(r[10])||0,
+          p3f:parseInt(r[11])||0,p3b:parseInt(r[12])||0,p4f:parseInt(r[13])||0,p4b:parseInt(r[14])||0});
+      }
+    }
+    const stats={};
+    for(const t of teams){stats[t.label]={label:t.label,name:t.name,won:0,lost:0,halved:0,played:0}}
+    const totalMatchesNeeded=teams.length>0?(teams.length-1):0;
+    for(const m of matches){
+      const hasScores=(m.t1fw+m.t2fw+m.t1bw+m.t2bw)>0;if(!hasScores)continue;
+      const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;const halved=18-t1w-t2w;
+      if(stats[m.t1]){stats[m.t1].won+=t1w;stats[m.t1].lost+=t2w;stats[m.t1].halved+=halved;stats[m.t1].played++}
+      if(stats[m.t2]){stats[m.t2].won+=t2w;stats[m.t2].lost+=t1w;stats[m.t2].halved+=halved;stats[m.t2].played++}
+    }
+    const standings=Object.values(stats).sort((a,b)=>b.won-a.won||a.lost-b.lost);
+    const yearComplete=standings.length>0&&standings.every(s=>s.played>=totalMatchesNeeded)&&totalMatchesNeeded>0;
+    allLgData[y]={teams,matches,standings,yearComplete,champion:yearComplete?standings[0]:null};
+  }
+
+  let h='';
+
+  // ── Champions Wall ──
+  const completedYears=lgYears.filter(y=>allLgData[y].yearComplete);
+  h+=`<div class="section"><div class="section-head"><span class="section-title">Champions</span><span class="section-line"></span></div>`;
+  if(completedYears.length){
+    h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:24px">`;
+    for(const y of [...completedYears].reverse()){
+      const champ=allLgData[y].champion;
+      const t=allLgData[y].teams.find(t=>t.label===champ.label);
+      h+=`<div class="card" style="padding:16px;text-align:center;border:1px solid rgba(201,168,76,0.2);background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.02))">
+        <div style="font-size:1.2em;margin-bottom:4px">🏆</div>
+        <div style="font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold)">${y}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.2rem;color:var(--cream);margin:4px 0">${esc(champ.name)}</div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">${t?esc(t.p1)+' & '+esc(t.p2):''}</div>
+        <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px">${champ.won}W · ${champ.lost}L · ${champ.halved}H</div>
+      </div>`;
+    }
+    h+=`</div>`;
+  }else{
+    h+=`<div class="card" style="padding:20px;text-align:center;color:var(--text-muted)">No completed seasons yet</div>`;
+  }
+  h+=`</div>`;
+
+  // ── League Records ──
+  h+=`<div class="section"><div class="section-head"><span class="section-title">League Records</span><span class="section-line"></span></div>`;
+  let mostWins=null,mostLosses=null,bestTeamRound=null,bestIndivRound=null;
+  for(const y of lgYears){
+    const d=allLgData[y];if(!d.yearComplete)continue;
+    for(const s of d.standings){
+      if(!mostWins||s.won>mostWins.val){mostWins={val:s.won,name:s.name,year:y}}
+      if(!mostLosses||s.lost>mostLosses.val){mostLosses={val:s.lost,name:s.name,year:y}}
+    }
+    for(const m of d.matches){
+      if((m.t1fw+m.t2fw+m.t1bw+m.t2bw)===0)continue;
+      const crs=courses[m.course];if(!crs)continue;
+      const rIdx=m.round-1;
+      // T1 team NTP
+      const t1t=d.teams.find(t=>t.label===m.t1);
+      if(t1t){
+        const p1ch=lgGetCH(t1t.p1hi[rIdx]||0,m.course);const p2ch=lgGetCH(t1t.p2hi[rIdx]||0,m.course);
+        const t1ntp=((m.p1f+m.p1b)-p1ch-crs.par)+((m.p2f+m.p2b)-p2ch-crs.par);
+        if(m.p1f>0&&!bestTeamRound||t1ntp<bestTeamRound.val){bestTeamRound={val:t1ntp,name:t1t.name,year:y}}
+        // Individual
+        if(m.p1f>0){const ntp=(m.p1f+m.p1b)-p1ch-crs.par;if(!bestIndivRound||ntp<bestIndivRound.val){bestIndivRound={val:ntp,name:t1t.p1,gross:m.p1f+m.p1b,year:y}}}
+        if(m.p2f>0){const ntp=(m.p2f+m.p2b)-p2ch-crs.par;if(!bestIndivRound||ntp<bestIndivRound.val){bestIndivRound={val:ntp,name:t1t.p2,gross:m.p2f+m.p2b,year:y}}}
+      }
+      // T2 team NTP
+      const t2t=d.teams.find(t=>t.label===m.t2);
+      if(t2t){
+        const p3ch=lgGetCH(t2t.p1hi[rIdx]||0,m.course);const p4ch=lgGetCH(t2t.p2hi[rIdx]||0,m.course);
+        const t2ntp=((m.p3f+m.p3b)-p3ch-crs.par)+((m.p4f+m.p4b)-p4ch-crs.par);
+        if(m.p3f>0&&(!bestTeamRound||t2ntp<bestTeamRound.val)){bestTeamRound={val:t2ntp,name:t2t.name,year:y}}
+        if(m.p3f>0){const ntp=(m.p3f+m.p3b)-p3ch-crs.par;if(!bestIndivRound||ntp<bestIndivRound.val){bestIndivRound={val:ntp,name:t2t.p1,gross:m.p3f+m.p3b,year:y}}}
+        if(m.p4f>0){const ntp=(m.p4f+m.p4b)-p4ch-crs.par;if(!bestIndivRound||ntp<bestIndivRound.val){bestIndivRound={val:ntp,name:t2t.p2,gross:m.p4f+m.p4b,year:y}}}
+      }
+    }
+  }
+  h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px">`;
+  if(mostWins){h+=`<div class="card" style="padding:14px;text-align:center"><div style="font-size:1em;margin-bottom:4px">🔥</div><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase">Most Wins (Season)</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem;color:var(--under-par);margin:4px 0">${mostWins.val}</div><div style="font-size:0.68rem;color:var(--text-secondary)">${esc(mostWins.name)} · ${mostWins.year}</div></div>`}
+  if(mostLosses){h+=`<div class="card" style="padding:14px;text-align:center"><div style="font-size:1em;margin-bottom:4px">🗑️</div><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase">Most Losses (Season)</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem;color:var(--over-par);margin:4px 0">${mostLosses.val}</div><div style="font-size:0.68rem;color:var(--text-secondary)">${esc(mostLosses.name)} · ${mostLosses.year}</div></div>`}
+  if(bestTeamRound){h+=`<div class="card" style="padding:14px;text-align:center"><div style="font-size:1em;margin-bottom:4px">💪</div><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase">Best Team Net Round</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem;color:var(--under-par);margin:4px 0">${fmtPar(bestTeamRound.val)}</div><div style="font-size:0.68rem;color:var(--text-secondary)">${esc(bestTeamRound.name)} · ${bestTeamRound.year}</div></div>`}
+  if(bestIndivRound){h+=`<div class="card" style="padding:14px;text-align:center"><div style="font-size:1em;margin-bottom:4px">👑</div><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase">Best Net Round</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.1rem;color:var(--under-par);margin:4px 0">${fmtPar(bestIndivRound.val)}</div><div style="font-size:0.68rem;color:var(--text-secondary)">${esc(bestIndivRound.name)} · ${bestIndivRound.gross} gross · ${bestIndivRound.year}</div></div>`}
+  h+=`</div></div>`;
+
+  // ── Player History ──
+  h+=`<div class="section"><div class="section-head"><span class="section-title">Player History</span><span class="section-line"></span></div>`;
+  const playerMap={};
+  for(const y of lgYears){
+    const d=allLgData[y];if(!d.yearComplete)continue;
+    for(const t of d.teams){
+      const playersInTeam=[
+        {name:t.p1,hi:t.p1hi,isP1:true},
+        {name:t.p2,hi:t.p2hi,isP1:false}
+      ];
+      for(const pi of playersInTeam){
+        if(!pi.name)continue;
+        if(!playerMap[pi.name])playerMap[pi.name]={championships:0,seasons:0,totalNtp:0,rounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYear:'',bestGrossScore:Infinity,bestGrossNtp:0,bestGrossYear:''};
+        const ps=playerMap[pi.name];
+        ps.seasons++;
+        if(d.champion&&d.champion.label===t.label)ps.championships++;
+        // Per-match stats
+        for(const m of d.matches){
+          if((m.t1fw+m.t2fw+m.t1bw+m.t2bw)===0)continue;
+          const isT1=m.t1===t.label;
+          if(!isT1&&m.t2!==t.label)continue;
+          const crs=courses[m.course];if(!crs)continue;
+          const rIdx=m.round-1;
+          let f,b,hi;
+          if(isT1){f=pi.isP1?m.p1f:m.p2f;b=pi.isP1?m.p1b:m.p2b;hi=pi.hi[rIdx]||0}
+          else{f=pi.isP1?m.p3f:m.p4f;b=pi.isP1?m.p3b:m.p4b;hi=pi.hi[rIdx]||0}
+          if(f<=0&&b<=0)continue;
+          const ch=lgGetCH(hi,m.course);
+          const gross=f+b;const net=gross-ch;const ntp=net-crs.par;
+          ps.totalNtp+=ntp;ps.rounds++;
+          if(ntp<ps.bestNetNtp){ps.bestNetNtp=ntp;ps.bestNetGross=gross;ps.bestNetYear=y}
+          if(gross<ps.bestGrossScore){ps.bestGrossScore=gross;ps.bestGrossNtp=ntp;ps.bestGrossYear=y}
+        }
+      }
+    }
+  }
+  const playerList=Object.entries(playerMap).sort((a,b)=>b[1].championships-a[1].championships||b[1].seasons-a[1].seasons||a[1].bestNetNtp-b[1].bestNetNtp);
+  if(playerList.length){
+    h+=`<div class="card">`;
+    for(const[name,ps] of playerList){
+      const badges=[];
+      if(ps.championships)badges.push(`<span class="ph-badge ph-badge-champ">${ps.championships}× Champion</span>`);
+      badges.push(`<span class="ph-badge ph-badge-tourn">${ps.seasons} Season${ps.seasons!==1?'s':''}</span>`);
+      const avgNtp=ps.rounds>0?(ps.totalNtp/ps.rounds):0;
+      const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
+      h+=`<div class="ph-item">
+        <div class="ph-header"><div class="ph-name">${esc(name)}</div><div class="ph-badges">${badges.join('')}</div></div>
+        <div class="ph-stats2">
+          <div class="ph-stat"><div class="ph-stat-label">Avg Net Round</div><div class="ph-stat-val">${ps.rounds>0?avgStr:'—'}</div></div>
+          <div class="ph-stat"><div class="ph-stat-label">Best Net Round</div><div class="ph-stat-val">${ps.bestNetNtp<Infinity?fmtPar(ps.bestNetNtp):'—'}</div>${ps.bestNetYear?`<div class="ph-stat-sub">${ps.bestNetGross} gross · ${ps.bestNetYear}</div>`:''}</div>
+          <div class="ph-stat"><div class="ph-stat-label">Best Gross Round</div><div class="ph-stat-val">${ps.bestGrossScore<Infinity?ps.bestGrossScore:'—'}</div>${ps.bestGrossYear?`<div class="ph-stat-sub">${ps.bestGrossYear}</div>`:''}</div>
+        </div>
+      </div>`;
+    }
+  }else{
+    h+=`<div class="card" style="padding:20px;text-align:center;color:var(--text-muted)">No player data yet</div>`;
+  }
+  h+=`</div>`;
+
+
+  // ── Course History ──
+  h+=`<div class="section"><div class="section-head"><span class="section-title">Course History</span><span class="section-line"></span></div>`;
+  const lgCourseData={};
+  for(const y of lgYears){
+    const d=allLgData[y];if(!d.yearComplete)continue;
+    for(const m of d.matches){
+      if((m.t1fw+m.t2fw+m.t1bw+m.t2bw)===0)continue;
+      const cName=m.course;if(!cName)continue;
+      const crs=courses[cName];if(!crs)continue;
+      if(!lgCourseData[cName])lgCourseData[cName]={rounds:0,totalNtp:0,totalPlayers:0,bestNet:Infinity,bestNetBys:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossBys:[],par:crs.par,rating:crs.rating,slope:crs.slope};
+      const cd=lgCourseData[cName];
+      cd.rounds++;
+      const rIdx=m.round-1;
+      const t1t=d.teams.find(t=>t.label===m.t1);
+      const t2t=d.teams.find(t=>t.label===m.t2);
+      const allPlayers=[];
+      if(t1t){
+        allPlayers.push({name:t1t.p1,hi:t1t.p1hi[rIdx]||0,f:m.p1f,b:m.p1b});
+        allPlayers.push({name:t1t.p2,hi:t1t.p2hi[rIdx]||0,f:m.p2f,b:m.p2b});
+      }
+      if(t2t){
+        allPlayers.push({name:t2t.p1,hi:t2t.p1hi[rIdx]||0,f:m.p3f,b:m.p3b});
+        allPlayers.push({name:t2t.p2,hi:t2t.p2hi[rIdx]||0,f:m.p4f,b:m.p4b});
+      }
+      for(const p of allPlayers){
+        if(p.f<=0&&p.b<=0)continue;
+        const ch=lgGetCH(p.hi,cName);
+        const gross=p.f+p.b;const net=gross-ch;const ntp=net-crs.par;
+        cd.totalNtp+=ntp;cd.totalPlayers++;
+        if(ntp<cd.bestNet){cd.bestNet=ntp;cd.bestNetBys=[esc(p.name)+' \u00b7 '+y]}
+        else if(ntp===cd.bestNet){const entry=esc(p.name)+' \u00b7 '+y;if(!cd.bestNetBys.includes(entry))cd.bestNetBys.push(entry)}
+        const gtp=gross-crs.par;
+        if(gtp<cd.bestGrossGtp){cd.bestGrossGtp=gtp;cd.bestGrossScore=gross;cd.bestGrossBys=[{text:esc(p.name)+' \u00b7 '+y,ntp}]}
+        else if(gtp===cd.bestGrossGtp){const entry=esc(p.name)+' \u00b7 '+y;if(!cd.bestGrossBys.some(b=>b.text===entry))cd.bestGrossBys.push({text:entry,ntp})}
+      }
+    }
+  }
+  const lgCourseSorted=Object.entries(lgCourseData).filter(([,d])=>d.rounds>0).sort((a,b)=>b[1].rounds-a[1].rounds);
+  if(lgCourseSorted.length){
+    h+=`<div class="card">`;
+    h+=lgCourseSorted.map(([name,d])=>{
+      const avgNtp=d.totalPlayers>0?(d.totalNtp/d.totalPlayers):0;
+      const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
+      return`<div class="course-hist-item">
+        <div class="course-hist-name"><span class="course-hist-name-text">${esc(name)}</span><span class="course-hist-name-line"></span><span class="course-hist-name-info">Par ${d.par} / ${parseFloat(d.rating).toFixed(1)} / ${d.slope}</span></div>
+        <div class="course-hist-stats">
+          <div class="course-hist-stat"><div class="course-hist-stat-label">Rounds Played</div><div class="course-hist-stat-val">${d.rounds}</div></div>
+          <div class="course-hist-stat"><div class="course-hist-stat-label">Avg Net to Par</div><div class="course-hist-stat-val">${avgStr}</div></div>
+          <div class="course-hist-stat"><div class="course-hist-stat-label">Best Net Round</div><div class="course-hist-stat-val">${fmtPar(d.bestNet)}</div>${d.bestNetBys.length?`<div class="course-hist-stat-sub">${d.bestNetBys.join('<br>')}</div>`:''}</div>
+          <div class="course-hist-stat"><div class="course-hist-stat-label">Best Gross</div><div class="course-hist-stat-val">${d.bestGrossScore||'\u2014'}</div>${d.bestGrossBys.length?`<div class="course-hist-stat-sub">${d.bestGrossBys.sort((a,b)=>a.ntp-b.ntp).map(b=>fmtPar(b.ntp)+' \u00b7 '+b.text).join('<br>')}</div>`:''}</div>
+        </div>
+      </div>`;
+    }).join('');
+    h+=`</div>`;
+  }else{
+    h+=`<div class="card" style="padding:20px;text-align:center;color:var(--text-muted)">No course data yet</div>`;
+  }
+  h+=`</div>`;
+
+  content.innerHTML=h;
+}
+
+function renderLgBadge(){
+  const badge=document.getElementById('lgBadge');
+  const standings=lgCalcStandings();
+  const totalMatches=lgTeams.length>0?(lgTeams.length-1):0;
+  const allComplete=standings.length>0&&standings.every(s=>s.played>=totalMatches)&&totalMatches>0;
+  if(allComplete){
+    badge.innerHTML='<span class="live-dot"></span>Final Results';
+    badge.classList.add('final');
+  }else{
+    badge.innerHTML='<span class="live-dot"></span>Live Scoring';
+    badge.classList.remove('final');
+  }
+}
+
+// ── Main Render ──
+function renderLeague(){
+  if(lgRecordsOpen)return;
+  document.getElementById('lgRecordsLinkWrap').style.display='';
+  document.getElementById('lgStandingsSection').style.display='';
+  document.getElementById('lgMatchesSection').style.display='';
+  renderLgYearSelector();
+  renderLgBadge();
+  renderLgViewControls();
+  renderLgChampion();
+  renderLgStandings();
+  renderLgMatches();
+  renderLgHandicaps();
+}
+
+// ── Standings ──
+function renderLgStandings(){
+  const standings=lgCalcStandings();
+  const isRound=lgCurrentView.startsWith('R');
+  const rn=isRound?parseInt(lgCurrentView.slice(1)):0;
+
+  let displayStats=standings;
+  if(isRound){
+    const roundStats={};
+    for(const t of lgTeams){roundStats[t.label]={label:t.label,name:t.name,won:0,lost:0,halved:0,ntp:0,played:0}}
+    for(const m of lgMatches.filter(m=>m.round===rn)){
+      if(!lgMatchHasScores(m))continue;
+      const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;const halved=18-t1w-t2w;
+      if(roundStats[m.t1]){roundStats[m.t1].won+=t1w;roundStats[m.t1].lost+=t2w;roundStats[m.t1].halved+=halved;roundStats[m.t1].played++}
+      if(roundStats[m.t2]){roundStats[m.t2].won+=t2w;roundStats[m.t2].lost+=t1w;roundStats[m.t2].halved+=halved;roundStats[m.t2].played++}
+      // NTP for round
+      const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
+      const rIdx=m.round-1;
+      if(t1Team&&m.course){const crs=courses[m.course];if(crs){const p1ch=lgGetCH(t1Team.p1hi[rIdx]||0,m.course);const p2ch=lgGetCH(t1Team.p2hi[rIdx]||0,m.course);const p1net=(m.p1f+m.p1b)-p1ch;const p2net=(m.p2f+m.p2b)-p2ch;if(m.p1f>0||m.p1b>0||m.p2f>0||m.p2b>0)roundStats[m.t1].ntp+=p1net+p2net-crs.par*2}}
+      if(t2Team&&m.course){const crs=courses[m.course];if(crs){const p3ch=lgGetCH(t2Team.p1hi[rIdx]||0,m.course);const p4ch=lgGetCH(t2Team.p2hi[rIdx]||0,m.course);const p3net=(m.p3f+m.p3b)-p3ch;const p4net=(m.p4f+m.p4b)-p4ch;if(m.p3f>0||m.p3b>0||m.p4f>0||m.p4b>0)roundStats[m.t2].ntp+=p3net+p4net-crs.par*2}}
+    }
+    displayStats=Object.values(roundStats).sort((a,b)=>b.won-a.won||a.lost-b.lost||a.ntp-b.ntp);
+  }
+
+  let h=`<div class="lg-standings-row header">
+    <div class="stat-lbl">#</div><div class="stat-lbl" style="text-align:left">Team</div>
+    <div class="stat-lbl">W</div><div class="stat-lbl">L</div><div class="stat-lbl">H</div><div class="stat-lbl">NTP</div>
+  </div>`;
+  displayStats.forEach((s,i)=>{
+    const ntpStr=s.ntp===0?'E':(s.ntp>0?'+'+s.ntp:String(s.ntp));
+    const ntpColor=s.ntp<0?'var(--under-par)':s.ntp>0?'var(--over-par)':'var(--even-par)';
+    const lgAllComplete=!isRound&&lgTeams.length>0&&displayStats.every(s=>s.played>=(lgTeams.length-1))&&(lgTeams.length-1)>0;
+    h+=`<div class="lg-standings-row${i===0&&lgAllComplete?' rank-1':''}" onclick="openLgTeamModal('${s.label}')">
+      <div class="rank">${i+1}</div>
+      <div><div class="team-nm">${esc(s.name)}</div><div style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">${(()=>{const t=lgTeamByLabel(s.label);return t?esc(t.p1)+', '+esc(t.p2):''})()}</div><div class="team-sub">${s.played} match${s.played!==1?'es':''} played</div></div>
+      <div class="stat">${s.won}</div><div class="stat">${s.lost}</div><div class="stat">${s.halved}</div><div class="stat" style="font-size:0.75rem;color:${ntpColor};${s.ntp<0?'font-weight:700':''}">${ntpStr}</div>
+    </div>`;
+  });
+  document.getElementById('lgStandings').innerHTML=h;
+}
+
+
+function lgGetMatchStrokes(m){
+  const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
+  if(!t1Team||!t2Team||!m.course)return{text:'',strokes:0};
+  const rIdx=m.round-1;
+  const t1CH=lgGetCH(t1Team.p1hi[rIdx]||0,m.course)+lgGetCH(t1Team.p2hi[rIdx]||0,m.course);
+  const t2CH=lgGetCH(t2Team.p1hi[rIdx]||0,m.course)+lgGetCH(t2Team.p2hi[rIdx]||0,m.course);
+  const diff=Math.abs(t1CH-t2CH);
+  if(diff===0)return{text:'Even match — no strokes given',strokes:0};
+  const receiver=t1CH>t2CH?t1Team:t2Team;
+  return{text:receiver.name+' get'+(receiver.name.endsWith('s')?'':'s')+' '+diff+' stroke'+(diff!==1?'s':''),strokes:diff};
+}
+
+// ── Match Cards ──
+function renderLgMatches(){
+  const isRound=lgCurrentView.startsWith('R');
+  const rn=isRound?parseInt(lgCurrentView.slice(1)):0;
+  const matchesToShow=isRound?lgMatches.filter(m=>m.round===rn):lgMatches;
+
+  document.getElementById('lgMatchesTitle').textContent=isRound?'Round '+rn+' Matches':'All Results';
+
+  if(!matchesToShow.length){
+    document.getElementById('lgMatches').innerHTML='<div class="card" style="padding:20px;text-align:center;color:var(--text-muted)">No matches scheduled</div>';
+    return;
+  }
+
+  let h='';
+  for(const m of matchesToShow){
+    const t1Name=lgTeamName(m.t1);const t2Name=lgTeamName(m.t2);
+    const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;
+    const hasScores=lgMatchHasScores(m);
+    const frontHalved=9-m.t1fw-m.t2fw;const backHalved=9-m.t1bw-m.t2bw;
+
+    h+=`<div class="lg-match-card">`;
+    h+=`<div class="lg-match-header"><div class="lg-match-round">Round ${m.round}</div><div class="lg-match-course">${m.course?esc(m.course):'TBD'}</div></div>`;
+
+    if(hasScores){
+      const t1Won=t1w>t2w;const t2Won=t2w>t1w;const tied=t1w===t2w;
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;margin-bottom:12px">
+        <div>
+          <div class="lg-match-team-name">${esc(t1Name)}</div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:${t1Won?'700':'500'};font-size:1.4rem;color:${t1Won?'var(--under-par)':tied?'var(--even-par)':'var(--cream)'};margin:4px 0 2px">${t1w}</div>
+          
+        </div>
+        <div>
+          <div class="lg-match-team-name">${esc(t2Name)}</div>
+          <div style="font-family:'Outfit',sans-serif;font-weight:${t2Won?'700':'500'};font-size:1.4rem;color:${t2Won?'var(--under-par)':tied?'var(--even-par)':'var(--cream)'};margin:4px 0 2px">${t2w}</div>
+          
+        </div>
+      </div>`;
+      const strokeInfo=lgGetMatchStrokes(m);
+      if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.68rem;color:var(--text-muted);font-style:italic;margin-bottom:10px">${strokeInfo.text}</div>`}
+      // Front/back breakdown
+      h+=`<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:2px 12px;font-size:0.68rem;align-items:center">`;
+      h+=`<div></div><div style="text-align:center;font-size:0.58rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">FRONT</div><div style="text-align:center;font-size:0.58rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">BACK</div><div style="text-align:center;font-size:0.58rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">TOTAL</div>`;
+      const t1fWon=m.t1fw>m.t2fw;const t1bWon=m.t1bw>m.t2bw;
+      const t2fWon=m.t2fw>m.t1fw;const t2bWon=m.t2bw>m.t1bw;
+      h+=`<div style="color:var(--cream);font-weight:600">${esc(t1Name)}</div><div style="text-align:center;color:${t1fWon?'var(--under-par)':'var(--text-muted)'};${t1fWon?'font-weight:700':''}">${m.t1fw}</div><div style="text-align:center;color:${t1bWon?'var(--under-par)':'var(--text-muted)'};${t1bWon?'font-weight:700':''}">${m.t1bw}</div><div style="text-align:center;color:${t1Won?'var(--under-par)':'var(--text-muted)'};${t1Won?'font-weight:700':''}">${t1w}</div>`;
+      h+=`<div style="color:var(--cream);font-weight:600">${esc(t2Name)}</div><div style="text-align:center;color:${t2fWon?'var(--under-par)':'var(--text-muted)'};${t2fWon?'font-weight:700':''}">${m.t2fw}</div><div style="text-align:center;color:${t2bWon?'var(--under-par)':'var(--text-muted)'};${t2bWon?'font-weight:700':''}">${m.t2bw}</div><div style="text-align:center;color:${t2Won?'var(--under-par)':'var(--text-muted)'};${t2Won?'font-weight:700':''}">${t2w}</div>`;
+      h+=`<div style="color:var(--text-muted)">Halved</div><div style="text-align:center;color:var(--text-muted)">${frontHalved}</div><div style="text-align:center;color:var(--text-muted)">${backHalved}</div><div style="text-align:center;color:var(--text-muted)">${frontHalved+backHalved}</div>`;
+      h+=`</div>`;
+
+      // Player scores
+      {
+        const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
+        if(t1Team&&t2Team){
+          h+=`<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">`;
+          h+=`<div class="lg-player-row header"><div style="text-align:left">Player</div><div class="lg-player-stat">HI</div><div class="lg-player-stat">CH</div><div class="lg-player-stat">Gross</div><div class="lg-player-stat">NTP</div></div>`;
+          const rIdx=m.round-1;
+          const allP=[
+            {name:t1Team.p1,hi:t1Team.p1hi[rIdx]||0,f:m.p1f,b:m.p1b,team:t1Name},
+            {name:t1Team.p2,hi:t1Team.p2hi[rIdx]||0,f:m.p2f,b:m.p2b,team:t1Name},
+            {name:t2Team.p1,hi:t2Team.p1hi[rIdx]||0,f:m.p3f,b:m.p3b,team:t2Name},
+            {name:t2Team.p2,hi:t2Team.p2hi[rIdx]||0,f:m.p4f,b:m.p4b,team:t2Name}
+          ];
+          for(const p of allP.sort((a,b)=>{const aN=a.f>0||a.b>0?1:0;const bN=b.f>0||b.b>0?1:0;if(aN!==bN)return bN-aN;const crs=courses[m.course];const aNet=crs?((a.f+a.b)-lgGetCH(a.hi,m.course)-crs.par):0;const bNet=crs?((b.f+b.b)-lgGetCH(b.hi,m.course)-crs.par):0;return aNet-bNet||a.hi-b.hi})){
+            const ch=m.course?lgGetCH(p.hi,m.course):0;
+            const crs=courses[m.course];
+            const gross=p.f+p.b;const net=gross-ch;const ntp=crs?(net-crs.par):0;
+            const hasP=p.f>0||p.b>0;
+            const ntpColor=ntp<0?'var(--under-par)':ntp>0?'var(--over-par)':'var(--even-par)';
+            h+=`<div class="lg-player-row">
+              <div class="lg-player-name">${esc(p.name)}<span style="font-size:0.6rem;color:var(--text-muted);margin-left:4px">${esc(p.team)}</span></div>
+              <div class="lg-player-stat">${p.hi.toFixed(1)}</div>
+              <div class="lg-player-stat">${ch}</div>
+              <div class="lg-player-stat">${hasP?gross:'—'}</div>
+              <div class="lg-player-stat" style="color:${hasP?ntpColor:'inherit'};${hasP&&ntp<0?'font-weight:700':''}">${hasP?fmtPar(ntp):'—'}</div>
+            </div>`;
+          }
+          h+=`</div>`;
+        }
+      }
+    }else{
+      h+=`<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;text-align:center;margin-bottom:8px;align-items:center">
+        <div class="lg-match-team-name">${esc(t1Name)}</div>
+        <div style="font-size:0.6rem;color:var(--text-muted);font-weight:600">vs</div>
+        <div class="lg-match-team-name">${esc(t2Name)}</div>
+      </div>`;
+      const upcomingStrokes=lgGetMatchStrokes(m);
+      if(upcomingStrokes.text){h+=`<div style="text-align:center;font-size:0.68rem;color:var(--text-muted);font-style:italic;margin-bottom:4px">${upcomingStrokes.text}</div>`}
+      h+=`<div style="text-align:center;padding:4px 0;font-size:0.72rem;color:var(--text-muted)">Not yet played</div>`;
+    }
+    h+=`</div>`;
+  }
+  document.getElementById('lgMatches').innerHTML=h;
+}
+
+// ── Team Modal ──
+function openLgTeamModal(label){
+  const team=lgTeamByLabel(label);if(!team)return;
+  const teamMatches=lgMatches.filter(m=>m.t1===label||m.t2===label);
+  const standings=lgCalcStandings();const teamStats=standings.find(s=>s.label===label);
+  const rank=standings.findIndex(s=>s.label===label)+1;
+
+  let h=`<div style="text-align:center;margin-bottom:16px">
+    <div style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.4rem;color:var(--cream)">${esc(team.name)}</div>
+    <div style="font-size:0.72rem;color:var(--text-muted)">${esc(team.p1)} & ${esc(team.p2)}</div>
+  </div>`;
+
+  if(teamStats){
+    const record=teamMatches.filter(m=>lgMatchHasScores(m));
+    const wins=record.filter(m=>{const isT1=m.t1===label;const myW=isT1?(m.t1fw+m.t1bw):(m.t2fw+m.t2bw);const oppW=isT1?(m.t2fw+m.t2bw):(m.t1fw+m.t1bw);return myW>oppW}).length;
+    const losses=record.filter(m=>{const isT1=m.t1===label;const myW=isT1?(m.t1fw+m.t1bw):(m.t2fw+m.t2bw);const oppW=isT1?(m.t2fw+m.t2bw):(m.t1fw+m.t1bw);return myW<oppW}).length;
+    const draws=record.length-wins-losses;
+    const recordStr=wins+'-'+losses+(draws>0?'-'+draws:'');
+    h+=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+      <div style="text-align:center"><div style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Record</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;color:var(--cream);margin-top:2px">${recordStr}</div></div>
+      <div style="text-align:center"><div style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Holes Won</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;color:var(--under-par);margin-top:2px">${teamStats.won}</div></div>
+      <div style="text-align:center"><div style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Holes Lost</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;color:var(--over-par);margin-top:2px">${teamStats.lost}</div></div>
+      <div style="text-align:center"><div style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)">Halved</div><div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;color:var(--even-par);margin-top:2px">${teamStats.halved}</div></div>
+    </div>`;
+  }
+
+  for(const m of teamMatches){
+    const isT1=m.t1===label;
+    const oppLabel=isT1?m.t2:m.t1;const oppName=lgTeamName(oppLabel);
+    const myW=isT1?(m.t1fw+m.t1bw):(m.t2fw+m.t2bw);
+    const oppW=isT1?(m.t2fw+m.t2bw):(m.t1fw+m.t1bw);
+    const myFW=isT1?m.t1fw:m.t2fw;const myBW=isT1?m.t1bw:m.t2bw;
+    const oppFW=isT1?m.t2fw:m.t1fw;const oppBW=isT1?m.t2bw:m.t1bw;
+    const hasScores=lgMatchHasScores(m);
+    const won=myW>oppW;const lost=myW<oppW;const drew=myW===oppW;
+    const resultText=hasScores?(won?'Won':lost?'Lost':'Draw'):'Upcoming';
+    const resultColor=won?'var(--under-par)':lost?'var(--over-par)':'var(--even-par)';
+    const borderColor=won?'rgba(218,165,32,0.3)':lost?'rgba(245,240,208,0.15)':'rgba(107,179,217,0.2)';
+
+    h+=`<div style="background:var(--surface-1);border:1px solid ${borderColor};border-radius:var(--radius);padding:14px;margin-bottom:10px">`;
+    // Header row
+    h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div><div style="font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold)">Round ${m.round}</div>
+      <div style="font-size:0.72rem;color:var(--cream);margin-top:2px">vs ${esc(oppName)}</div>${m.course?`<div style="font-size:0.62rem;color:var(--text-muted);margin-top:1px">${esc(m.course)}</div>`:''}</div>
+      <div style="text-align:right"><div style="font-weight:700;font-size:1.1rem;color:${resultColor}">${hasScores?myW+' — '+oppW:''}</div>
+      <div style="font-size:0.6rem;color:${resultColor}">${resultText}</div></div>
+    </div>`;
+
+    if(hasScores){
+      const modalStrokes=lgGetMatchStrokes(m);
+      if(modalStrokes.text){h+=`<div style="text-align:center;font-size:0.65rem;color:var(--text-muted);font-style:italic;margin-bottom:8px">${modalStrokes.text}</div>`}
+      // Front/back breakdown
+      h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:2px 10px;font-size:0.68rem;margin-bottom:10px;padding:8px;background:rgba(0,0,0,0.15);border-radius:6px">`;
+      h+=`<div></div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">FRONT</div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">BACK</div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">TOTAL</div>`;
+      h+=`<div style="color:var(--cream);font-weight:600">${esc(team.name)}</div><div style="text-align:center;color:${myFW>oppFW?'var(--under-par);font-weight:700':'var(--text-muted)'}">${myFW}</div><div style="text-align:center;color:${myBW>oppBW?'var(--under-par);font-weight:700':'var(--text-muted)'}">${myBW}</div><div style="text-align:center;color:${won?'var(--under-par);font-weight:700':'var(--text-muted)'}">${myW}</div>`;
+      h+=`<div style="color:var(--text-muted)">${esc(oppName)}</div><div style="text-align:center;color:${oppFW>myFW?'var(--under-par);font-weight:700':'var(--text-muted)'}">${oppFW}</div><div style="text-align:center;color:${oppBW>myBW?'var(--under-par);font-weight:700':'var(--text-muted)'}">${oppBW}</div><div style="text-align:center;color:${lost?'var(--under-par);font-weight:700':'var(--text-muted)'}">${oppW}</div>`;
+      h+=`</div>`;
+
+      // Player scores
+      const rIdx=m.round-1;
+      const myPlayers=isT1?[
+        {name:team.p1,hi:team.p1hi[rIdx],f:m.p1f,b:m.p1b},
+        {name:team.p2,hi:team.p2hi[rIdx],f:m.p2f,b:m.p2b}
+      ]:[
+        {name:team.p1,hi:team.p1hi[rIdx],f:m.p3f,b:m.p3b},
+        {name:team.p2,hi:team.p2hi[rIdx],f:m.p4f,b:m.p4b}
+      ];
+      for(const p of myPlayers){
+        const ch=m.course?lgGetCH(p.hi||0,m.course):0;
+        const gross=p.f+p.b;const net=gross-ch;
+        const crs2=courses[m.course];const ntp2=crs2?(net-crs2.par):0;
+        const ntpC=ntp2<0?'var(--under-par)':ntp2>0?'var(--over-par)':'var(--even-par)';
+        const hasP=p.f>0||p.b>0;
+        h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:0.72rem">
+          <div style="color:var(--cream);font-weight:600">${esc(p.name)}</div>
+          <div style="display:flex;gap:12px;align-items:center">
+            <span style="color:var(--text-muted);font-size:0.62rem">CH ${ch}</span>
+            <span style="color:var(--text-secondary)">${hasP?gross+' gross':''}</span>
+            <span style="color:${hasP?ntpC:'var(--text-muted)'};${hasP&&ntp2<0?'font-weight:700':''}">${hasP?fmtPar(ntp2):'—'}</span>
+          </div>
+        </div>`;
+      }
+    }else{
+      h+=`<div style="text-align:center;padding:4px 0;font-size:0.72rem;color:var(--text-muted)">${m.course?esc(m.course):'Course TBD'}</div>`;
+    }
+    h+=`</div>`;
+  }
+
+  document.getElementById('lgTeamModalContent').innerHTML=h;
+  document.getElementById('lgTeamModal').classList.add('open');document.querySelector('#lgTeamModal .modal-sheet').scrollTop=0;
+}
+
+// ── League Admin ──
+let lgAdminActiveTab='config';let lgAdminYear='';
+
+function openLgAdmin(){
+  openPinModal('admin',{title:'League Admin',sub:'Enter admin PIN',onSuccess:lgAdminAuthenticated});
+}
+
+function lgAdminAuthenticated(){
+  lgAdminYear=lgCurrentYear;
+  document.getElementById('lgAdminBrandName').textContent=lgName+' Admin';
+  document.getElementById('lgAdminOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.querySelectorAll('#lgAdminTabs .admin-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.lgtab===lgAdminActiveTab);
+    t.onclick=()=>{lgAdminActiveTab=t.dataset.lgtab;document.querySelectorAll('#lgAdminTabs .admin-tab').forEach(b=>b.classList.remove('active'));t.classList.add('active');renderLgAdminTab()};
+  });
+  document.getElementById('lgAdminClose').onclick=closeLgAdmin;
+  renderLgAdminTab();
+}
+function closeLgAdmin(){document.getElementById('lgAdminOverlay').classList.remove('open');document.body.style.overflow='';lgLastCSV='';loadLgYear()}
+
+function renderLgAdminTab(){
+  const c=document.getElementById('lgAdminContent');
+  document.getElementById('lgAdminTabs').querySelectorAll('.admin-tab').forEach(b=>{
+    b.classList.toggle('active',b.textContent.toLowerCase()===lgAdminActiveTab);
+  });
+  if(lgAdminActiveTab==='config')renderLgAdminConfig(c);
+  else if(lgAdminActiveTab==='teams')renderLgAdminTeams(c);
+  else if(lgAdminActiveTab==='schedule')renderLgAdminSchedule(c);
+  else if(lgAdminActiveTab==='scores')renderLgAdminScores(c);
+}
+
+function renderLgAdminConfig(c){
+  const isAuth=!!gAuthToken;
+  c.innerHTML=`<div class="admin-section">
+    <div class="admin-section-title">League Configuration</div>
+    <div style="background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:20px">
+      <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">Google Account</div>
+      ${isAuth?`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="color:var(--green-300);font-size:0.85rem">✓ Connected</span><button class="admin-btn admin-btn-secondary admin-btn-sm" onclick="gAuthToken=null;renderLgAdminTab()">Sign Out</button></div>`:`<div style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:12px">Sign in with Google to enable writing scores and managing the league.</div><button class="admin-btn admin-btn-primary" onclick="startLgGoogleAuth()">Sign in with Google</button>`}
+    </div>
+    <div style="margin-bottom:12px"><label style="font-size:0.7rem;color:var(--text-muted)">League Name</label>
+    <input class="admin-input" id="lgAdminName" value="${esc(lgName)}" style="margin-top:4px" /></div>
+    <div style="margin-bottom:12px"><label style="font-size:0.7rem;color:var(--text-muted)">Years</label>
+    <div id="lgAdminYears" style="margin-top:4px">${lgYears.map((y,i)=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px"><input class="admin-input lg-year-input" value="${esc(y)}" style="flex:1" /><button class="admin-btn-sm admin-btn-danger" onclick="lgRemoveYear(${i})">✕</button></div>`).join('')}</div>
+    <button class="admin-btn-sm" onclick="lgAddYear()" style="margin-top:4px">+ Add Year</button></div>
+    <button class="admin-btn" onclick="saveLgConfig()">Save Config</button>
+  </div>`;
+}
+
+function lgAddYear(){
+  const d=document.getElementById('lgAdminYears');
+  const div=document.createElement('div');
+  div.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:4px';
+  div.innerHTML=`<input class="admin-input lg-year-input" value="" placeholder="e.g. 2027" style="flex:1" /><button class="admin-btn-sm admin-btn-danger" onclick="this.parentElement.remove()">✕</button>`;
+  d.appendChild(div);
+}
+function lgRemoveYear(i){
+  const inputs=document.querySelectorAll('.lg-year-input');
+  if(inputs.length<=1){showAdminToast('Need at least one year',true);return}
+  inputs[i].parentElement.remove();
+}
+
+async function saveLgConfig(){
+  const name=document.getElementById('lgAdminName').value.trim()||'OPGA Round Robin';
+  const yearInputs=document.querySelectorAll('#lgAdminYears .lg-year-input');
+  const years=[...yearInputs].map(i=>i.value.trim()).filter(Boolean);
+  if(!years.length){showAdminToast('Need at least one year',true);return}
+  let ok=await writeRawToSheet('League Config!A1:D1',[['Year','League Name','Scorer PIN','Admin PIN']]);
+  // Write years + name together: A=year, B=name(row2 only)
+  const rows=years.map((y,i)=>i===0?[y,name]:[y,'']);
+  ok=await writeRawToSheet('League Config!A2:B'+(years.length+1),rows)&&ok;
+  // Clear extra rows
+  await writeAdminToSheet('League Config!A'+(years.length+2)+':B'+(years.length+21),Array.from({length:20},()=>['','']));
+  // Create tabs for new years
+  try{
+    const sheetsRes=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`,{headers:{'Authorization':`Bearer ${gAuthToken}`}});
+    const sheetsData=await sheetsRes.json();
+    const existing=(sheetsData.sheets||[]).map(s=>s.properties.title);
+    const newTabs=[];
+    for(const yr of years){
+      if(!existing.includes('League Teams '+yr))newTabs.push('League Teams '+yr);
+      if(!existing.includes('League Scores '+yr))newTabs.push('League Scores '+yr);
+    }
+    if(newTabs.length){
+      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`,{method:'POST',headers:{'Authorization':`Bearer ${gAuthToken}`,'Content-Type':'application/json'},body:JSON.stringify({requests:newTabs.map(t=>({addSheet:{properties:{title:t}}}))})});
+      for(const t of newTabs){
+        if(t.startsWith('League Teams'))await writeAdminToSheet(t+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI R1','P1 HI R2','P1 HI R3','P2 HI R1','P2 HI R2','P2 HI R3']]);
+        else if(t.startsWith('League Scores'))await writeAdminToSheet(t+'!A1:O1',[['Round','Match','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+      }
+    }
+  }catch(e){}
+  lgYears=years;lgName=name;
+  document.getElementById('leagueName').textContent=lgName;
+  if(ok)showAdminToast('League config saved');
+  renderLgYearSelector();
+  if(!lgYears.includes(lgCurrentYear))lgCurrentYear=lgYears[lgYears.length-1];
+  lgLastCSV='';loadLgYear();
+}
+
+function renderLgAdminTeams(c){
+  let h=`<div class="admin-section"><div class="admin-section-title">Teams — ${lgAdminYear}</div>
+  <div class="admin-section-sub">Define teams with 2 players each. Set handicap index per round.</div>`;
+  const maxR=lgTotalRounds()||3;
+  for(let ti=0;ti<Math.max(lgTeams.length,4);ti++){
+    const t=lgTeams[ti]||{label:String.fromCharCode(65+ti),p1:'',p2:'',name:'',p1hi:Array(maxR).fill(0),p2hi:Array(maxR).fill(0)};
+    h+=`<div class="lg-admin-match"><div style="font-weight:600;color:var(--gold);font-size:0.7rem;letter-spacing:0.08em;margin-bottom:8px">TEAM ${esc(t.label)}</div>`;
+    h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div><label style="font-size:0.6rem;color:var(--text-muted)">Player 1</label><input class="admin-input lg-t-p1" data-ti="${ti}" value="${esc(t.p1)}" style="margin-top:2px" /></div>
+      <div><label style="font-size:0.6rem;color:var(--text-muted)">Player 2</label><input class="admin-input lg-t-p2" data-ti="${ti}" value="${esc(t.p2)}" style="margin-top:2px" /></div>
+    </div>`;
+    h+=`<div style="margin-bottom:8px"><label style="font-size:0.6rem;color:var(--text-muted)">Team Name (optional)</label><input class="admin-input lg-t-name" data-ti="${ti}" value="${esc(t.name===t.p1.split(' ')[0]+'/'+t.p2.split(' ')[0]?'':t.name)}" placeholder="${t.p1?t.p1.split(' ')[0]:''}/${t.p2?t.p2.split(' ')[0]:''}" style="margin-top:2px" /></div>`;
+    h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:4px">Handicap Index per Round</div>`;
+    h+=`<div style="display:grid;grid-template-columns:auto repeat(${maxR},1fr);gap:4px;font-size:0.7rem;align-items:center">`;
+    h+=`<div></div>`;for(let r=1;r<=maxR;r++){h+=`<div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">R${r}</div>`}
+    h+=`<div style="color:var(--text-muted)">P1</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p1hi" data-ti="${ti}" data-r="${r}" value="${(t.p1hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
+    h+=`<div style="color:var(--text-muted)">P2</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p2hi" data-ti="${ti}" data-r="${r}" value="${(t.p2hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
+    h+=`</div></div>`;
+  }
+  h+=`<button class="admin-btn" onclick="saveLgTeams()" style="margin-top:12px">Save Teams</button></div>`;
+  c.innerHTML=h;
+}
+
+async function saveLgTeams(){
+  const tab='League Teams '+lgAdminYear;
+  let ok=await writeAdminToSheet(tab+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI R1','P1 HI R2','P1 HI R3','P2 HI R1','P2 HI R2','P2 HI R3']]);
+  const teamCount=document.querySelectorAll('.lg-t-p1').length;
+  const rows=[];
+  for(let ti=0;ti<teamCount;ti++){
+    const label=String.fromCharCode(65+ti);
+    const p1=document.querySelector(`.lg-t-p1[data-ti="${ti}"]`).value.trim();
+    const p2=document.querySelector(`.lg-t-p2[data-ti="${ti}"]`).value.trim();
+    const name=document.querySelector(`.lg-t-name[data-ti="${ti}"]`).value.trim();
+    const p1hi=[];const p2hi=[];
+    document.querySelectorAll(`.lg-t-p1hi[data-ti="${ti}"]`).forEach(i=>p1hi.push(i.value||'0'));
+    document.querySelectorAll(`.lg-t-p2hi[data-ti="${ti}"]`).forEach(i=>p2hi.push(i.value||'0'));
+    rows.push([label,p1,p2,name,...p1hi,...p2hi]);
+  }
+  ok=await writeAdminToSheet(tab+'!A2:J'+(rows.length+1),rows)&&ok;
+  if(ok)showAdminToast('Teams saved');
+  lgLastCSV='';loadLgYear();
+}
+
+function renderLgAdminSchedule(c){
+  const maxR=lgTotalRounds()||3;
+  let h=`<div class="admin-section"><div class="admin-section-title">Schedule — ${lgAdminYear}</div>
+  <div class="admin-section-sub">Set matchups and course for each round. Matchups auto-saved with scores.</div>`;
+  const courseNames=Object.keys(courses);
+  for(let rn=1;rn<=maxR;rn++){
+    h+=`<div style="font-weight:600;color:var(--gold);font-size:0.65rem;letter-spacing:0.1em;margin:12px 0 8px">ROUND ${rn}</div>`;
+    const roundMatches=lgMatches.filter(m=>m.round===rn);
+    if(!roundMatches.length){
+      h+=`<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:8px">No matches — add via Save Schedule</div>`;
+    }
+    for(let mi=0;mi<roundMatches.length;mi++){
+      const m=roundMatches[mi];
+      const teamOpts=lgTeams.map(t=>`<option value="${esc(t.label)}" ${t.label===m.t1?'selected':''}>${esc(t.name)} (${t.label})</option>`).join('');
+      const teamOpts2=lgTeams.map(t=>`<option value="${esc(t.label)}" ${t.label===m.t2?'selected':''}>${esc(t.name)} (${t.label})</option>`).join('');
+      const courseOpts=`<option value="">Select course</option>`+courseNames.map(cn=>`<option value="${esc(cn)}" ${cn===m.course?'selected':''}>${esc(cn)}</option>`).join('');
+      h+=`<div class="lg-admin-match">
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px">
+          <select class="admin-input lg-sch-t1" data-rn="${rn}" data-mi="${mi}">${teamOpts}</select>
+          <div style="font-size:0.65rem;color:var(--text-muted);font-weight:600">vs</div>
+          <select class="admin-input lg-sch-t2" data-rn="${rn}" data-mi="${mi}">${teamOpts2}</select>
+        </div>
+        <select class="admin-input lg-sch-course" data-rn="${rn}" data-mi="${mi}">${courseOpts}</select>
+      </div>`;
+    }
+  }
+  h+=`<button class="admin-btn" onclick="saveLgSchedule()" style="margin-top:12px">Save Schedule</button></div>`;
+  c.innerHTML=h;
+}
+
+async function saveLgSchedule(){
+  const tab='League Scores '+lgAdminYear;
+  let ok=await writeAdminToSheet(tab+'!A1:O1',[['Round','Match','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+  const rows=[];
+  const maxR=lgTotalRounds()||3;
+  for(let rn=1;rn<=maxR;rn++){
+    const t1Selects=document.querySelectorAll(`.lg-sch-t1[data-rn="${rn}"]`);
+    const t2Selects=document.querySelectorAll(`.lg-sch-t2[data-rn="${rn}"]`);
+    const courseSelects=document.querySelectorAll(`.lg-sch-course[data-rn="${rn}"]`);
+    for(let mi=0;mi<t1Selects.length;mi++){
+      const t1=t1Selects[mi].value;const t2=t2Selects[mi].value;
+      const course=courseSelects[mi].value;
+      const existing=lgMatches.find(m=>m.round===rn&&((m.t1===t1&&m.t2===t2)||(m.t1===t2&&m.t2===t1)));
+      rows.push([rn,t1+' vs '+t2,course,
+        existing?existing.t1fw:0,existing?existing.t2fw:0,existing?existing.t1bw:0,existing?existing.t2bw:0,
+        existing?existing.p1f:0,existing?existing.p1b:0,existing?existing.p2f:0,existing?existing.p2b:0,
+        existing?existing.p3f:0,existing?existing.p3b:0,existing?existing.p4f:0,existing?existing.p4b:0]);
+    }
+  }
+  if(rows.length)ok=await writeAdminToSheet(tab+'!A2:O'+(rows.length+1),rows)&&ok;
+  if(ok)showAdminToast('Schedule saved');
+  lgLastCSV='';loadLgYear();
+}
+
+function renderLgAdminScores(c){
+  const yr=lgMode==='league'?lgCurrentYear:lgAdminYear;
+  let h=`<div class="admin-section"><div class="admin-section-title">Scores</div>
+  <div class="admin-section-sub">Scores auto-save on each field change.</div>`;
+  for(const m of lgMatches){
+    const t1Name=lgTeamName(m.t1);const t2Name=lgTeamName(m.t2);
+    const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
+    h+=`<div class="lg-admin-match">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div style="font-weight:600;color:var(--gold);font-size:0.65rem;letter-spacing:0.1em">ROUND ${m.round} — ${esc(t1Name)} vs ${esc(t2Name)}</div>
+        <div style="font-size:0.6rem;color:var(--text-muted)">${m.course||'No course'}</div>
+      </div>`;
+    h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:4px;font-weight:600">Holes Won</div>`;
+    h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 8px;font-size:0.72rem;align-items:center;margin-bottom:10px">
+      <div></div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Front 9</div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Back 9</div>
+      <div style="color:var(--cream);font-size:0.68rem">${esc(t1Name)}</div>
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="D" value="${m.t1fw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="F" value="${m.t1bw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <div style="color:var(--cream);font-size:0.68rem">${esc(t2Name)}</div>
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="E" value="${m.t2fw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="G" value="${m.t2bw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+    </div>`;
+    h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:4px;font-weight:600">Gross Scores (9-hole)</div>`;
+    h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 8px;font-size:0.72rem;align-items:center">
+      <div></div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Front</div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Back</div>`;
+    const pList=[
+      {name:t1Team?t1Team.p1:'P1',fcol:'H',bcol:'I',fv:m.p1f,bv:m.p1b},
+      {name:t1Team?t1Team.p2:'P2',fcol:'J',bcol:'K',fv:m.p2f,bv:m.p2b},
+      {name:t2Team?t2Team.p1:'P3',fcol:'L',bcol:'M',fv:m.p3f,bv:m.p3b},
+      {name:t2Team?t2Team.p2:'P4',fcol:'N',bcol:'O',fv:m.p4f,bv:m.p4b}
+    ];
+    for(const p of pList){
+      h+=`<div style="color:var(--cream);font-size:0.68rem">${esc(p.name)}</div>
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="${p.fcol}" value="${p.fv||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="${p.bcol}" value="${p.bv||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    }
+    h+=`</div></div>`;
+  }
+  h+=`</div>`;
+  c.innerHTML=h;
+  // Wire up auto-save on each input
+  c.querySelectorAll('.lg-sc-auto').forEach(inp=>{
+    inp.addEventListener('change',handleLgScoreInput);
+  });
+}
+
+async function handleLgScoreInput(e){
+  const inp=e.target;
+  const val=inp.value.replace(/\D/g,'').slice(0,2);
+  inp.value=val;
+  const row=inp.dataset.row;const col=inp.dataset.col;
+  const numVal=parseInt(val)||0;
+  const tab='League Scores '+lgCurrentYear;
+  let ok=false;
+  try{
+    if(APPS_SCRIPT_URL){
+      const res=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'writeLeagueScore',pin:scorerPIN,year:lgCurrentYear,row:parseInt(row),col:col,val:numVal})});
+      const d=await res.json();ok=d.ok;
+    }
+    if(!ok&&gAuthToken){
+      const res=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(tab+'!'+col+row)+'?valueInputOption=USER_ENTERED',{method:'PUT',headers:{'Authorization':'Bearer '+gAuthToken,'Content-Type':'application/json'},body:JSON.stringify({range:tab+'!'+col+row,values:[[numVal]]})});
+      ok=res.ok;
+    }
+    if(ok){
+      inp.classList.add('saved');inp.classList.remove('save-flash');void inp.offsetWidth;inp.classList.add('save-flash');
+    }else{
+      inp.classList.remove('saved');
+    }
+  }catch(err){
+    inp.classList.remove('saved');
+  }
+  lgLastCSV='';
+}
+
+// ── League Scorer Modal ──
+function openLgScorerModal(){
+  openPinModal('scorer',{title:'League Scores',sub:'Enter scorer PIN',onSuccess:function(){
+    const c=document.getElementById('lgScorerContent');
+    renderLgAdminScores(c);
+    document.getElementById('lgScorerModal').classList.add('open');document.querySelector('#lgScorerModal .modal-sheet').scrollTop=0;
+  }});
+}
+
   </script>
 </body>
 </html>
