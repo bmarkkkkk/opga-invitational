@@ -2837,18 +2837,16 @@ async function loadLgYear(){
     for(let i=1;i<scoresRaw.length;i++){
       const r=scoresRaw[i];if(!r[0])continue;
       const round=parseInt(r[0])||0;
-      const matchStr=(r[1]||'').trim();
-      const parts=matchStr.split(/\s*vs\s*/i);
-      const t1=(parts[0]||'').trim();const t2=(parts[1]||'').trim();
-      const course=(r[2]||'').trim();
+      const t1=(r[1]||'').trim();const t2=(r[2]||'').trim();
+      const course=(r[3]||'').trim();
       lgMatches.push({
-        round, match:matchStr, course, t1, t2,
-        t1fw:parseInt(r[3])||0, t2fw:parseInt(r[4])||0,
-        t1bw:parseInt(r[5])||0, t2bw:parseInt(r[6])||0,
-        p1f:parseInt(r[7])||0, p1b:parseInt(r[8])||0,
-        p2f:parseInt(r[9])||0, p2b:parseInt(r[10])||0,
-        p3f:parseInt(r[11])||0, p3b:parseInt(r[12])||0,
-        p4f:parseInt(r[13])||0, p4b:parseInt(r[14])||0,
+        round, match:t1&&t2?t1+' vs '+t2:'', course, t1, t2,
+        t1fw:parseInt(r[4])||0, t2fw:parseInt(r[5])||0,
+        t1bw:parseInt(r[6])||0, t2bw:parseInt(r[7])||0,
+        p1f:parseInt(r[8])||0, p1b:parseInt(r[9])||0,
+        p2f:parseInt(r[10])||0, p2b:parseInt(r[11])||0,
+        p3f:parseInt(r[12])||0, p3b:parseInt(r[13])||0,
+        p4f:parseInt(r[14])||0, p4b:parseInt(r[15])||0,
         row:i+1
       });
     }
@@ -3055,13 +3053,11 @@ async function renderLgRecordsPage(){
     if(scoresRaw&&scoresRaw.length>1){
       for(let i=1;i<scoresRaw.length;i++){
         const r=scoresRaw[i];if(!r[0])continue;
-        const round=parseInt(r[0])||0;const matchStr=(r[1]||'').trim();
-        const parts=matchStr.split(/\s*vs\s*/i);
-        const t1=(parts[0]||'').trim();const t2=(parts[1]||'').trim();
-        const course=(r[2]||'').trim();
-        matches.push({round,t1,t2,course,t1fw:parseInt(r[3])||0,t2fw:parseInt(r[4])||0,t1bw:parseInt(r[5])||0,t2bw:parseInt(r[6])||0,
-          p1f:parseInt(r[7])||0,p1b:parseInt(r[8])||0,p2f:parseInt(r[9])||0,p2b:parseInt(r[10])||0,
-          p3f:parseInt(r[11])||0,p3b:parseInt(r[12])||0,p4f:parseInt(r[13])||0,p4b:parseInt(r[14])||0});
+        const round=parseInt(r[0])||0;const t1=(r[1]||'').trim();const t2=(r[2]||'').trim();
+        const course=(r[3]||'').trim();
+        matches.push({round,t1,t2,course,t1fw:parseInt(r[4])||0,t2fw:parseInt(r[5])||0,t1bw:parseInt(r[6])||0,t2bw:parseInt(r[7])||0,
+          p1f:parseInt(r[8])||0,p1b:parseInt(r[9])||0,p2f:parseInt(r[10])||0,p2b:parseInt(r[11])||0,
+          p3f:parseInt(r[12])||0,p3b:parseInt(r[13])||0,p4f:parseInt(r[14])||0,p4b:parseInt(r[15])||0});
       }
     }
     const stats={};
@@ -3621,7 +3617,7 @@ async function saveLgConfig(){
       await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`,{method:'POST',headers:{'Authorization':`Bearer ${gAuthToken}`,'Content-Type':'application/json'},body:JSON.stringify({requests:newTabs.map(t=>({addSheet:{properties:{title:t}}}))})});
       for(const t of newTabs){
         if(t.startsWith('League Teams'))await writeAdminToSheet(t+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI R1','P1 HI R2','P1 HI R3','P2 HI R1','P2 HI R2','P2 HI R3']]);
-        else if(t.startsWith('League Scores'))await writeAdminToSheet(t+'!A1:O1',[['Round','Match','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+        else if(t.startsWith('League Scores'))await writeAdminToSheet(t+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
       }
     }
   }catch(e){}
@@ -3693,8 +3689,8 @@ function renderLgAdminSchedule(c){
     for(let mi=0;mi<roundMatches.length;mi++){
       const m=roundMatches[mi];
       const thisMatchTeams=[m.t1,m.t2];
-      const teamOpts=lgTeams.map(t=>{const usedElsewhere=usedInRound.includes(t.label)&&!thisMatchTeams.includes(t.label);return`<option value="${esc(t.label)}" ${t.label===m.t1?'selected':''}${usedElsewhere?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${usedElsewhere?' — in use':''}</option>`}).join('');
-      const teamOpts2=lgTeams.map(t=>{const usedElsewhere=usedInRound.includes(t.label)&&!thisMatchTeams.includes(t.label);return`<option value="${esc(t.label)}" ${t.label===m.t2?'selected':''}${usedElsewhere?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${usedElsewhere?' — in use':''}</option>`}).join('');
+      const teamOpts=`<option value="">— Select —</option>`+lgTeams.map(t=>{const usedElsewhere=usedInRound.includes(t.label)&&!thisMatchTeams.includes(t.label);return`<option value="${esc(t.label)}" ${t.label===m.t1?'selected':''}${usedElsewhere?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${usedElsewhere?' — in use':''}</option>`}).join('');
+      const teamOpts2=`<option value="">— Select —</option>`+lgTeams.map(t=>{const usedElsewhere=usedInRound.includes(t.label)&&!thisMatchTeams.includes(t.label);return`<option value="${esc(t.label)}" ${t.label===m.t2?'selected':''}${usedElsewhere?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${usedElsewhere?' — in use':''}</option>`}).join('');
       const courseOpts=`<option value="">Select course</option>`+courseNames.map(cn=>`<option value="${esc(cn)}" ${cn===m.course?'selected':''}>${esc(cn)}</option>`).join('');
       h+=`<div class="lg-admin-match">
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px">
@@ -3712,7 +3708,7 @@ function renderLgAdminSchedule(c){
 
 async function saveLgSchedule(){
   const tab='League Scores '+lgAdminYear;
-  let ok=await writeAdminToSheet(tab+'!A1:O1',[['Round','Match','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+  let ok=await writeAdminToSheet(tab+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
   const rows=[];
   const maxR=lgTotalRounds()||3;
   for(let rn=1;rn<=maxR;rn++){
@@ -3723,13 +3719,13 @@ async function saveLgSchedule(){
       const t1=t1Selects[mi].value;const t2=t2Selects[mi].value;
       const course=courseSelects[mi].value;
       const existing=lgMatches.find(m=>m.round===rn&&((m.t1===t1&&m.t2===t2)||(m.t1===t2&&m.t2===t1)));
-      rows.push([rn,t1+' vs '+t2,course,
+      rows.push([rn,t1,t2,course,
         existing?existing.t1fw:0,existing?existing.t2fw:0,existing?existing.t1bw:0,existing?existing.t2bw:0,
         existing?existing.p1f:0,existing?existing.p1b:0,existing?existing.p2f:0,existing?existing.p2b:0,
         existing?existing.p3f:0,existing?existing.p3b:0,existing?existing.p4f:0,existing?existing.p4b:0]);
     }
   }
-  if(rows.length)ok=await writeAdminToSheet(tab+'!A2:O'+(rows.length+1),rows)&&ok;
+  if(rows.length)ok=await writeAdminToSheet(tab+'!A2:P'+(rows.length+1),rows)&&ok;
   if(ok)showAdminToast('Schedule saved');
   lgLastCSV='';loadLgYear();
 }
@@ -3750,20 +3746,20 @@ function renderLgAdminScores(c){
     h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 8px;font-size:0.72rem;align-items:center;margin-bottom:10px">
       <div></div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Front 9</div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Back 9</div>
       <div><div style="color:var(--cream);font-size:0.68rem">${esc(t1Name)}</div><div style="font-size:0.58rem;color:var(--text-muted)">${t1Team?esc(t1Team.p1):''}<br>${t1Team?esc(t1Team.p2):''}</div></div>
-      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="D" value="${m.t1fw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
-      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="F" value="${m.t1bw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="E" value="${m.t1fw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="G" value="${m.t1bw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
       <div><div style="color:var(--cream);font-size:0.68rem">${esc(t2Name)}</div><div style="font-size:0.58rem;color:var(--text-muted)">${t2Team?esc(t2Team.p1):''}<br>${t2Team?esc(t2Team.p2):''}</div></div>
-      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="E" value="${m.t2fw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
-      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="G" value="${m.t2bw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="F" value="${m.t2fw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
+      <input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="H" value="${m.t2bw||''}" style="text-align:center;padding:8px;font-size:1rem" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />
     </div>`;
     h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:4px;font-weight:600">Gross Scores (9-hole)</div>`;
     h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 8px;font-size:0.72rem;align-items:center">
       <div></div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Front</div><div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">Back</div>`;
     const pList=[
-      {name:t1Team?t1Team.p1:'P1',fcol:'H',bcol:'I',fv:m.p1f,bv:m.p1b},
-      {name:t1Team?t1Team.p2:'P2',fcol:'J',bcol:'K',fv:m.p2f,bv:m.p2b},
-      {name:t2Team?t2Team.p1:'P3',fcol:'L',bcol:'M',fv:m.p3f,bv:m.p3b},
-      {name:t2Team?t2Team.p2:'P4',fcol:'N',bcol:'O',fv:m.p4f,bv:m.p4b}
+      {name:t1Team?t1Team.p1:'P1',fcol:'I',bcol:'J',fv:m.p1f,bv:m.p1b},
+      {name:t1Team?t1Team.p2:'P2',fcol:'K',bcol:'L',fv:m.p2f,bv:m.p2b},
+      {name:t2Team?t2Team.p1:'P3',fcol:'M',bcol:'N',fv:m.p3f,bv:m.p3b},
+      {name:t2Team?t2Team.p2:'P4',fcol:'O',bcol:'P',fv:m.p4f,bv:m.p4b}
     ];
     for(const p of pList){
       h+=`<div style="color:var(--cream);font-size:0.68rem">${esc(p.name)}</div>
@@ -3848,21 +3844,21 @@ function renderLgScorerModal(){
     h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 10px;align-items:center;margin-bottom:14px">`;
     h+=`<div></div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">FRONT 9</div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">BACK 9</div>`;
     h+=`<div><div style="color:var(--cream);font-size:0.75rem;font-weight:600">${esc(t1Name)}</div><div style="font-size:0.58rem;color:var(--text-muted)">${t1Team?esc(t1Team.p1):''}<br>${t1Team?esc(t1Team.p2):''}</div></div>`;
-    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="D" value="${m.t1fw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
-    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="F" value="${m.t1bw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="E" value="${m.t1fw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="G" value="${m.t1bw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
     h+=`<div><div style="color:var(--cream);font-size:0.75rem;font-weight:600">${esc(t2Name)}</div><div style="font-size:0.58rem;color:var(--text-muted)">${t2Team?esc(t2Team.p1):''}<br>${t2Team?esc(t2Team.p2):''}</div></div>`;
-    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="E" value="${m.t2fw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
-    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="G" value="${m.t2bw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="F" value="${m.t2fw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="H" value="${m.t2bw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
     h+=`</div>`;
     // Gross scores
     h+=`<div style="font-size:0.58rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:6px">GROSS SCORES</div>`;
     h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 10px;align-items:center">`;
     h+=`<div></div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">FRONT</div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">BACK</div>`;
     const pList=[
-      {name:t1Team?t1Team.p1:'P1',fcol:'H',bcol:'I',fv:m.p1f,bv:m.p1b},
-      {name:t1Team?t1Team.p2:'P2',fcol:'J',bcol:'K',fv:m.p2f,bv:m.p2b},
-      {name:t2Team?t2Team.p1:'P3',fcol:'L',bcol:'M',fv:m.p3f,bv:m.p3b},
-      {name:t2Team?t2Team.p2:'P4',fcol:'N',bcol:'O',fv:m.p4f,bv:m.p4b}
+      {name:t1Team?t1Team.p1:'P1',fcol:'I',bcol:'J',fv:m.p1f,bv:m.p1b},
+      {name:t1Team?t1Team.p2:'P2',fcol:'K',bcol:'L',fv:m.p2f,bv:m.p2b},
+      {name:t2Team?t2Team.p1:'P3',fcol:'M',bcol:'N',fv:m.p3f,bv:m.p3b},
+      {name:t2Team?t2Team.p2:'P4',fcol:'O',bcol:'P',fv:m.p4f,bv:m.p4b}
     ];
     for(const p of pList){
       h+=`<div style="color:var(--cream);font-size:0.72rem">${esc(p.name)}</div>`;
