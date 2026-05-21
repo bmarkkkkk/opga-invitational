@@ -3145,7 +3145,7 @@ async function renderLgRecordsPage(){
   h+=`<div class="section"><div class="section-head"><span class="section-title">Player History</span><span class="section-line"></span></div>`;
   const playerMap={};
   for(const y of lgYears){
-    const d=allLgData[y];if(!d.yearComplete)continue;
+    const d=allLgData[y];
     for(const t of d.teams){
       const playersInTeam=[
         {name:t.p1,hi:t.p1hi,isP1:true},
@@ -3153,9 +3153,10 @@ async function renderLgRecordsPage(){
       ];
       for(const pi of playersInTeam){
         if(!pi.name)continue;
-        if(!playerMap[pi.name])playerMap[pi.name]={championships:0,seasons:0,totalNtp:0,rounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYear:'',bestGrossScore:Infinity,bestGrossNtp:0,bestGrossYear:''};
+        if(!playerMap[pi.name])playerMap[pi.name]={championships:0,seasons:0,yearsPlayed:new Set(),totalNtp:0,rounds:0,bestNetNtp:Infinity,bestNetGross:0,bestNetYear:'',bestGrossScore:Infinity,bestGrossNtp:0,bestGrossYear:''};
         const ps=playerMap[pi.name];
-        ps.seasons++;
+        ps.yearsPlayed.add(y);
+        if(d.yearComplete)ps.seasons++;
         if(d.champion&&d.champion.label===t.label)ps.championships++;
         // Per-match stats
         for(const m of d.matches){
@@ -3183,7 +3184,7 @@ async function renderLgRecordsPage(){
     for(const[name,ps] of playerList){
       const badges=[];
       if(ps.championships)badges.push(`<span class="ph-badge ph-badge-champ">${ps.championships}× Champion</span>`);
-      badges.push(`<span class="ph-badge ph-badge-tourn">${ps.seasons} Season${ps.seasons!==1?'s':''}</span>`);
+      const seasonCount=ps.yearsPlayed.size;badges.push(`<span class="ph-badge ph-badge-tourn">${seasonCount} Season${seasonCount!==1?'s':''}</span>`);
       const avgNtp=ps.rounds>0?(ps.totalNtp/ps.rounds):0;
       const avgStr=avgNtp===0?'E':(avgNtp>0?'+'+avgNtp.toFixed(1):avgNtp.toFixed(1));
       h+=`<div class="ph-item">
@@ -3205,7 +3206,7 @@ async function renderLgRecordsPage(){
   h+=`<div class="section"><div class="section-head"><span class="section-title">Course History</span><span class="section-line"></span></div>`;
   const lgCourseData={};
   for(const y of lgYears){
-    const d=allLgData[y];if(!d.yearComplete)continue;
+    const d=allLgData[y];
     for(const m of d.matches){
       if((m.t1fw+m.t2fw+m.t1bw+m.t2bw)===0)continue;
       const cName=m.course;if(!cName)continue;
