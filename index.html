@@ -956,8 +956,9 @@
       <button class="score-entry-fab" id="lgScorerFab" style="display:none" onclick="openLgScorerModal()"><span class="fab-dot"></span> Enter Scores</button>
 
       <!-- League Admin FAB -->
-      <div class="admin-fab" id="lgAdminFab" style="display:none" onclick="openLgAdmin()">⚙ League Setup</div>
 
+
+      <div style="text-align:center;padding-bottom:24px"><span class="admin-header-btn" id="lgAdminBtn" onclick="openLgAdmin()">League Setup</span></div>
       <!-- League Footer -->
       <footer class="footer" id="lgFooter"></footer>
 
@@ -982,12 +983,18 @@
     </div>
     <!-- League Scorer Modal -->
     <div class="modal-overlay" id="lgScorerModal">
-      <div class="modal-sheet" style="max-width:480px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <div style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.2rem;color:var(--cream)">Enter Scores</div>
-          <button class="admin-close" onclick="document.getElementById('lgScorerModal').classList.remove('open')">✕</button>
+      <div class="scorer-sheet">
+        <div class="scorer-header">
+          <div class="scorer-header-top">
+            <div class="scorer-title-area">
+              <div class="scorer-title-text">League Scores</div>
+              <div class="scorer-course-text" id="lgScorerSubtitle"></div>
+            </div>
+            <button class="scorer-back-btn" onclick="document.getElementById('lgScorerModal').classList.remove('open')">✕ Close</button>
+          </div>
+          <div class="scorer-round-tabs" id="lgScorerRoundTabs"></div>
         </div>
-        <div id="lgScorerContent"></div>
+        <div class="scorer-body" id="lgScorerContent"></div>
       </div>
     </div>
 
@@ -2751,10 +2758,10 @@ function initModeSwitcher(){
         recordsOpen=false;
         document.querySelectorAll('.controls').forEach(el=>el.style.display='none');
         document.getElementById('scoreEntryFab').style.display='none';
-        const invAdminFab=document.querySelector('.admin-fab:not(#lgAdminFab)');if(invAdminFab)invAdminFab.style.display='none';
+        
         document.getElementById('leaguePage').style.display='block';
         document.getElementById('lgScorerFab').style.display='';
-        document.getElementById('lgAdminFab').style.display='';
+        document.getElementById('lgAdminBtn').style.display='';
         if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}
         if(!lgYears.length)loadLeague();else renderLeague();
         startLgPolling();
@@ -2763,7 +2770,7 @@ function initModeSwitcher(){
         document.getElementById('lgChampBanner').classList.remove('show');
         document.getElementById('lgRecordsPage').style.display='none';lgRecordsOpen=false;
         document.getElementById('lgScorerFab').style.display='none';
-        document.getElementById('lgAdminFab').style.display='none';
+        document.getElementById('lgAdminBtn').style.display='none';
         document.getElementById('lgAdminOverlay').classList.remove('open');
         // Restore all invitational elements
         document.getElementById('recordsPage').style.display='none';
@@ -3004,7 +3011,7 @@ function showLgRecordsPage(){
   lgRecordsOpen=true;
   document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap').forEach(el=>el.style.display='none');
   document.getElementById('lgScorerFab').style.display='none';
-  document.getElementById('lgAdminFab').style.display='none';
+  document.getElementById('lgAdminBtn').style.display='none';
   document.getElementById('lgRecordsPage').style.display='block';
   renderLgRecordsPage();
   window.scrollTo(0,0);
@@ -3014,7 +3021,7 @@ function hideLgRecordsPage(){
   lgRecordsOpen=false;
   document.getElementById('lgRecordsPage').style.display='none';
   document.getElementById('lgScorerFab').style.display='';
-  document.getElementById('lgAdminFab').style.display='';
+  document.getElementById('lgAdminBtn').style.display='';
   document.getElementById('lgRecordsLinkWrap').style.display='';
   document.getElementById('lgViewControls').style.display='';
   document.getElementById('lgStandingsSection').style.display='';
@@ -3802,12 +3809,70 @@ async function handleLgScoreInput(e){
 }
 
 // ── League Scorer Modal ──
+let lgScorerRound=0;
 function openLgScorerModal(){
   openPinModal('scorer',{title:'League Scores',sub:'Enter scorer PIN',onSuccess:function(){
-    const c=document.getElementById('lgScorerContent');
-    renderLgAdminScores(c);
-    document.getElementById('lgScorerModal').classList.add('open');document.querySelector('#lgScorerModal .modal-sheet').scrollTop=0;
+    lgScorerRound=0;
+    renderLgScorerModal();
+    document.getElementById('lgScorerModal').classList.add('open');
   }});
+}
+
+function renderLgScorerModal(){
+  const maxR=lgTotalRounds();
+  const tabsEl=document.getElementById('lgScorerRoundTabs');
+  let tabs=`<button class="scorer-rtab ${lgScorerRound===0?'active':'inactive'}" data-lgsr="0">All</button>`;
+  for(let r=1;r<=maxR;r++){tabs+=`<button class="scorer-rtab ${lgScorerRound===r?'active':'inactive'}" data-lgsr="${r}">R${r}</button>`}
+  tabsEl.innerHTML=tabs;
+  tabsEl.querySelectorAll('.scorer-rtab').forEach(btn=>{
+    btn.addEventListener('click',()=>{lgScorerRound=parseInt(btn.dataset.lgsr);renderLgScorerModal()});
+  });
+  document.getElementById('lgScorerSubtitle').textContent=lgScorerRound===0?lgName:'Round '+lgScorerRound;
+  const matchesToShow=lgScorerRound===0?lgMatches:lgMatches.filter(m=>m.round===lgScorerRound);
+  const c=document.getElementById('lgScorerContent');
+  const yr=lgCurrentYear;
+  let h='';
+  for(const m of matchesToShow){
+    const t1Name=lgTeamName(m.t1);const t2Name=lgTeamName(m.t2);
+    const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
+    h+=`<div class="scorer-player-card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold)">Round ${m.round} — Match</div>
+        <div style="font-size:0.62rem;color:var(--text-muted)">${m.course||''}</div>
+      </div>`;
+    // Strokes
+    const strokeInfo=lgGetMatchStrokes(m);
+    if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.65rem;color:var(--text-muted);font-style:italic;margin-bottom:10px">${strokeInfo.text}</div>`}
+    // Holes won
+    h+=`<div style="font-size:0.58rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:6px">HOLES WON</div>`;
+    h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 10px;align-items:center;margin-bottom:14px">`;
+    h+=`<div></div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">FRONT 9</div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">BACK 9</div>`;
+    h+=`<div><div style="color:var(--cream);font-size:0.75rem;font-weight:600">${esc(t1Name)}</div><div style="font-size:0.58rem;color:var(--text-muted)">${t1Team?esc(t1Team.p1):''}<br>${t1Team?esc(t1Team.p2):''}</div></div>`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="D" value="${m.t1fw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="F" value="${m.t1bw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<div><div style="color:var(--cream);font-size:0.75rem;font-weight:600">${esc(t2Name)}</div><div style="font-size:0.58rem;color:var(--text-muted)">${t2Team?esc(t2Team.p1):''}<br>${t2Team?esc(t2Team.p2):''}</div></div>`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="E" value="${m.t2fw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="G" value="${m.t2bw||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    h+=`</div>`;
+    // Gross scores
+    h+=`<div style="font-size:0.58rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:6px">GROSS SCORES</div>`;
+    h+=`<div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 10px;align-items:center">`;
+    h+=`<div></div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">FRONT</div><div style="text-align:center;font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted)">BACK</div>`;
+    const pList=[
+      {name:t1Team?t1Team.p1:'P1',fcol:'H',bcol:'I',fv:m.p1f,bv:m.p1b},
+      {name:t1Team?t1Team.p2:'P2',fcol:'J',bcol:'K',fv:m.p2f,bv:m.p2b},
+      {name:t2Team?t2Team.p1:'P3',fcol:'L',bcol:'M',fv:m.p3f,bv:m.p3b},
+      {name:t2Team?t2Team.p2:'P4',fcol:'N',bcol:'O',fv:m.p4f,bv:m.p4b}
+    ];
+    for(const p of pList){
+      h+=`<div style="color:var(--cream);font-size:0.72rem">${esc(p.name)}</div>`;
+      h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="${p.fcol}" value="${p.fv||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+      h+=`<input class="scorer-input lg-sc-auto" data-row="${m.row}" data-col="${p.bcol}" value="${p.bv||''}" style="text-align:center;font-size:1.1rem;padding:10px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="—" />`;
+    }
+    h+=`</div></div>`;
+  }
+  c.innerHTML=h;
+  c.querySelectorAll('.lg-sc-auto').forEach(inp=>{inp.addEventListener('change',handleLgScoreInput)});
 }
 
   </script>
