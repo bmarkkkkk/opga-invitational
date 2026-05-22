@@ -101,6 +101,28 @@
     .countdown-live.show { display:block; animation:fadeUp 0.4s ease both; }
     .countdown-live-text { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.3rem; color:var(--gold); }
 
+
+    /* ── Gallery ── */
+    .gallery-links { display:flex; justify-content:center; gap:16px; margin:8px 0 12px; }
+    .gallery-link { display:inline-block; font-family:'Outfit',sans-serif; font-size:0.72rem; font-weight:500; color:var(--text-secondary); cursor:pointer; padding:6px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:rgba(245,240,232,0.03); transition:all var(--transition); }
+    @media(hover:hover){.gallery-link:hover { color:var(--cream); border-color:var(--text-muted); }}
+    .gallery-page { display:none; }
+    .gallery-page.show { display:block; }
+    .gallery-header { text-align:center; margin-bottom:20px; padding-top:8px; }
+    .gallery-header h2 { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:1.4rem; color:var(--cream); margin:0 0 4px; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin-bottom:24px; }
+    .gallery-thumb { aspect-ratio:1; border-radius:var(--radius); overflow:hidden; cursor:pointer; background:var(--surface-1); border:1px solid var(--border); position:relative; }
+    .gallery-thumb img { width:100%; height:100%; object-fit:cover; transition:transform 0.2s; cursor:pointer; }
+    .gallery-delete { position:absolute; top:6px; right:6px; width:24px; height:24px; background:rgba(0,0,0,0.55); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.6rem; cursor:pointer; opacity:1; transition:opacity 0.2s; }
+    @media(hover:hover){.gallery-thumb:hover img { transform:scale(1.05); }}
+    .gallery-empty { text-align:center; padding:60px 16px; color:var(--text-muted); font-size:0.8rem; grid-column:1/-1; }
+    .gallery-upload-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:var(--surface-1); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-secondary); font-family:'Outfit',sans-serif; font-size:0.75rem; font-weight:500; cursor:pointer; transition:all var(--transition); }
+    @media(hover:hover){.gallery-upload-btn:hover { color:var(--cream); border-color:var(--text-muted); }}
+    .gallery-upload-btn.uploading { opacity:0.5; pointer-events:none; }
+    .lightbox-overlay { display:none; position:fixed; inset:0; z-index:1200; background:rgba(0,0,0,0.92); align-items:center; justify-content:center; cursor:pointer; }
+    .lightbox-overlay.open { display:flex; }
+    .lightbox-overlay img { max-width:95vw; max-height:90vh; object-fit:contain; border-radius:8px; }
+
     /* ── Mode Switcher ── */
     .mode-switcher { display:flex; gap:0; padding:8px 16px 0; }
     .mode-btn { padding:8px 16px; font-family:'Outfit',sans-serif; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; background:transparent; color:var(--text-muted); border:none; border-bottom:2px solid transparent; cursor:pointer; transition:all 0.2s; }
@@ -960,6 +982,10 @@
       <!-- League Admin FAB -->
 
 
+      <div class="gallery-links" id="lgGalleryLinks" style="display:none">
+        <span class="gallery-link" id="lgScorecardsLink">📋 Scorecards</span>
+        <span class="gallery-link" id="lgGalleryLink">📸 Photo Gallery</span>
+      </div>
       <div style="text-align:center;padding-bottom:24px"><span class="admin-header-btn" id="lgAdminBtn" onclick="openLgAdmin()">League Setup</span></div>
       <!-- League Footer -->
       <footer class="footer" id="lgFooter"></footer>
@@ -998,6 +1024,28 @@
         </div>
         <div class="scorer-body" id="lgScorerContent"></div>
       </div>
+    </div>
+
+
+    <!-- Gallery Page -->
+    <div id="galleryPage" class="gallery-page">
+      <div class="gallery-header">
+        <span class="records-back" id="galleryBack">← Back</span>
+        <h2 id="galleryTitle">Photo Gallery</h2>
+        <div style="margin-top:10px">
+          <label class="gallery-upload-btn" id="galleryUploadBtn">
+            📷 Upload Photos
+            <input type="file" id="galleryFileInput" accept="image/*" multiple style="display:none" />
+          </label>
+        </div>
+        <div id="galleryUploadStatus" style="font-size:0.68rem;color:var(--text-muted);margin-top:6px"></div>
+      </div>
+      <div id="galleryGrid" class="gallery-grid"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="this.classList.remove('open')">
+      <img id="lightboxImg" src="" />
     </div>
 
     <!-- Records Page (hidden by default) -->
@@ -1066,8 +1114,13 @@
 
     <div class="info-tabs-wrap" id="infoTabsWrap" style="display:none"></div>
 
-    <div class="footer" id="siteFooter">Live Leaderboard</div>
+    <div class="gallery-links" id="galleryLinks" style="display:none">
+      <span class="gallery-link" id="scorecardsLink">📋 Scorecards</span>
+      <span class="gallery-link" id="galleryLink">📸 Photo Gallery</span>
+    </div>
     <div style="text-align:center;padding-bottom:24px"><span class="admin-header-btn" id="adminHeaderBtn">Setup</span></div>
+    <div class="footer" id="siteFooter">Live Leaderboard</div>
+
   <button class="score-entry-fab" id="scoreEntryFab" style="display:none"><span class="fab-dot"></span>Enter Scores</button>
   <div class="pin-modal-overlay" id="pinModal"><div class="pin-sheet"><div class="pin-sheet-title" id="pinTitle">Enter PIN</div><div class="pin-sheet-sub" id="pinSub">Enter your PIN to continue</div><div class="pin-dots-row" id="pinDots"><div class="pin-dot-el"></div><div class="pin-dot-el"></div><div class="pin-dot-el"></div><div class="pin-dot-el"></div></div><div class="numpad-grid"><button class="np-btn" data-n="1">1</button><button class="np-btn" data-n="2">2</button><button class="np-btn" data-n="3">3</button><button class="np-btn" data-n="4">4</button><button class="np-btn" data-n="5">5</button><button class="np-btn" data-n="6">6</button><button class="np-btn" data-n="7">7</button><button class="np-btn" data-n="8">8</button><button class="np-btn" data-n="9">9</button><button class="np-btn np-empty"></button><button class="np-btn" data-n="0">0</button><button class="np-btn np-del" id="pinDel">⌫</button></div><div class="pin-error-msg" id="pinError"></div></div></div>
   <div class="modal-overlay" id="scorerModal"><div class="scorer-sheet"><div class="scorer-header"><div class="scorer-header-top"><div class="scorer-title-area"><div class="scorer-title-text">Enter Scores</div><div class="scorer-course-text" id="scorerCourseName"></div></div><button class="scorer-back-btn" id="scorerClose">✕ Close</button></div><div style="display:flex;gap:4px;margin-bottom:8px" id="scorerModeToggle"><button class="scorer-rtab active" id="scorerModeScores" onclick="switchScorerMode('scores')">Scores</button><button class="scorer-rtab inactive" id="scorerModeSkins" onclick="switchScorerMode('skins')">Skins</button></div><div class="scorer-round-tabs" id="scorerRoundTabs"></div><div class="scorer-progress-row"><div class="scorer-prog-bar"><div class="scorer-prog-fill" id="scorerProgFill" style="width:0%"></div></div><div class="scorer-prog-label" id="scorerProgLabel">0 / 0 done</div></div></div><div class="scorer-body" id="scorerBody"></div></div></div>
@@ -1209,7 +1262,7 @@ function startCountdown(){
     document.getElementById('cdHours').textContent=h;
     document.getElementById('cdMins').textContent=String(m).padStart(2,'0');
     document.getElementById('cdSecs').textContent=String(s).padStart(2,'0');
-    if(currentView==='tournament')banner.classList.add('show');else banner.classList.remove('show');
+    if(currentView==='tournament'&&!galleryOpen&&!recordsOpen)banner.classList.add('show');else banner.classList.remove('show');
   }
   tick();
   countdownInterval=setInterval(tick,1000);
@@ -1317,7 +1370,7 @@ function isTournamentComplete(){
 }
 
 function render(){
-  if(recordsOpen||lgMode==='league')return;
+  if(recordsOpen||lgMode==='league'||galleryOpen)return;
   const anyScores=players.some(p=>Object.values(p.rounds).some(r=>r.front>0||r.back>0));
   if(anyScores){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null};countdownDismissed=true}else if(currentView!=='tournament'){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show')}else if(!countdownDismissed&&tournamentStartTime){const now=new Date();if(now>=tournamentStartTime){if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.add('show')}else{document.getElementById('countdownLive').classList.remove('show');startCountdown()}}else if(!tournamentStartTime){document.getElementById('countdownBanner').classList.remove('show');document.getElementById('countdownLive').classList.remove('show');if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}}
   // Show/hide team sections based on teamMode
@@ -1433,7 +1486,7 @@ function renderChampionState(complete){
   }
   document.getElementById('champAccolades').innerHTML=accoladesHtml;
 
-  if(currentView==='tournament')banner.classList.add('show');else banner.classList.remove('show');
+  if(currentView==='tournament'&&!galleryOpen&&!recordsOpen)banner.classList.add('show');else banner.classList.remove('show');
 }
 
 /* ═══ COURSE INFO ═══ */
@@ -2128,6 +2181,8 @@ function showRecordsPage(){
   document.querySelectorAll('#yearControls, .controls, #championBanner, #highlights, #teamSection, #chartSection, #skinsSection, #individualSection, #historySection, #coursesSection, #hcSection, #infoTabsWrap, #countdownBanner, #countdownLive, #courseInfoCard').forEach(el=>el.style.display='none');
   document.getElementById('recordsLinkWrap').style.display='none';
   document.getElementById('scoreEntryFab').style.display='none';
+  document.getElementById('galleryLinks').style.display='none';
+  document.getElementById('galleryPage').classList.remove('show');galleryOpen=false;
   document.getElementById('leaguePage').style.display='none';
   document.getElementById('recordsPage').style.display='block';
   loadAllYearsAndRender();
@@ -2148,6 +2203,7 @@ function hideRecordsPage(){
   document.getElementById('leaguePage').style.display='none';
   document.getElementById('recordsLinkWrap').style.display='block';
   document.getElementById('scoreEntryFab').style.display='flex';
+  document.getElementById('galleryLinks').style.display='';
   checkLeagueExists();
   if(infoTabs.length) document.getElementById('infoTabsWrap').style.display='flex';
   lastCSV='';
@@ -2577,6 +2633,7 @@ async function init(){
   document.getElementById('recordsLink').addEventListener('click',showRecordsPage);
   document.getElementById('recordsBack').addEventListener('click',hideRecordsPage);
   initModeSwitcher();
+  initGallery();
   checkLeagueExists();
   document.getElementById('championBanner').addEventListener('click',function(){const t=this.dataset.champTeam;if(t){openTeamModal(t);return}const p=this.dataset.champPlayer;if(p)openPlayerModal(p)});
   loadPINsFromConfig(configRows);
@@ -2584,6 +2641,7 @@ async function init(){
   if(!players.length){for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,2000));await load();if(players.length)break}}
   window._pollTimer=setInterval(load,POLL_SECONDS*1000);
   showScoreFAB();
+  document.getElementById('galleryLinks').style.display='';
   setupAdminHeaderBtn();
   if(gAuthToken){if(window._authState==='league_auth'){setTimeout(()=>{document.querySelector('.mode-btn[data-mode="league"]').click();setTimeout(()=>{lgAdminAuthenticated();showAdminToast('Signed in with Google')},500)},200)}else{openAdminPanel();showAdminToast('Signed in with Google')}}
 }
@@ -2617,7 +2675,7 @@ function advanceScorerFocus(currentInput){const allInputs=[...document.querySele
 
 /* ═══ SHEETS WRITE ═══ */
 let gAuthToken=null;
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbykiggM3s3grSSr5WT9pXIH13sPAEkCMHtEH4bm5juiAQf1tHFuYvtUtgCtiqoSGBBJ/exec';
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwlDAZxAT3kCiZrarLp_wD3sV_b_lS1japE3QHnPc9k8_yviEPQ7OLKT3GJK5FvHBmr/exec';
 async function writeScorerToSheet(player,rn,half){const pName=player.name;const pi=players.findIndex(p=>p.name===pName);if(APPS_SCRIPT_URL){if(pi<0)return false;const r=player.rounds[String(rn)];try{const res=await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'writeScore',pin:scorerPIN,year:currentYear,playerRow:pi+2,round:rn,front:half==='front'?(r.front>0?r.front:0):undefined,back:half==='back'?(r.back>0?r.back:0):undefined})});const d=await res.json();if(!d.ok)throw new Error(d.error||'Write failed');return true}catch(err){showAdminToast('Save failed: '+err.message,true);return false}}else if(gAuthToken){if(pi<0)return false;const ri=pi+2;const tab=`Scores ${currentYear}`;const r=player.rounds[String(rn)];const col=half==='front'?String.fromCharCode(68+(rn-1)*2):String.fromCharCode(69+(rn-1)*2);const val=half==='front'?(r.front>0?r.front:0):(r.back>0?r.back:0);try{const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(tab+'!'+col+ri)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{'Authorization':`Bearer ${gAuthToken}`,'Content-Type':'application/json'},body:JSON.stringify({range:`${tab}!${col}${ri}`,values:[[val]]})});if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'Write failed')}return true}catch(err){showAdminToast('Save failed: '+err.message,true);return false}}else{showAdminToast('Not authenticated',true);return false}}
 async function writeRawToSheet(range,values){if(!gAuthToken){showAdminToast('Not authenticated',true);return false}try{const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,{method:'PUT',headers:{'Authorization':`Bearer ${gAuthToken}`,'Content-Type':'application/json'},body:JSON.stringify({range,values})});if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'Write failed')}return true}catch(err){showAdminToast('Save failed: '+err.message,true);return false}}
 async function writeAdminToSheet(range,values){if(!gAuthToken){showAdminToast('Not authenticated',true);return false}try{const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{'Authorization':`Bearer ${gAuthToken}`,'Content-Type':'application/json'},body:JSON.stringify({range,values})});if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'Write failed')}return true}catch(err){showAdminToast('Save failed: '+err.message,true);return false}}
@@ -2685,7 +2743,7 @@ async function loadSkins(){skinsData=[];skinsActive=false;try{const raw=await fe
 
 function getTeamSkinsTotals(roundFilter){const teams=[...new Set(players.map(p=>p.team).filter(Boolean))];if(teams.length<2)return null;const totals={};teams.forEach(t=>totals[t]=0);const data=roundFilter?skinsData.filter(s=>s.round===roundFilter):skinsData;for(const s of data){const s1t=[s.p1,s.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const s2t=[s.p3,s.p4].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const t1team=s1t[0];const t2team=s2t[0];if(t1team)totals[t1team]=(totals[t1team]||0)+s.t1f+s.t1b;if(t2team)totals[t2team]=(totals[t2team]||0)+s.t2f+s.t2b}return totals}
 
-function renderSkinsSection(){if(lgMode==='league')return;const el=document.getElementById('skinsSection');const sum=document.getElementById('skinsSummary');if(document.getElementById('recordsPage').style.display==='block'){el.style.display='none';return}if(!teamMode||!skinsActive||!skinsData.length){el.style.display='none';return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);if(!totals){el.style.display='none';return}const allZero=Object.values(totals).every(v=>v===0);const teamNames=[...new Set(players.map(p=>p.team).filter(Boolean))];const teams=teamNames.map(t=>[t,totals[t]||0]);const total=teams.reduce((s,t)=>s+t[1],0);const diff=teams[0][1]-teams[1][1];const absDiff=Math.abs(diff);const leader=diff>0?teams[0][0]:diff<0?teams[1][0]:null;const pct=total>0?(teams[0][1]/total*100):50;const barColor=allZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)';const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');el.style.display='block';let h='<div class="skins-team-row">';h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[0][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[0][1]>teams[1][1]?'var(--gold)':teams[0][1]<teams[1][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[1][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[1][1]>teams[0][1]?'var(--gold)':teams[1][1]<teams[0][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const hasMatchups=roundNum?skinsData.some(s=>s.round===roundNum&&(s.p1||s.p3)):skinsData.some(s=>s.p1||s.p3);const dollarDiff=absDiff*skinsPerSkin;const isComplete=(isTournComplete||isRoundComplete);const dollarText=skinsPerSkin>0&&absDiff>0?' ($'+dollarDiff+')':'';const label=allZero?(hasMatchups?'Matchups set — no scores yet':'Matchups not set yet'):diff===0?'Skins tied':(esc(leader)+' '+(isComplete?(isPlural?'won':'won'):verb)+' '+absDiff+' skin'+(absDiff!==1?'s':'')+dollarText);const leadColor=allZero?'var(--text-muted)':diff===0?'var(--text-muted)':isComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-bar-wrap"><div class="skins-lead-text" style="color:${leadColor}">${label}</div><div class="skins-bar"><div class="skins-bar-fill" style="width:${pct}%;background:${barColor}"></div></div></div>`;if(skinsPerSkin>0&&!allZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-top:4px">$${skinsPerSkin}/skin</div>`}h+=`<div class="skins-tap-hint">Tap for full skins breakdown</div>`;sum.innerHTML=h}
+function renderSkinsSection(){if(lgMode==='league'||galleryOpen)return;const el=document.getElementById('skinsSection');const sum=document.getElementById('skinsSummary');if(document.getElementById('recordsPage').style.display==='block'){el.style.display='none';return}if(!teamMode||!skinsActive||!skinsData.length){el.style.display='none';return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);if(!totals){el.style.display='none';return}const allZero=Object.values(totals).every(v=>v===0);const teamNames=[...new Set(players.map(p=>p.team).filter(Boolean))];const teams=teamNames.map(t=>[t,totals[t]||0]);const total=teams.reduce((s,t)=>s+t[1],0);const diff=teams[0][1]-teams[1][1];const absDiff=Math.abs(diff);const leader=diff>0?teams[0][0]:diff<0?teams[1][0]:null;const pct=total>0?(teams[0][1]/total*100):50;const barColor=allZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)';const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');el.style.display='block';let h='<div class="skins-team-row">';h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[0][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[0][1]>teams[1][1]?'var(--gold)':teams[0][1]<teams[1][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(teams[1][0])}</div><div class="skins-team-count" style="color:${allZero?'var(--cream)':teams[1][1]>teams[0][1]?'var(--gold)':teams[1][1]<teams[0][1]?'var(--cream)':'var(--cream)'}">${allZero?'—':teams[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const hasMatchups=roundNum?skinsData.some(s=>s.round===roundNum&&(s.p1||s.p3)):skinsData.some(s=>s.p1||s.p3);const dollarDiff=absDiff*skinsPerSkin;const isComplete=(isTournComplete||isRoundComplete);const dollarText=skinsPerSkin>0&&absDiff>0?' ($'+dollarDiff+')':'';const label=allZero?(hasMatchups?'Matchups set — no scores yet':'Matchups not set yet'):diff===0?'Skins tied':(esc(leader)+' '+(isComplete?(isPlural?'won':'won'):verb)+' '+absDiff+' skin'+(absDiff!==1?'s':'')+dollarText);const leadColor=allZero?'var(--text-muted)':diff===0?'var(--text-muted)':isComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-bar-wrap"><div class="skins-lead-text" style="color:${leadColor}">${label}</div><div class="skins-bar"><div class="skins-bar-fill" style="width:${pct}%;background:${barColor}"></div></div></div>`;if(skinsPerSkin>0&&!allZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-top:4px">$${skinsPerSkin}/skin</div>`}h+=`<div class="skins-tap-hint">Tap for full skins breakdown</div>`;sum.innerHTML=h}
 function getMatchStrokes(m,rn){const lps=[m.p1,m.p2].filter(Boolean).map(n=>players.find(p=>p.name===n));const rps=[m.p3,m.p4].filter(Boolean).map(n=>players.find(p=>p.name===n));const lCH=lps.reduce((s,p)=>s+(p?getCH(p.hi,rn):0),0);const rCH=rps.reduce((s,p)=>s+(p?getCH(p.hi,rn):0),0);const diff=Math.abs(lCH-rCH);if(diff===0)return{text:'Even match — no strokes given',strokes:0};const receiverPair=lCH>rCH?[m.p1,m.p2]:[m.p3,m.p4];const names=receiverPair.filter(Boolean).map(n=>n.split(' ')[0]);const receiver=names.length===2?names[0]+' and '+names[1]:names[0]||'Side';return{text:receiver+' get'+(names.length===1?'s':'')+' '+diff+' stroke'+(diff!==1?'s':''),strokes:diff}}
 function openSkinsModal(){if(!skinsData.length)return;const modal=document.getElementById('skinsModal');const body=document.getElementById('skinsModalBody');const teams=[...new Set(players.map(p=>p.team).filter(Boolean))];if(teams.length<2){body.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">No team data</div>';modal.classList.add('open');return}const isRoundView=currentView!=='tournament';const roundNum=isRoundView?parseInt(currentView):null;const totals=getTeamSkinsTotals(roundNum);const tArr=teams.map(t=>[t,totals[t]||0]);const total=tArr.reduce((s,t)=>s+t[1],0);const diff=tArr[0][1]-tArr[1][1];const absDiff=Math.abs(diff);const leader=diff>0?tArr[0][0]:diff<0?tArr[1][0]:null;const allComplete=players.length>0&&players.every(p=>{const r=p.rounds[String(totalRounds)];return r&&r.front>0&&r.back>0});const isTournComplete=!isRoundView&&allComplete;const isRoundComplete=isRoundView&&players.length>0&&players.every(p=>{const r=p.rounds[String(roundNum)];return r&&r.front>0&&r.back>0});const isPlural=leader&&leader.endsWith('s');const verb=(isTournComplete||isRoundComplete)?(isPlural?'win by':'wins by'):(isPlural?'lead by':'leads by');let h=`<div style="text-align:center;font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">${isRoundView?'Round '+roundNum+' Skins':'Tournament Skins'}</div>`;h+='<div class="skins-team-row" style="margin-bottom:16px">';const mAllZero=total===0;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[0][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[0][1]>tArr[1][1]?'var(--gold)':tArr[0][1]<tArr[1][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[0][1]}</div><div class="skins-team-label">skins</div></div>`;h+=`<div class="skins-vs">vs</div>`;h+=`<div class="skins-team"><div class="skins-team-name">${esc(tArr[1][0])}</div><div class="skins-team-count" style="color:${mAllZero?'var(--cream)':tArr[1][1]>tArr[0][1]?'var(--gold)':tArr[1][1]<tArr[0][1]?'var(--cream)':'var(--cream)'}">${mAllZero?'—':tArr[1][1]}</div><div class="skins-team-label">skins</div></div>`;h+='</div>';const mDollarDiff=absDiff*skinsPerSkin;const mIsComplete=(isTournComplete||isRoundComplete);const mDollarText=skinsPerSkin>0&&absDiff>0?' ($'+mDollarDiff+')':'';if(mAllZero)h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Matchups set — no scores yet</div>`;else if(absDiff>0){const mLeadColor=mIsComplete?'var(--gold)':'var(--text-secondary)';h+=`<div class="skins-lead-text" style="color:${mLeadColor};margin-bottom:6px">${esc(leader)} ${mIsComplete?(isPlural?'won':'won'):verb} ${absDiff} skin${absDiff!==1?'s':''}${mDollarText}</div>`}else h+=`<div class="skins-lead-text" style="color:var(--text-muted);margin-bottom:6px">Tied</div>`;h+=`<div class="skins-bar" style="margin-bottom:4px"><div class="skins-bar-fill" style="width:${total>0?(tArr[0][1]/total*100):50}%;background:${mAllZero?'transparent':absDiff===0?'var(--text-muted)':'var(--gold)'}"></div></div>`;if(skinsPerSkin>0&&!mAllZero){h+=`<div style="text-align:center;font-size:0.55rem;color:var(--text-muted);margin-bottom:16px">$${skinsPerSkin}/skin</div>`}else{h+=`<div style="margin-bottom:16px"></div>`}const rounds=isRoundView?[roundNum]:[...new Set(skinsData.map(s=>s.round))].sort((a,b)=>a-b);for(const rn of rounds){const rMatches=skinsData.filter(s=>s.round===rn);if(!rMatches.length)continue;const cn=getCourseName(rn);let rT1=0,rT2=0;rMatches.forEach(m=>{const s1t=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const s1isT0=s1t.includes(teams[0]);if(s1isT0){rT1+=m.t1f+m.t1b;rT2+=m.t2f+m.t2b}else{rT2+=m.t1f+m.t1b;rT1+=m.t2f+m.t2b}});h+=`<div class="skins-round-card"><div class="skins-round-head"><div style="display:flex;align-items:center;gap:8px"><span style="background:var(--green-500);color:var(--cream);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:700">R${rn}</span><span style="font-size:0.8rem;color:var(--text-secondary)">${cn?esc(cn):''}</span></div><div style="display:flex;gap:14px;font-size:0.82rem;font-weight:700"><span style="color:${rT1>rT2?'var(--gold)':rT1<rT2?'var(--cream)':'var(--cream)'}">${rT1}</span><span style="color:${rT2>rT1?'var(--gold)':rT2<rT1?'var(--cream)':'var(--cream)'}">${rT2}</span></div></div><div class="skins-round-body">`;for(const m of rMatches){const side1Teams=[m.p1,m.p2].map(n=>players.find(p=>p.name===n)?.team).filter(Boolean);const side1IsTeam0=side1Teams.includes(teams[0]);const isFlipped=!side1IsTeam0;const leftPlayers=isFlipped?[m.p3,m.p4].filter(Boolean):[m.p1,m.p2].filter(Boolean);const rightPlayers=isFlipped?[m.p1,m.p2].filter(Boolean):[m.p3,m.p4].filter(Boolean);const lf=isFlipped?m.t2f:m.t1f;const lb=isFlipped?m.t2b:m.t1b;const rf=isFlipped?m.t1f:m.t2f;const rb=isFlipped?m.t1b:m.t2b;const lt=lf+lb;const rt=rf+rb;h+=`<div class="skins-match-title">Match ${m.match}</div>`;h+=`<div class="skins-match-players"><div>${leftPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div><div style="font-size:0.65rem;color:var(--text-muted);align-self:center;font-weight:600">vs</div><div style="text-align:right">${rightPlayers.map(n=>`<div style="font-weight:500;color:var(--cream)">${esc(n)}</div>`).join('')}</div></div>`;const mStrokes=getMatchStrokes(m,rn);h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin:4px 0 10px">${mStrokes.text}</div>`;h+=`<div class="skins-grid"><div class="skins-grid-head">${esc(teams[0])}</div><div></div><div class="skins-grid-head" style="text-align:right">${esc(teams[1])}</div>`;h+=`<div style="font-weight:700;color:${lf>rf?'var(--gold)':lf<rf?'var(--cream)':'var(--cream)'}">${lf}</div><div class="skins-grid-label">Front 9</div><div style="font-weight:700;text-align:right;color:${rf>lf?'var(--gold)':rf<lf?'var(--cream)':'var(--cream)'}">${rf}</div>`;h+=`<div style="font-weight:700;color:${lb>rb?'var(--gold)':lb<rb?'var(--cream)':'var(--cream)'}">${lb}</div><div class="skins-grid-label">Back 9</div><div style="font-weight:700;text-align:right;color:${rb>lb?'var(--gold)':rb<lb?'var(--cream)':'var(--cream)'}">${rb}</div>`;h+=`<div class="skins-grid-total" style="font-weight:700;color:${lt>rt?'var(--gold)':lt<rt?'var(--cream)':'var(--cream)'}">${lt}</div><div class="skins-grid-total skins-grid-label" style="font-weight:600">Total</div><div class="skins-grid-total" style="font-weight:700;text-align:right;color:${rt>lt?'var(--gold)':rt<lt?'var(--cream)':'var(--cream)'}">${rt}</div>`;h+=`</div>`}h+=`</div></div>`}body.innerHTML=h;modal.classList.add('open');modal.querySelector('.modal-sheet').scrollTop=0}
 /* ═══ SCORER SKINS MODE ═══ */
@@ -2725,11 +2783,223 @@ async function saveInfoTab(){if(!adminInfoActiveTab){showAdminToast('No tab sele
 
 /* ═══ GOOGLE OAUTH ═══ */
 let googleClientId='181776945321-257almdmhts5sbgnj3a3q6p8bcn2dvat.apps.googleusercontent.com';
-const GOOGLE_SCOPE='https://www.googleapis.com/auth/spreadsheets';
+const GOOGLE_SCOPE='https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 function startLgGoogleAuth(){const params=new URLSearchParams({client_id:googleClientId,redirect_uri:window.location.origin+window.location.pathname,response_type:'token',scope:GOOGLE_SCOPE,include_granted_scopes:'true',state:'league_auth'});window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+params.toString()}
 function startGoogleAuth(){const params=new URLSearchParams({client_id:googleClientId,redirect_uri:window.location.origin+window.location.pathname,response_type:'token',scope:GOOGLE_SCOPE,include_granted_scopes:'true',state:'admin_auth'});window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+params.toString()}
 function handleOAuthCallback(){const hash=window.location.hash;if(!hash||!hash.includes('access_token'))return;const params=new URLSearchParams(hash.slice(1));const token=params.get('access_token');const state=params.get('state');if(token&&(state==='admin_auth'||state==='league_auth')){gAuthToken=token;window._authState=state;history.replaceState(null,'',window.location.pathname+window.location.search)}}
 handleOAuthCallback();
+
+
+
+// ══════════════════════════════════════════════════════════════
+// PHOTO GALLERY MODULE
+// ══════════════════════════════════════════════════════════════
+
+let galleryOpen=false;let galleryCategory='';let galleryContext='';
+
+function initGallery(){
+  document.getElementById('scorecardsLink').addEventListener('click',()=>openPinModal('scorer',{title:'Scorecards',sub:'Enter PIN to view',onSuccess:()=>openGallery('scorecards','invitational')}));
+  document.getElementById('galleryLink').addEventListener('click',()=>openPinModal('scorer',{title:'Photo Gallery',sub:'Enter PIN to view',onSuccess:()=>openGallery('photos','invitational')}));
+  document.getElementById('lgScorecardsLink').addEventListener('click',()=>openPinModal('scorer',{title:'Scorecards',sub:'Enter PIN to view',onSuccess:()=>openGallery('scorecards','league')}));
+  document.getElementById('lgGalleryLink').addEventListener('click',()=>openPinModal('scorer',{title:'Photo Gallery',sub:'Enter PIN to view',onSuccess:()=>openGallery('photos','league')}));
+  document.getElementById('galleryBack').addEventListener('click',closeGallery);
+  document.getElementById('galleryFileInput').addEventListener('change',handleGalleryUpload);
+}
+
+function getGalleryYear(){return galleryContext==='league'?lgCurrentYear:currentYear}
+function getGalleryFolderName(){
+  const yr=getGalleryYear();
+  const prefix=galleryContext==='league'?'League':'Invitational';
+  const sub=galleryCategory==='scorecards'?'Scorecards':'Photos';
+  return prefix+' '+yr+' '+sub;
+}
+function getGalleryTabName(){
+  const yr=getGalleryYear();
+  const prefix=galleryContext==='league'?'League ':'';
+  const sub=galleryCategory==='scorecards'?'Scorecards':'Photos';
+  return prefix+sub+' '+yr;
+}
+
+function openGallery(category,context){
+  galleryCategory=category;galleryContext=context;galleryOpen=true;
+  document.getElementById('galleryTitle').textContent=category==='scorecards'?'Scorecards':'Photo Gallery';
+  // Hide current page content
+  if(context==='invitational'){
+    document.querySelectorAll('#yearControls,.controls,#championBanner,#countdownBanner,#countdownLive,#highlights,#teamSection,#chartSection,#skinsSection,#individualSection,#historySection,#coursesSection,#hcSection,#infoTabsWrap,#recordsLinkWrap,#courseInfoCard,#galleryLinks,#siteFooter').forEach(el=>el.style.display='none');
+    document.getElementById('scoreEntryFab').style.display='none';
+    document.querySelector('#adminHeaderBtn').parentElement.style.display='none';
+  }else{
+    document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap,#lgGalleryLinks').forEach(el=>el.style.display='none');
+    document.getElementById('lgScorerFab').style.display='none';
+    document.getElementById('lgAdminBtn').style.display='none';
+  }
+  document.getElementById('galleryPage').classList.add('show');
+  loadGalleryPhotos();
+  window.scrollTo(0,0);
+}
+
+function closeGallery(){
+  galleryOpen=false;
+  document.getElementById('galleryPage').classList.remove('show');
+  if(galleryContext==='invitational'){
+    // Restore all invitational elements
+    document.getElementById('mainHeader').style.display='';
+    document.getElementById('siteFooter').style.display='';
+    document.querySelectorAll('.controls').forEach(el=>el.style.display='flex');
+    if(availableYears.length>1)document.getElementById('yearControls').style.display='flex';
+    document.querySelectorAll('#individualSection,#historySection,#coursesSection,#hcSection').forEach(el=>el.style.display='block');
+    if(teamMode){document.getElementById('teamSection').style.display='block';document.getElementById('chartSection').style.display='block'}
+    document.getElementById('recordsLinkWrap').style.display='block';
+    document.getElementById('scoreEntryFab').style.display='flex';
+    document.getElementById('galleryLinks').style.display='';
+    document.querySelector('#adminHeaderBtn').parentElement.style.display='';
+    if(infoTabs.length)document.getElementById('infoTabsWrap').style.display='flex';
+    document.getElementById('championBanner').style.display='';
+    document.getElementById('countdownBanner').style.display='';
+    document.getElementById('countdownLive').style.display='';
+    document.getElementById('courseInfoCard').style.display='';
+    lastCSV='';load();
+  }else{
+    document.getElementById('lgGalleryLinks').style.display='';
+    document.getElementById('lgScorerFab').style.display='';
+    document.getElementById('lgAdminBtn').style.display='';
+    renderLeague();
+  }
+}
+
+async function loadGalleryPhotos(){
+  const grid=document.getElementById('galleryGrid');
+  grid.innerHTML='<div class="gallery-empty">Loading...</div>';
+  const tabName=getGalleryTabName();
+  try{
+    const rows=await fetchTab(tabName);
+    // Validate this is actually a photos tab (header row should contain "File ID")
+    if(!rows||rows.length<1||(rows[0][0]||'').trim()!=='File ID'){
+      grid.innerHTML='<div class="gallery-empty">No photos yet. Upload some!</div>';
+      return;
+    }
+    if(rows.length<=1){
+      grid.innerHTML='<div class="gallery-empty">No photos yet. Upload some!</div>';
+      return;
+    }
+    let html='';
+    for(let i=1;i<rows.length;i++){
+      const fileId=(rows[i][0]||'').trim();
+      const caption=(rows[i][1]||'').trim();
+      if(!fileId||fileId.length<10)continue;
+      const thumbUrl='https://drive.google.com/thumbnail?id='+fileId+'&sz=w400';
+      const fullUrl='https://drive.google.com/thumbnail?id='+fileId+'&sz=w1600';
+      html+=`<div class="gallery-thumb">
+        <img src="${thumbUrl}" loading="lazy" alt="${esc(caption)}" onclick="openLightbox('${fullUrl}')" />
+        <div class="gallery-delete" onclick="event.stopPropagation();deletePhoto('${fileId}')">🗑</div>
+      </div>`;
+    }
+    grid.innerHTML=html||'<div class="gallery-empty">No photos yet. Upload some!</div>';
+  }catch(e){
+    grid.innerHTML='<div class="gallery-empty">No photos yet. Upload some!</div>';
+  }
+}
+
+
+async function deletePhoto(fileId){
+  if(!confirm('Delete this photo?'))return;
+  const tabName=getGalleryTabName();
+  const status=document.getElementById('galleryUploadStatus');
+  status.textContent='Deleting...';
+  try{
+    const res=await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({
+        action:'deletePhoto',
+        pin:scorerPIN,
+        fileId:fileId,
+        tabName:tabName
+      })
+    });
+    const txt=await res.text();
+    let d;
+    try{d=JSON.parse(txt)}catch(e){const m=txt.match(/\{[^]*?\}/);d=m?JSON.parse(m[0]):{ok:false,error:'Parse error'}}
+    if(d&&d.ok){
+      status.textContent='Photo deleted';
+      setTimeout(()=>{status.textContent=''},2000);
+      loadGalleryPhotos();
+    }else{
+      status.textContent='Delete failed: '+(d?d.error:'Unknown');
+    }
+  }catch(err){
+    status.textContent='Delete failed: '+err.message;
+  }
+}
+
+function openLightbox(url){
+  document.getElementById('lightboxImg').src=url;
+  document.getElementById('lightboxOverlay').classList.add('open');
+}
+
+async function handleGalleryUpload(e){
+  const files=e.target.files;
+  if(!files||!files.length)return;
+  const btn=document.getElementById('galleryUploadBtn');
+  const status=document.getElementById('galleryUploadStatus');
+  btn.classList.add('uploading');
+  status.textContent='Uploading '+files.length+' photo'+(files.length>1?'s':'')+'...';
+
+  const tabName=getGalleryTabName();
+  const folderName=getGalleryFolderName();
+  let uploaded=0;
+
+  for(const file of files){
+    try{
+      const base64=await fileToBase64(file);
+      const payload={
+          action:'uploadPhoto',
+          pin:scorerPIN,
+          fileName:file.name,
+          mimeType:file.type,
+          data:base64,
+          folderName:folderName,
+          tabName:tabName,
+          sheetId:SHEET_ID
+        };
+      status.textContent='Sending '+file.name+'...';
+      const res=await fetch(APPS_SCRIPT_URL,{
+        method:'POST',
+        redirect:'follow',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify(payload)
+      });
+      const txt=await res.text();
+      let d;
+      try{d=JSON.parse(txt)}catch(parseErr){
+        const jsonMatch=txt.match(/\{[^]*?\}/);
+        if(jsonMatch){try{d=JSON.parse(jsonMatch[0])}catch(e2){d={ok:false,error:'Response: '+txt.slice(0,100)}}}
+        else{d={ok:false,error:'Not JSON: '+txt.slice(0,100)}}
+      }
+      if(d&&d.ok){uploaded++;status.textContent='Uploaded '+uploaded+' of '+files.length+'...';loadGalleryPhotos()}
+      else{status.textContent='Error: '+(d?d.error||'Unknown':'No response');console.error('Upload response:',txt.slice(0,200))}
+    }catch(err){
+      console.error('Upload error:',err);
+    }
+    status.textContent='Uploaded '+uploaded+' of '+files.length+'...';
+  }
+
+  btn.classList.remove('uploading');
+  status.textContent=uploaded+' photo'+(uploaded>1?'s':'')+' uploaded!';
+  setTimeout(()=>{status.textContent=''},3000);
+  e.target.value='';
+  loadGalleryPhotos();
+}
+
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result.split(',')[1]);
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 // ══════════════════════════════════════════════════════════════
 // LEAGUE MODULE
@@ -2756,11 +3026,13 @@ function initModeSwitcher(){
       lgMode=mode;
       if(mode==='league'){
         // Hide all invitational elements
-        document.querySelectorAll('#mainHeader,#yearControls,#courseInfoCard,#championBanner,#countdownBanner,#countdownLive,#highlights,#teamSection,#chartSection,#skinsSection,#individualSection,#historySection,#coursesSection,#hcSection,#infoTabsWrap,#recordsLinkWrap,#siteFooter,#recordsPage,#lgYearControls').forEach(el=>{if(el)el.style.display='none'});
+        document.querySelectorAll('#mainHeader,#yearControls,#courseInfoCard,#championBanner,#countdownBanner,#countdownLive,#highlights,#teamSection,#chartSection,#skinsSection,#individualSection,#historySection,#coursesSection,#hcSection,#infoTabsWrap,#recordsLinkWrap,#siteFooter,#recordsPage,#lgYearControls,#galleryLinks').forEach(el=>{if(el)el.style.display='none'});
+        document.querySelector('#adminHeaderBtn').parentElement.style.display='none';
         recordsOpen=false;
         document.querySelectorAll('.controls').forEach(el=>el.style.display='none');
         document.getElementById('scoreEntryFab').style.display='none';
         
+        document.getElementById('galleryPage').classList.remove('show');galleryOpen=false;
         document.getElementById('leaguePage').style.display='block';
         document.getElementById('lgScorerFab').style.display='';
         document.getElementById('lgAdminBtn').style.display='';
@@ -2791,6 +3063,8 @@ function initModeSwitcher(){
         document.getElementById('recordsLinkWrap').style.display='block';
         document.getElementById('scoreEntryFab').style.display='flex';
         if(infoTabs.length)document.getElementById('infoTabsWrap').style.display='flex';
+        document.getElementById('galleryLinks').style.display='';
+        document.querySelector('#adminHeaderBtn').parentElement.style.display='';
         stopLgPolling();
         lastCSV='';load();
       }
@@ -3280,8 +3554,9 @@ function renderLgBadge(){
 
 // ── Main Render ──
 function renderLeague(){
-  if(lgRecordsOpen)return;
+  if(lgRecordsOpen||galleryOpen)return;
   document.getElementById('lgRecordsLinkWrap').style.display='';
+  document.getElementById('lgGalleryLinks').style.display='';
   document.getElementById('lgStandingsSection').style.display='';
   document.getElementById('lgMatchesSection').style.display='';
   renderLgYearSelector();
