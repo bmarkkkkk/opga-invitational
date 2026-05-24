@@ -2863,6 +2863,7 @@ function closeGallery(){
     document.getElementById('lgGalleryLinks').style.display='';
     document.getElementById('lgScorerFab').style.display='';
     document.getElementById('lgAdminBtn').style.display='';
+    document.getElementById('lgRecordsLinkWrap').style.display='';
     renderLeague();
   }
 }
@@ -3864,7 +3865,7 @@ function renderLgAdminConfig(c){
     <div style="margin-bottom:12px"><label style="font-size:0.7rem;color:var(--text-muted)">Years</label>
     <div id="lgAdminYears" style="margin-top:4px">${lgYears.map((y,i)=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px"><input class="admin-input lg-year-input" value="${esc(y)}" style="flex:1" /><button class="admin-btn-sm admin-btn-danger" onclick="lgRemoveYear(${i})">✕</button></div>`).join('')}</div>
     <button class="admin-btn-sm" onclick="lgAddYear()" style="margin-top:4px">+ Add Year</button></div>
-    <button class="admin-btn" onclick="saveLgConfig()">Save Config</button>
+    <button class="admin-btn admin-btn-primary" onclick="saveLgConfig()">Save Config</button>
   </div>`;
 }
 
@@ -3937,8 +3938,33 @@ function renderLgAdminTeams(c){
     h+=`<div style="color:var(--text-muted);font-size:0.65rem">${t.p2||'P2'}</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p2hi" data-ti="${ti}" data-r="${r}" value="${(t.p2hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
     h+=`</div></div>`;
   }
-  h+=`<button class="admin-btn" onclick="saveLgTeams()" style="margin-top:12px">Save Teams</button></div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="admin-btn admin-btn-primary" onclick="saveLgTeams()">Save Teams</button><button class="admin-btn admin-btn-secondary" onclick="saveLgHandicaps()">Update Handicaps (no sign-in)</button></div></div>`;
   c.innerHTML=h;
+}
+
+
+async function saveLgHandicaps(){
+  if(!APPS_SCRIPT_URL){showAdminToast('No Apps Script URL configured',true);return}
+  const teamCount=document.querySelectorAll('.lg-t-p1').length;
+  const hiData=[];
+  for(let ti=0;ti<teamCount;ti++){
+    const p1hi=[];const p2hi=[];
+    document.querySelectorAll(`.lg-t-p1hi[data-ti="${ti}"]`).forEach(i=>p1hi.push(parseFloat(i.value)||0));
+    document.querySelectorAll(`.lg-t-p2hi[data-ti="${ti}"]`).forEach(i=>p2hi.push(parseFloat(i.value)||0));
+    hiData.push({row:ti+2,p1hi,p2hi});
+  }
+  showAdminToast('Saving handicaps...');
+  try{
+    const res=await fetch(APPS_SCRIPT_URL,{
+      method:'POST',redirect:'follow',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateLeagueHI',pin:adminPIN,year:lgAdminYear||lgCurrentYear,hiData})
+    });
+    const txt=await res.text();
+    let d;try{d=JSON.parse(txt)}catch(e){const m=txt.match(/\{[^]*?\}/);d=m?JSON.parse(m[0]):{ok:false,error:'Parse error'}}
+    if(d&&d.ok){showAdminToast('Handicaps updated');lgLastCSV='';loadLgYear()}
+    else{showAdminToast('Failed: '+(d?d.error:'Unknown'),true)}
+  }catch(err){showAdminToast('Failed: '+err.message,true)}
 }
 
 async function saveLgTeams(){
@@ -3991,7 +4017,7 @@ function renderLgAdminSchedule(c){
       </div>`;
     }
   }
-  h+=`<button class="admin-btn" onclick="saveLgSchedule()" style="margin-top:12px">Save Schedule</button></div>`;
+  h+=`<button class="admin-btn admin-btn-primary" onclick="saveLgSchedule()" style="margin-top:12px">Save Schedule</button></div>`;
   c.innerHTML=h;
 }
 
