@@ -159,7 +159,7 @@
     .lg-match-detail { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; font-size:0.68rem; color:var(--text-muted); text-align:center; }
     .lg-match-detail-header { font-weight:600; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); }
 
-    .lg-player-row { display:grid; grid-template-columns:1fr auto auto auto auto; gap:6px; padding:6px 0; font-size:0.75rem; align-items:center; }
+    .lg-player-row { display:grid; grid-template-columns:1fr auto auto auto auto auto; gap:6px; padding:6px 0; font-size:0.75rem; align-items:center; }
     .lg-player-row.header { font-size:0.6rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); border-bottom:1px solid var(--border); padding-bottom:4px; margin-bottom:2px; }
     .lg-player-row.header div:not(:first-child) { text-align:center; }
     .lg-player-name { font-weight:600; color:var(--cream); }
@@ -3676,7 +3676,7 @@ function renderLgMatches(){
         const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
         if(t1Team&&t2Team){
           h+=`<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">`;
-          h+=`<div class="lg-player-row header"><div style="text-align:left">Player</div><div class="lg-player-stat">HI</div><div class="lg-player-stat">CH</div><div class="lg-player-stat">Gross</div><div class="lg-player-stat">NTP</div></div>`;
+          h+=`<div class="lg-player-row header"><div style="text-align:left">Player</div><div class="lg-player-stat">HI</div><div class="lg-player-stat">CH</div><div class="lg-player-stat">Gross</div><div class="lg-player-stat">NTP</div><div class="lg-player-stat">Thru</div></div>`;
           const rIdx=m.round-1;
           const allP=[
             {name:t1Team.p1,hi:t1Team.p1hi[rIdx]||0,f:m.p1f,b:m.p1b,team:t1Name},
@@ -3684,18 +3684,23 @@ function renderLgMatches(){
             {name:t2Team.p1,hi:t2Team.p1hi[rIdx]||0,f:m.p3f,b:m.p3b,team:t2Name},
             {name:t2Team.p2,hi:t2Team.p2hi[rIdx]||0,f:m.p4f,b:m.p4b,team:t2Name}
           ];
-          for(const p of allP.sort((a,b)=>{const aN=a.f>0||a.b>0?1:0;const bN=b.f>0||b.b>0?1:0;if(aN!==bN)return bN-aN;const crs=courses[m.course];const aNet=crs?((a.f+a.b)-lgGetCH(a.hi,m.course)-crs.par):0;const bNet=crs?((b.f+b.b)-lgGetCH(b.hi,m.course)-crs.par):0;return aNet-bNet||a.hi-b.hi})){
-            const ch=m.course?lgGetCH(p.hi,m.course):0;
+          for(const p of allP.sort((a,b)=>{const aN=a.f>0||a.b>0?1:0;const bN=b.f>0||b.b>0?1:0;if(aN!==bN)return bN-aN;const crs=courses[m.course];if(!crs)return a.hi-b.hi;function calcNtp9(x){const ch=lgGetCH(x.hi,m.course);const hF=x.f>0,hB=x.b>0;if(hF&&hB)return(x.f+x.b)-ch-crs.par;if(hF)return x.f-Math.ceil(ch/2)-(crs.frontPar||Math.ceil(crs.par/2));if(hB)return x.b-Math.floor(ch/2)-(crs.backPar||Math.floor(crs.par/2));return 0}return calcNtp9(a)-calcNtp9(b)||a.hi-b.hi})){
+            const fullCH=m.course?lgGetCH(p.hi,m.course):0;
             const crs=courses[m.course];
-            const gross=p.f+p.b;const net=gross-ch;const ntp=crs?(net-crs.par):0;
-            const hasP=p.f>0||p.b>0;
+            const hasF=p.f>0;const hasB=p.b>0;const hasP=hasF||hasB;
+            let gross=0,strokes=0,par=0,thru=0;
+            if(hasF&&hasB){gross=p.f+p.b;strokes=fullCH;par=crs?crs.par:0;thru=18}
+            else if(hasF){gross=p.f;strokes=Math.ceil(fullCH/2);par=crs?crs.frontPar||Math.ceil(crs.par/2):0;thru=9}
+            else if(hasB){gross=p.b;strokes=Math.floor(fullCH/2);par=crs?crs.backPar||Math.floor(crs.par/2):0;thru=9}
+            const net=gross-strokes;const ntp=par?(net-par):0;
             const ntpColor=ntp<0?'var(--under-par)':ntp>0?'var(--over-par)':'var(--even-par)';
             h+=`<div class="lg-player-row">
               <div class="lg-player-name">${esc(p.name)}<span style="font-size:0.6rem;color:var(--text-muted);margin-left:4px">${esc(p.team)}</span></div>
               <div class="lg-player-stat">${p.hi.toFixed(1)}</div>
-              <div class="lg-player-stat">${ch}</div>
+              <div class="lg-player-stat">${fullCH}</div>
               <div class="lg-player-stat">${hasP?gross:'—'}</div>
               <div class="lg-player-stat" style="color:${hasP?ntpColor:'inherit'};${hasP&&ntp<0?'font-weight:700':''}">${hasP?fmtPar(ntp):'—'}</div>
+              <div class="lg-player-stat" style="color:var(--text-muted)">${hasP?thru:'—'}</div>
             </div>`;
           }
           h+=`</div>`;
