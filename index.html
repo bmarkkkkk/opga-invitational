@@ -3612,10 +3612,14 @@ function renderLgStandings(){
     const ntpStr=s.ntp===0?'E':(s.ntp>0?'+'+s.ntp:String(s.ntp));
     const ntpColor=s.ntp<0?'var(--under-par)':s.ntp>0?'var(--over-par)':'var(--even-par)';
     const lgAllComplete=!isRound&&lgTeams.length>0&&displayStats.every(s=>s.played>=(lgTeams.length-1))&&(lgTeams.length-1)>0;
+    let thru=0;const matchSet=isRound?lgMatches.filter(m=>m.round===rn):lgMatches;
+    for(const m of matchSet){const isT1=m.t1===s.label;if(!isT1&&m.t2!==s.label)continue;
+      const ps=isT1?[[m.p1f,m.p1b],[m.p2f,m.p2b]]:[[m.p3f,m.p3b],[m.p4f,m.p4b]];
+      for(const[f,b] of ps){if(f>0&&b>0)thru+=18;else if(f>0||b>0)thru+=9}}
     h+=`<div class="lg-standings-row${i===0&&lgAllComplete?' rank-1':''}" onclick="openLgTeamModal('${s.label}')">
       <div class="rank">${i+1}</div>
       <div><div class="team-nm">${esc(s.name)}</div><div style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">${(()=>{const t=lgTeamByLabel(s.label);return t?esc(t.p1)+', '+esc(t.p2):''})()}</div><div class="team-sub">${s.played} match${s.played!==1?'es':''} played</div></div>
-      <div class="stat">${s.won}</div><div class="stat">${s.lost}</div><div class="stat">${s.halved}</div><div class="stat" style="font-size:0.75rem;color:${ntpColor};${s.ntp<0?'font-weight:700':''}">${ntpStr}</div>
+      <div class="stat">${s.won}</div><div class="stat">${s.lost}</div><div class="stat">${s.halved}</div><div class="stat" style="font-size:0.75rem;color:${ntpColor};${s.ntp<0?'font-weight:700':''}">${ntpStr}</div><div class="stat" style="color:var(--text-muted)">${thru||'—'}</div>
     </div>`;
   });
   document.getElementById('lgStandings').innerHTML=h;
