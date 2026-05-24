@@ -136,7 +136,7 @@
     .league-header h1 { font-family:'Cormorant Garamond',serif; font-size:2.2rem; font-weight:700; color:var(--cream); margin:0 0 4px; }
     .league-header-sub { font-size:0.72rem; color:var(--text-muted); }
 
-    .lg-standings-row { display:grid; grid-template-columns:28px 1fr repeat(4,minmax(32px,auto)); align-items:center; gap:8px; padding:12px 14px; cursor:pointer; transition:background var(--transition); }
+    .lg-standings-row { display:grid; grid-template-columns:28px 1fr repeat(5,minmax(32px,auto)); align-items:center; gap:8px; padding:12px 14px; cursor:pointer; transition:background var(--transition); }
     @media(hover:hover){.lg-standings-row:hover { background:var(--surface-1); }}
     .lg-standings-row.header { cursor:default; padding:8px 14px; border-bottom:1px solid var(--border); }
     .lg-standings-row.header .stat-lbl { text-align:center; }
@@ -969,7 +969,7 @@
           <div class="admin-tabs" id="lgAdminTabs">
             <button class="admin-tab active" data-lgtab="config">Config</button>
             <button class="admin-tab" data-lgtab="teams">Teams</button>
-            <button class="admin-tab" data-lgtab="schedule">Schedule</button>
+            <button class="admin-tab" data-lgtab="schedule">Rounds</button>
             <button class="admin-tab" data-lgtab="scores">Scores</button>
           </div>
           <div class="admin-content" id="lgAdminContent"></div>
@@ -1018,7 +1018,7 @@
               <div class="scorer-title-text">League Scores</div>
               <div class="scorer-course-text" id="lgScorerSubtitle"></div>
             </div>
-            <button class="scorer-back-btn" onclick="document.getElementById('lgScorerModal').classList.remove('open')">✕ Close</button>
+            <button class="scorer-back-btn" onclick="document.getElementById('lgScorerModal').classList.remove('open');startLgPolling()">✕ Close</button>
           </div>
           <div class="scorer-round-tabs" id="lgScorerRoundTabs"></div>
         </div>
@@ -3075,6 +3075,11 @@ function initModeSwitcher(){
 
 // ── Load League Data ──
 async function loadLeague(){
+  // Ensure shared courses are loaded
+  if(!Object.keys(courses).length){
+    const coursesRaw=await fetchTab('Courses');
+    if(coursesRaw&&coursesRaw.length>1){for(let i=1;i<coursesRaw.length;i++){const r=coursesRaw[i];const name=(r[0]||'').trim();if(!name)continue;const fp=parseFloat(r[1])||36;const bp=parseFloat(r[2])||36;courses[name]={par:fp+bp,frontPar:fp,backPar:bp,rating:r[3]||'72',slope:parseInt(r[4])||113,tees:(r[5]||'').trim()}}}
+  }
   const configRows=await fetchTab('League Config');
   if(!configRows||configRows.length<2){return}
   lgYears=[];
@@ -3601,7 +3606,7 @@ function renderLgStandings(){
 
   let h=`<div class="lg-standings-row header">
     <div class="stat-lbl">#</div><div class="stat-lbl" style="text-align:left">Team</div>
-    <div class="stat-lbl">W</div><div class="stat-lbl">L</div><div class="stat-lbl">H</div><div class="stat-lbl">NTP</div>
+    <div class="stat-lbl">W</div><div class="stat-lbl">L</div><div class="stat-lbl">H</div><div class="stat-lbl">NTP</div><div class="stat-lbl">Thru</div>
   </div>`;
   displayStats.forEach((s,i)=>{
     const ntpStr=s.ntp===0?'E':(s.ntp>0?'+'+s.ntp:String(s.ntp));
@@ -3938,34 +3943,10 @@ function renderLgAdminTeams(c){
     h+=`<div style="color:var(--text-muted);font-size:0.65rem">${t.p2||'P2'}</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p2hi" data-ti="${ti}" data-r="${r}" value="${(t.p2hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
     h+=`</div></div>`;
   }
-  h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="admin-btn admin-btn-primary" onclick="saveLgTeams()">Save Teams</button><button class="admin-btn admin-btn-secondary" onclick="saveLgHandicaps()">Update Handicaps (no sign-in)</button></div></div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="admin-btn admin-btn-primary" onclick="saveLgTeams()">Save Teams</button></div></div>`;
   c.innerHTML=h;
 }
 
-
-async function saveLgHandicaps(){
-  if(!APPS_SCRIPT_URL){showAdminToast('No Apps Script URL configured',true);return}
-  const teamCount=document.querySelectorAll('.lg-t-p1').length;
-  const hiData=[];
-  for(let ti=0;ti<teamCount;ti++){
-    const p1hi=[];const p2hi=[];
-    document.querySelectorAll(`.lg-t-p1hi[data-ti="${ti}"]`).forEach(i=>p1hi.push(parseFloat(i.value)||0));
-    document.querySelectorAll(`.lg-t-p2hi[data-ti="${ti}"]`).forEach(i=>p2hi.push(parseFloat(i.value)||0));
-    hiData.push({row:ti+2,p1hi,p2hi});
-  }
-  showAdminToast('Saving handicaps...');
-  try{
-    const res=await fetch(APPS_SCRIPT_URL,{
-      method:'POST',redirect:'follow',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'updateLeagueHI',pin:adminPIN,year:lgAdminYear||lgCurrentYear,hiData})
-    });
-    const txt=await res.text();
-    let d;try{d=JSON.parse(txt)}catch(e){const m=txt.match(/\{[^]*?\}/);d=m?JSON.parse(m[0]):{ok:false,error:'Parse error'}}
-    if(d&&d.ok){showAdminToast('Handicaps updated');lgLastCSV='';loadLgYear()}
-    else{showAdminToast('Failed: '+(d?d.error:'Unknown'),true)}
-  }catch(err){showAdminToast('Failed: '+err.message,true)}
-}
 
 async function saveLgTeams(){
   const tab='League Teams '+lgAdminYear;
@@ -3989,8 +3970,8 @@ async function saveLgTeams(){
 
 function renderLgAdminSchedule(c){
   const maxR=lgTotalRounds()||3;
-  let h=`<div class="admin-section"><div class="admin-section-title">Schedule — ${lgAdminYear}</div>
-  <div class="admin-section-sub">Set matchups and course for each round. Matchups auto-saved with scores.</div>`;
+  let h=`<div class="admin-section"><div class="admin-section-title">Rounds — ${lgAdminYear}</div>
+  <div class="admin-section-sub">Set matchups and course for each round.</div>`;
   const courseNames=Object.keys(courses);
   for(let rn=1;rn<=maxR;rn++){
     h+=`<div style="font-weight:600;color:var(--gold);font-size:0.65rem;letter-spacing:0.1em;margin:12px 0 8px">ROUND ${rn}</div>`;
@@ -4006,7 +3987,7 @@ function renderLgAdminSchedule(c){
       const thisMatchTeams=[m.t1,m.t2];
       const teamOpts=`<option value="">— Select —</option>`+lgTeams.map(t=>{const usedElsewhere=usedInRound.includes(t.label)&&!thisMatchTeams.includes(t.label);return`<option value="${esc(t.label)}" ${t.label===m.t1?'selected':''}${usedElsewhere?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${usedElsewhere?' — in use':''}</option>`}).join('');
       const teamOpts2=`<option value="">— Select —</option>`+lgTeams.map(t=>{const usedElsewhere=usedInRound.includes(t.label)&&!thisMatchTeams.includes(t.label);return`<option value="${esc(t.label)}" ${t.label===m.t2?'selected':''}${usedElsewhere?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${usedElsewhere?' — in use':''}</option>`}).join('');
-      const courseOpts=`<option value="">Select course</option>`+courseNames.map(cn=>`<option value="${esc(cn)}" ${cn===m.course?'selected':''}>${esc(cn)}</option>`).join('');
+      const courseOpts=`<option value="">Select course</option>`+courseNames.map(cn=>{const cInfo=courses[cn];const tees=cInfo&&cInfo.tees?' — '+cInfo.tees:'';return`<option value="${esc(cn)}" ${cn===m.course?'selected':''}>${esc(cn)}${tees}</option>`}).join('');
       h+=`<div class="lg-admin-match">
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px">
           <select class="admin-input lg-sch-t1" data-rn="${rn}" data-mi="${mi}" onchange="updateLgScheduleDisabled()">${teamOpts}</select>
@@ -4147,6 +4128,7 @@ let lgScorerRound=0;
 function openLgScorerModal(){
   openPinModal('scorer',{title:'League Scores',sub:'Enter scorer PIN',onSuccess:function(){
     lgScorerRound=0;
+    stopLgPolling();
     renderLgScorerModal();
     document.getElementById('lgScorerModal').classList.add('open');
   }});
