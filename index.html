@@ -3151,22 +3151,27 @@ function lgCalcStandings(){
     if(stats[m.t2]){stats[m.t2].won+=t2w;stats[m.t2].lost+=t1w;stats[m.t2].halved+=halved;stats[m.t2].played++}
     // NTP tiebreaker - calculate team net scores
     const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
-    if(t1Team&&m.course){
+    const crs=courses[m.course];
+    if(t1Team&&crs){
       const rIdx=m.round-1;
-      const p1ch=lgGetCH(t1Team.p1hi[rIdx]||0,m.course);const p2ch=lgGetCH(t1Team.p2hi[rIdx]||0,m.course);
-      const crs=courses[m.course];if(crs){
-        const p1net=(m.p1f+m.p1b)-p1ch;const p2net=(m.p2f+m.p2b)-p2ch;
-        const teamNet=p1net+p2net-crs.par*2;
-        if(m.p1f>0||m.p1b>0||m.p2f>0||m.p2b>0)stats[m.t1].ntp+=teamNet;
+      const players=[[m.p1f,m.p1b,t1Team.p1hi[rIdx]||0],[m.p2f,m.p2b,t1Team.p2hi[rIdx]||0]];
+      for(const[f,b,hi] of players){
+        const hasF=f>0,hasB=b>0;if(!hasF&&!hasB)continue;
+        const ch=lgGetCH(hi,m.course);
+        if(hasF&&hasB){stats[m.t1].ntp+=(f+b)-ch-crs.par}
+        else if(hasF){stats[m.t1].ntp+=f-Math.ceil(ch/2)-(crs.frontPar||Math.ceil(crs.par/2))}
+        else{stats[m.t1].ntp+=b-Math.floor(ch/2)-(crs.backPar||Math.floor(crs.par/2))}
       }
     }
-    if(t2Team&&m.course){
+    if(t2Team&&crs){
       const rIdx=m.round-1;
-      const p3ch=lgGetCH(t2Team.p1hi[rIdx]||0,m.course);const p4ch=lgGetCH(t2Team.p2hi[rIdx]||0,m.course);
-      const crs=courses[m.course];if(crs){
-        const p3net=(m.p3f+m.p3b)-p3ch;const p4net=(m.p4f+m.p4b)-p4ch;
-        const teamNet=p3net+p4net-crs.par*2;
-        if(m.p3f>0||m.p3b>0||m.p4f>0||m.p4b>0)stats[m.t2].ntp+=teamNet;
+      const players=[[m.p3f,m.p3b,t2Team.p1hi[rIdx]||0],[m.p4f,m.p4b,t2Team.p2hi[rIdx]||0]];
+      for(const[f,b,hi] of players){
+        const hasF=f>0,hasB=b>0;if(!hasF&&!hasB)continue;
+        const ch=lgGetCH(hi,m.course);
+        if(hasF&&hasB){stats[m.t2].ntp+=(f+b)-ch-crs.par}
+        else if(hasF){stats[m.t2].ntp+=f-Math.ceil(ch/2)-(crs.frontPar||Math.ceil(crs.par/2))}
+        else{stats[m.t2].ntp+=b-Math.floor(ch/2)-(crs.backPar||Math.floor(crs.par/2))}
       }
     }
   }
@@ -3586,8 +3591,9 @@ function renderLgStandings(){
       // NTP for round
       const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
       const rIdx=m.round-1;
-      if(t1Team&&m.course){const crs=courses[m.course];if(crs){const p1ch=lgGetCH(t1Team.p1hi[rIdx]||0,m.course);const p2ch=lgGetCH(t1Team.p2hi[rIdx]||0,m.course);const p1net=(m.p1f+m.p1b)-p1ch;const p2net=(m.p2f+m.p2b)-p2ch;if(m.p1f>0||m.p1b>0||m.p2f>0||m.p2b>0)roundStats[m.t1].ntp+=p1net+p2net-crs.par*2}}
-      if(t2Team&&m.course){const crs=courses[m.course];if(crs){const p3ch=lgGetCH(t2Team.p1hi[rIdx]||0,m.course);const p4ch=lgGetCH(t2Team.p2hi[rIdx]||0,m.course);const p3net=(m.p3f+m.p3b)-p3ch;const p4net=(m.p4f+m.p4b)-p4ch;if(m.p3f>0||m.p3b>0||m.p4f>0||m.p4b>0)roundStats[m.t2].ntp+=p3net+p4net-crs.par*2}}
+      const rnCrs=courses[m.course];
+      if(t1Team&&rnCrs){const ps=[[m.p1f,m.p1b,t1Team.p1hi[rIdx]||0],[m.p2f,m.p2b,t1Team.p2hi[rIdx]||0]];for(const[f,b,hi] of ps){const hF=f>0,hB=b>0;if(!hF&&!hB)continue;const ch=lgGetCH(hi,m.course);if(hF&&hB)roundStats[m.t1].ntp+=(f+b)-ch-rnCrs.par;else if(hF)roundStats[m.t1].ntp+=f-Math.ceil(ch/2)-(rnCrs.frontPar||Math.ceil(rnCrs.par/2));else roundStats[m.t1].ntp+=b-Math.floor(ch/2)-(rnCrs.backPar||Math.floor(rnCrs.par/2))}}
+      if(t2Team&&rnCrs){const ps=[[m.p3f,m.p3b,t2Team.p1hi[rIdx]||0],[m.p4f,m.p4b,t2Team.p2hi[rIdx]||0]];for(const[f,b,hi] of ps){const hF=f>0,hB=b>0;if(!hF&&!hB)continue;const ch=lgGetCH(hi,m.course);if(hF&&hB)roundStats[m.t2].ntp+=(f+b)-ch-rnCrs.par;else if(hF)roundStats[m.t2].ntp+=f-Math.ceil(ch/2)-(rnCrs.frontPar||Math.ceil(rnCrs.par/2));else roundStats[m.t2].ntp+=b-Math.floor(ch/2)-(rnCrs.backPar||Math.floor(rnCrs.par/2))}}
     }
     displayStats=Object.values(roundStats).sort((a,b)=>b.won-a.won||a.lost-b.lost||a.ntp-b.ntp);
   }
@@ -3927,8 +3933,8 @@ function renderLgAdminTeams(c){
     h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:4px">Handicap Index per Round</div>`;
     h+=`<div style="display:grid;grid-template-columns:auto repeat(${maxR},1fr);gap:4px;font-size:0.7rem;align-items:center">`;
     h+=`<div></div>`;for(let r=1;r<=maxR;r++){h+=`<div style="text-align:center;font-size:0.58rem;color:var(--text-muted)">R${r}</div>`}
-    h+=`<div style="color:var(--text-muted)">P1</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p1hi" data-ti="${ti}" data-r="${r}" value="${(t.p1hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
-    h+=`<div style="color:var(--text-muted)">P2</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p2hi" data-ti="${ti}" data-r="${r}" value="${(t.p2hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
+    h+=`<div style="color:var(--text-muted);font-size:0.65rem">${t.p1||'P1'}</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p1hi" data-ti="${ti}" data-r="${r}" value="${(t.p1hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
+    h+=`<div style="color:var(--text-muted);font-size:0.65rem">${t.p2||'P2'}</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p2hi" data-ti="${ti}" data-r="${r}" value="${(t.p2hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
     h+=`</div></div>`;
   }
   h+=`<button class="admin-btn" onclick="saveLgTeams()" style="margin-top:12px">Save Teams</button></div>`;
