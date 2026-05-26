@@ -2646,7 +2646,7 @@ async function init(){
   document.getElementById('galleryLinks').style.display='';
   setupAdminHeaderBtn();
   // Auto-switch to league if invitational complete and league active
-  setTimeout(async()=>{if(!isTournamentComplete())return;try{const lr=await fetchTab('League Config');if(!lr||lr.length<2)return;const yrs=[];for(let i=1;i<lr.length;i++){const v=(lr[i][0]||'').trim();if(v)yrs.push(v)}if(!yrs.length)return;const lastYr=yrs[yrs.length-1];const ls=await fetchTab('League Scores '+lastYr);if(!ls||ls.length<2)return;const hasInc=ls.some((row,i)=>{if(i===0)return false;const t1=(row[1]||'').trim();const t2=(row[2]||'').trim();if(!t1||!t2)return false;const hw=parseInt(row[4])||0;const hw2=parseInt(row[5])||0;return(hw+hw2)===0});if(hasInc){const lgBtn=document.querySelector('.mode-btn[data-mode="league"]');if(lgBtn)lgBtn.click()}}catch(e){}},500);
+  setTimeout(async()=>{if(!isTournamentComplete())return;try{const lr=await fetchTab('League Config');if(!lr||lr.length<2)return;const yrs=[];for(let i=1;i<lr.length;i++){const v=(lr[i][0]||'').trim();if(v)yrs.push(v)}if(!yrs.length)return;const lastYr=yrs[yrs.length-1];const ls=await fetchTab('League Scores '+lastYr);if(!ls||ls.length<2)return;const hasInc=ls.some((row,i)=>{if(i===0)return false;const t1=(row[1]||'').trim();const t2=(row[2]||'').trim();if(!t1||!t2)return false;const hw=parseInt(row[4])||0;const hw2=parseInt(row[5])||0;return(hw+hw2)===0});if(hasInc){const lgBtn=document.querySelector('.mode-btn[data-mode="league"]');if(lgBtn)lgBtn.click()}}catch(e){}},100);
   if(gAuthToken){if(window._authState==='league_auth'){setTimeout(()=>{document.querySelector('.mode-btn[data-mode="league"]').click();setTimeout(()=>{lgAdminAuthenticated();showAdminToast('Signed in with Google')},500)},200)}else{openAdminPanel();showAdminToast('Signed in with Google')}}
 }
 init();
@@ -3592,14 +3592,14 @@ function openLgMatchModal(matchIdx){
     // Score block
     h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">`;
     // T1
-    h+=`<div style="text-align:center;padding:16px 12px;background:rgba(0,0,0,0.15);border-radius:10px;${t1Won?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06)'}">`;
+    h+=`<div style="text-align:center;padding:16px 12px;background:rgba(0,0,0,0.15);border-radius:10px;${t1Won&&allPlayed?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06)'}">`;
     h+=`<div style="font-weight:700;font-size:0.85rem;color:var(--cream);margin-bottom:2px">${esc(t1Name)}</div>`;
     h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:8px;line-height:1.4">${t1Team?esc(t1Team.p1)+'<br>'+esc(t1Team.p2):''}</div>`;
     h+=`<div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:2rem;line-height:1;color:${t1Won?'var(--under-par)':'var(--cream)'}">${t1w}</div>`;
     h+=`<div style="font-size:0.55rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-top:4px;color:${t1Won?'var(--under-par)':'var(--text-muted)'}">${t1Won?'Winner':tied?'Draw':''}</div>`;
     h+=`</div>`;
     // T2
-    h+=`<div style="text-align:center;padding:16px 12px;background:rgba(0,0,0,0.15);border-radius:10px;${t2Won?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06)'}">`;
+    h+=`<div style="text-align:center;padding:16px 12px;background:rgba(0,0,0,0.15);border-radius:10px;${t2Won&&allPlayed?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06)'}">`;
     h+=`<div style="font-weight:700;font-size:0.85rem;color:var(--cream);margin-bottom:2px">${esc(t2Name)}</div>`;
     h+=`<div style="font-size:0.6rem;color:var(--text-muted);margin-bottom:8px;line-height:1.4">${t2Team?esc(t2Team.p1)+'<br>'+esc(t2Team.p2):''}</div>`;
     h+=`<div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:2rem;line-height:1;color:${t2Won?'var(--under-par)':'var(--cream)'}">${t2w}</div>`;
@@ -3732,13 +3732,13 @@ function renderLgMatches(){
     h+=`<div class="lg-match-card" style="margin-bottom:16px">`;
     // Header
     h+=`<div style="text-align:center;margin-bottom:12px">`;
-    h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:${statusColor}">${statusLabel}</div><div style="font-size:0.6rem;color:var(--text-muted)">${m.course?esc(m.course)+(crs?' · Par '+crs.par+' · '+parseFloat(crs.rating).toFixed(1)+'/'+crs.slope+(crs.tees?' · '+esc(crs.tees):''):''):'Course TBD'}</div></div>`;
+    h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:${statusColor}">${statusLabel}</div><div style="font-size:0.68rem;color:var(--text-muted)">${m.course?esc(m.course)+(crs?' · Par '+crs.par+' · '+parseFloat(crs.rating).toFixed(1)+'/'+crs.slope+(crs.tees?' · '+esc(crs.tees):''):''):'Course TBD'}</div></div>`;
     h+=`</div>`;
     if(m.hasScores){
       const halved=18-m.t1w-m.t2w;
       // Score block
       h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">`;
-      h+=`<div style="text-align:center;padding:14px 10px;border-radius:10px;${t1Won?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)'}">`;
+      h+=`<div style="text-align:center;padding:14px 10px;border-radius:10px;${t1Won&&m.allPlayed?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)'}">`;
       h+=`<div style="font-weight:700;font-size:0.82rem;color:var(--cream);margin-bottom:2px">${esc(t1Name)}</div>`;
       h+=`<div style="font-size:0.58rem;color:var(--text-muted);line-height:1.4;margin-bottom:6px">${t1Team?esc(t1Team.p1)+'<br>'+esc(t1Team.p2):''}</div>`;
       h+=`<div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.8rem;line-height:1;color:${t1Won?'var(--under-par)':'var(--cream)'}">${m.t1w}</div>`;
@@ -3918,7 +3918,7 @@ function openLgTeamModal(label){
     // Header
     h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">`;
     h+=`<div style="font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:${statusColor}">${statusLabel}</div>`;
-    h+=`<div style="font-size:0.58rem;color:var(--text-muted)">${m.course?esc(m.course)+(crs?' · Par '+crs.par:''):'Course TBD'}</div>`;
+    h+=`<div style="font-size:0.68rem;color:var(--text-muted)">${m.course?esc(m.course)+(crs?' · Par '+crs.par+' · '+parseFloat(crs.rating).toFixed(1)+'/'+crs.slope:''):'Course TBD'}</div>`;
     h+=`</div>`;
 
     if(hasScores){
@@ -3926,7 +3926,7 @@ function openLgTeamModal(label){
       const oppFW=isT1?m.t2fw:m.t1fw;const oppBW=isT1?m.t2bw:m.t1bw;
       // Score block - same as static display
       h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">`;
-      h+=`<div style="text-align:center;padding:12px 8px;border-radius:10px;${won?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)'}">`;
+      h+=`<div style="text-align:center;padding:12px 8px;border-radius:10px;${won&&allPlayed?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)'}">`;
       h+=`<div style="font-weight:700;font-size:0.8rem;color:var(--cream)">${esc(team.name)}</div>`;
       h+=`<div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.6rem;line-height:1;color:${won?'var(--under-par)':'var(--cream)'};margin:6px 0">${myW}</div>`;
       if(won&&allPlayed){h+=`<div style="font-size:0.48rem;font-weight:600;letter-spacing:0.08em;color:var(--under-par)">WINNER</div>`}
@@ -4007,11 +4007,64 @@ function openLgAdmin(){
   openPinModal('admin',{title:'League Admin',sub:'Enter admin PIN',onSuccess:lgAdminAuthenticated});
 }
 
+
+
+async function loadLgAdminYear(){
+  if(lgAdminYear===lgCurrentYear){renderLgAdminTab();return}
+  // Load data for the selected admin year
+  const teamsRaw=await fetchTab('League Teams '+lgAdminYear);
+  const scoresRaw=await fetchTab('League Scores '+lgAdminYear);
+  lgTeams=[];
+  if(teamsRaw&&teamsRaw.length>1){
+    for(let i=1;i<teamsRaw.length;i++){
+      const r=teamsRaw[i];if(!r[0])continue;
+      const label=(r[0]||'').trim();const p1=(r[1]||'').trim();const p2=(r[2]||'').trim();
+      const nameOverride=(r[3]||'').trim();
+      const name=nameOverride||(p1&&p2?p1.split(' ')[0]+'/'+p2.split(' ')[0]:(p1||p2||'Team '+label));
+      const p1hi=[];const p2hi=[];for(let ri=4;ri<7&&ri<r.length;ri++)p1hi.push(parseFloat(r[ri])||0);for(let ri=7;ri<10&&ri<r.length;ri++)p2hi.push(parseFloat(r[ri])||0);
+      lgTeams.push({label,p1,p2,name,p1hi,p2hi});
+    }
+  }
+  lgMatches=[];
+  if(scoresRaw&&scoresRaw.length>1){
+    for(let i=1;i<scoresRaw.length;i++){
+      const r=scoresRaw[i];if(!r[0])continue;
+      const round=parseInt(r[0])||0;const t1=(r[1]||'').trim();const t2=(r[2]||'').trim();
+      const course=(r[3]||'').trim();
+      lgMatches.push({round,match:t1&&t2?t1+' vs '+t2:'',course,t1,t2,
+        t1fw:parseInt(r[4])||0,t2fw:parseInt(r[5])||0,t1bw:parseInt(r[6])||0,t2bw:parseInt(r[7])||0,
+        p1f:parseInt(r[8])||0,p1b:parseInt(r[9])||0,p2f:parseInt(r[10])||0,p2b:parseInt(r[11])||0,
+        p3f:parseInt(r[12])||0,p3b:parseInt(r[13])||0,p4f:parseInt(r[14])||0,p4b:parseInt(r[15])||0,
+        row:i+1});
+    }
+  }
+  lgCurrentYear=lgAdminYear;
+  renderLgAdminTab();
+}
+
+function renderLgAdminYearSelector(){
+  const tabsEl=document.getElementById('lgAdminTabs');
+  // Add year pills before tab buttons
+  let yearHtml='<div style="display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap">';
+  for(const y of lgYears){
+    yearHtml+=`<button class="ctrl-btn${y===lgAdminYear?' active':''}" style="padding:4px 10px;font-size:0.68rem" onclick="lgAdminYear='${y}';renderLgAdminYearSelector();lgLastCSV='';loadLgAdminYear()">${y}</button>`;
+  }
+  yearHtml+='</div>';
+  const existingYearSel=document.getElementById('lgAdminYearSel');
+  if(existingYearSel)existingYearSel.innerHTML=yearHtml;
+  else{
+    const div=document.createElement('div');div.id='lgAdminYearSel';div.innerHTML=yearHtml;
+    tabsEl.parentElement.insertBefore(div,tabsEl);
+  }
+}
+
 function lgAdminAuthenticated(){
   lgAdminYear=lgCurrentYear;
   document.getElementById('lgAdminBrandName').textContent=lgName+' Admin';
   document.getElementById('lgAdminOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+  // Render year selector in admin
+  renderLgAdminYearSelector();
   document.querySelectorAll('#lgAdminTabs .admin-tab').forEach(t=>{
     t.classList.toggle('active',t.dataset.lgtab===lgAdminActiveTab);
     t.onclick=()=>{lgAdminActiveTab=t.dataset.lgtab;document.querySelectorAll('#lgAdminTabs .admin-tab').forEach(b=>b.classList.remove('active'));t.classList.add('active');renderLgAdminTab()};
@@ -4086,8 +4139,15 @@ async function saveLgConfig(){
     if(newTabs.length){
       await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`,{method:'POST',headers:{'Authorization':`Bearer ${gAuthToken}`,'Content-Type':'application/json'},body:JSON.stringify({requests:newTabs.map(t=>({addSheet:{properties:{title:t}}}))})});
       for(const t of newTabs){
-        if(t.startsWith('League Teams'))await writeAdminToSheet(t+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI R1','P1 HI R2','P1 HI R3','P2 HI R1','P2 HI R2','P2 HI R3']]);
-        else if(t.startsWith('League Scores'))await writeAdminToSheet(t+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+        if(t.startsWith('League Teams')){
+          await writeAdminToSheet(t+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI M1','P1 HI M2','P1 HI M3','P2 HI M1','P2 HI M2','P2 HI M3']]);
+          await writeAdminToSheet(t+'!A2:A5',[['A'],['B'],['C'],['D']]);
+        }
+        else if(t.startsWith('League Scores')){
+          await writeAdminToSheet(t+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+          // Default round robin for 4 teams
+          await writeAdminToSheet(t+'!A2:C7',[[1,'A','B'],[1,'C','D'],[2,'A','C'],[2,'B','D'],[3,'A','D'],[3,'B','C']]);
+        }
       }
     }
   }catch(e){}
@@ -4103,7 +4163,7 @@ function renderLgAdminTeams(c){
   let h=`<div class="admin-section"><div class="admin-section-title">Teams — ${lgAdminYear}</div>
   <div class="admin-section-sub">Define teams with 2 players each. Set handicap index per round.</div>`;
   const maxR=lgTotalRounds()||3;
-  for(let ti=0;ti<Math.max(lgTeams.length,4);ti++){
+  const teamCount=Math.max(lgTeams.length,4);for(let ti=0;ti<teamCount;ti++){
     const t=lgTeams[ti]||{label:String.fromCharCode(65+ti),p1:'',p2:'',name:'',p1hi:Array(maxR).fill(0),p2hi:Array(maxR).fill(0)};
     h+=`<div class="lg-admin-match"><div style="font-weight:600;color:var(--gold);font-size:0.7rem;letter-spacing:0.08em;margin-bottom:8px">TEAM ${esc(t.label)}</div>`;
     h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -4118,13 +4178,21 @@ function renderLgAdminTeams(c){
     h+=`<div style="color:var(--text-muted);font-size:0.65rem">${t.p2||'P2'}</div>`;for(let r=0;r<maxR;r++){h+=`<input class="admin-input lg-t-p2hi" data-ti="${ti}" data-r="${r}" value="${(t.p2hi[r]||0)||''}" style="text-align:center;padding:6px 2px;font-size:0.75rem" />`}
     h+=`</div></div>`;
   }
-  h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="admin-btn admin-btn-primary" onclick="saveLgTeams()">Save Teams</button></div></div>`;
+  h+=`<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="admin-btn admin-btn-primary" onclick="saveLgTeams()">Save Teams</button><button class="admin-btn admin-btn-secondary" onclick="lgAddTeam()">+ Add Team</button></div></div>`;
   c.innerHTML=h;
 }
 
 
+
+function lgAddTeam(){
+  const nextLabel=String.fromCharCode(65+lgTeams.length);
+  lgTeams.push({label:nextLabel,p1:'',p2:'',name:'Team '+nextLabel,p1hi:[],p2hi:[]});
+  renderLgAdminTab();
+}
+
 async function saveLgTeams(){
-  const tab='League Teams '+lgAdminYear;
+  const yr=lgAdminYear||lgCurrentYear;
+  const tab='League Teams '+yr;
   let ok=await writeAdminToSheet(tab+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI R1','P1 HI R2','P1 HI R3','P2 HI R1','P2 HI R2','P2 HI R3']]);
   const teamCount=document.querySelectorAll('.lg-t-p1').length;
   const rows=[];
@@ -4184,7 +4252,8 @@ function updateLgScheduleDisabled(){
 }
 
 async function saveLgSchedule(){
-  const tab='League Scores '+lgAdminYear;
+  const yr=lgAdminYear||lgCurrentYear;
+  const tab='League Scores '+yr;
   let ok=await writeAdminToSheet(tab+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
   const rows=[];
   const t1Selects=document.querySelectorAll('.lg-sch-t1');
