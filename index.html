@@ -2111,7 +2111,7 @@ document.getElementById('teamModal').addEventListener('click',function(e){if(e.t
 document.getElementById('skinsModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('historyRoundModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('infoModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
-  document.getElementById('lgScorerModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+  document.getElementById('lgScorerModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');startLgPolling()}});
   document.getElementById('lgTeamModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('lgRecordsLink').addEventListener('click',showLgRecordsPage);
   document.getElementById('lgRecordsBack').addEventListener('click',hideLgRecordsPage);
