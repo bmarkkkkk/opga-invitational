@@ -2646,7 +2646,7 @@ async function init(){
   document.getElementById('galleryLinks').style.display='';
   setupAdminHeaderBtn();
   // Auto-switch to league if invitational complete and league active
-  setTimeout(async()=>{if(!isTournamentComplete())return;try{const lr=await fetchTab('League Config');if(!lr||lr.length<2)return;const yrs=[];for(let i=1;i<lr.length;i++){const v=(lr[i][0]||'').trim();if(v)yrs.push(v)}if(!yrs.length)return;const lastYr=yrs[yrs.length-1];const ls=await fetchTab('League Scores '+lastYr);if(!ls||ls.length<2)return;const hasInc=ls.some((row,i)=>{if(i===0)return false;const t1=(row[1]||'').trim();const t2=(row[2]||'').trim();if(!t1||!t2)return false;const hw=parseInt(row[4])||0;const hw2=parseInt(row[5])||0;return(hw+hw2)===0});if(hasInc){const lgBtn=document.querySelector('.mode-btn[data-mode="league"]');if(lgBtn)lgBtn.click()}}catch(e){}},100);
+  setTimeout(async()=>{if(!isTournamentComplete())return;try{const lr=await fetchTab('League Config');if(!lr||lr.length<2)return;const yrs=[];for(let i=1;i<lr.length;i++){const v=(lr[i][0]||'').trim();if(v)yrs.push(v)}if(!yrs.length)return;const lastYr=yrs[yrs.length-1];const ls=await fetchTab('League Scores '+lastYr);if(!ls||ls.length<2)return;const hasInc=ls.some((row,i)=>{if(i===0)return false;const t1=(row[1]||'').trim();const t2=(row[2]||'').trim();if(!t1||!t2)return false;const hw=parseInt(row[4])||0;const hw2=parseInt(row[5])||0;return(hw+hw2)===0});if(hasInc){const lgBtn=document.querySelector('.mode-btn[data-mode="league"]');if(lgBtn)lgBtn.click()}}catch(e){}},10);
   if(gAuthToken){if(window._authState==='league_auth'){setTimeout(()=>{document.querySelector('.mode-btn[data-mode="league"]').click();setTimeout(()=>{lgAdminAuthenticated();showAdminToast('Signed in with Google')},500)},200)}else{openAdminPanel();showAdminToast('Signed in with Google')}}
 }
 init();
@@ -4038,7 +4038,6 @@ async function loadLgAdminYear(){
         row:i+1});
     }
   }
-  lgCurrentYear=lgAdminYear;
   renderLgAdminTab();
 }
 
@@ -4072,7 +4071,7 @@ function lgAdminAuthenticated(){
   document.getElementById('lgAdminClose').onclick=closeLgAdmin;
   renderLgAdminTab();
 }
-function closeLgAdmin(){document.getElementById('lgAdminOverlay').classList.remove('open');document.body.style.overflow='';lgLastCSV='';loadLgYear()}
+function closeLgAdmin(){document.getElementById('lgAdminOverlay').classList.remove('open');document.body.style.overflow='';const ys=document.getElementById('lgAdminYearSel');if(ys)ys.remove();lgLastCSV='';lgTeams=[];lgMatches=[];loadLgYear()}
 
 function renderLgAdminTab(){
   const c=document.getElementById('lgAdminContent');
@@ -4156,6 +4155,7 @@ async function saveLgConfig(){
   if(ok)showAdminToast('League config saved');
   renderLgYearSelector();
   if(!lgYears.includes(lgCurrentYear))lgCurrentYear=lgYears[lgYears.length-1];
+  lgAdminYear=lgCurrentYear;
   lgLastCSV='';loadLgYear();
 }
 
@@ -4193,7 +4193,7 @@ function lgAddTeam(){
 async function saveLgTeams(){
   const yr=lgAdminYear||lgCurrentYear;
   const tab='League Teams '+yr;
-  let ok=await writeAdminToSheet(tab+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI R1','P1 HI R2','P1 HI R3','P2 HI R1','P2 HI R2','P2 HI R3']]);
+  let ok=await writeAdminToSheet(tab+'!A1:J1',[['Team','Player 1','Player 2','Team Name','P1 HI M1','P1 HI M2','P1 HI M3','P2 HI M1','P2 HI M2','P2 HI M3']]);
   const teamCount=document.querySelectorAll('.lg-t-p1').length;
   const rows=[];
   for(let ti=0;ti<teamCount;ti++){
