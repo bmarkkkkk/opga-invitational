@@ -3045,6 +3045,7 @@ function initModeSwitcher(){
         if(countdownInterval){clearInterval(countdownInterval);countdownInterval=null}
         if(!lgYears.length)loadLeague();else renderLeague();
         startLgPolling();
+        window.scrollTo(0,0);
       }else{
         document.getElementById('leaguePage').style.display='none';
         document.getElementById('lgChampBanner').classList.remove('show');
@@ -3074,6 +3075,7 @@ function initModeSwitcher(){
         stopLgPolling();
         lastCSV='';load();
         if(!window._pollTimer)window._pollTimer=setInterval(load,POLL_SECONDS*1000);
+        window.scrollTo(0,0);
       }
     });
   });
@@ -4334,6 +4336,7 @@ function renderLgAdminScores(c){
   // Wire up auto-save on each input
   c.querySelectorAll('.lg-sc-auto').forEach(inp=>{
     inp.addEventListener('change',handleLgScoreInput);
+    inp.addEventListener('input',function(){if(this.value.length>=2){const all=[...c.querySelectorAll('.lg-sc-auto')];const idx=all.indexOf(this);if(idx>=0&&idx<all.length-1)all[idx+1].focus()}});
   });
 }
 
@@ -4357,13 +4360,15 @@ async function handleLgScoreInput(e){
     if(ok){
       inp.classList.add('saved');inp.classList.remove('save-flash');void inp.offsetWidth;inp.classList.add('save-flash');
     }else{
-      inp.classList.remove('saved');
+      inp.classList.remove('saved');inp.value='';
+      showAdminToast('Save failed',true);
     }
   }catch(err){
-    inp.classList.remove('saved');
+    inp.classList.remove('saved');inp.value='';
+    showAdminToast('Save failed: '+err.message,true);
   }
   lgLastCSV='';
-  setTimeout(()=>{loadLgYear()},200);
+  setTimeout(()=>{if(!document.getElementById('lgScorerModal').classList.contains('open'))loadLgYear()},200);
 }
 
 // ── League Scorer Modal ──
