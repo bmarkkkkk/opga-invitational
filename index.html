@@ -4229,9 +4229,8 @@ function renderLgAdminSchedule(c){
   const courseNames=Object.keys(courses).sort();
   for(let mi=0;mi<lgMatches.length;mi++){
     const m=lgMatches[mi];
-    const usedTeams=lgMatches.filter((_,i)=>i!==mi).flatMap(x=>[x.t1,x.t2]).filter(Boolean);
-    const teamOpts=`<option value="">— Select —</option>`+lgTeams.map(t=>{const used=usedTeams.includes(t.label)&&t.label!==m.t1&&t.label!==m.t2;return`<option value="${esc(t.label)}" ${t.label===m.t1?'selected':''}${used?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${used?' — in use':''}</option>`}).join('');
-    const teamOpts2=`<option value="">— Select —</option>`+lgTeams.map(t=>{const used=usedTeams.includes(t.label)&&t.label!==m.t1&&t.label!==m.t2;return`<option value="${esc(t.label)}" ${t.label===m.t2?'selected':''}${used?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})${used?' — in use':''}</option>`}).join('');
+    const teamOpts=`<option value="">— Select —</option>`+lgTeams.map(t=>{const taken=t.label===m.t2;return`<option value="${esc(t.label)}" ${t.label===m.t1?'selected':''}${taken?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})</option>`}).join('');
+    const teamOpts2=`<option value="">— Select —</option>`+lgTeams.map(t=>{const taken=t.label===m.t1;return`<option value="${esc(t.label)}" ${t.label===m.t2?'selected':''}${taken?' disabled style="color:#555"':''}>${esc(t.name)} (${t.label})</option>`}).join('');
     const courseOpts=`<option value="">Select course</option>`+courseNames.map(cn=>{const cInfo=courses[cn];const tees=cInfo&&cInfo.tees?' — '+cInfo.tees:'';return`<option value="${esc(cn)}" ${cn===m.course?'selected':''}>${esc(cn)}${tees}</option>`}).join('');
     h+=`<div class="lg-admin-match">
       <div style="font-weight:600;color:var(--gold);font-size:0.62rem;letter-spacing:0.1em;margin-bottom:8px">MATCH ${mi+1}</div>
@@ -4251,16 +4250,11 @@ function renderLgAdminSchedule(c){
 function updateLgScheduleDisabled(){
   const t1Selects=document.querySelectorAll('.lg-sch-t1');
   const t2Selects=document.querySelectorAll('.lg-sch-t2');
-  const allSelects=[...t1Selects,...t2Selects];
-  const used=[];
-  allSelects.forEach(s=>{if(s.value)used.push(s.value)});
-  allSelects.forEach(sel=>{
-    sel.querySelectorAll('option').forEach(opt=>{
-      if(!opt.value)return;
-      opt.disabled=!opt.selected&&used.includes(opt.value);
-      opt.style.color=opt.disabled?'#555':'';
-    });
-  });
+  for(let i=0;i<t1Selects.length;i++){
+    const t1Val=t1Selects[i].value;const t2Val=t2Selects[i].value;
+    t1Selects[i].querySelectorAll('option').forEach(opt=>{if(!opt.value)return;opt.disabled=opt.value===t2Val&&!opt.selected;opt.style.color=opt.disabled?'#555':''});
+    t2Selects[i].querySelectorAll('option').forEach(opt=>{if(!opt.value)return;opt.disabled=opt.value===t1Val&&!opt.selected;opt.style.color=opt.disabled?'#555':''});
+  }
 }
 
 
