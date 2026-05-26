@@ -3171,7 +3171,7 @@ function lgCalcStandings(){
     const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
     const crs=courses[m.course];
     if(t1Team&&crs){
-      const rIdx=lgGetTeamMatchIndex(m.t1,m.round);
+      const rIdx=m.round-1;
       const players=[[m.p1f,m.p1b,t1Team.p1hi[rIdx]||0],[m.p2f,m.p2b,t1Team.p2hi[rIdx]||0]];
       for(const[f,b,hi] of players){
         const hasF=f>0,hasB=b>0;if(!hasF&&!hasB)continue;
@@ -3182,7 +3182,7 @@ function lgCalcStandings(){
       }
     }
     if(t2Team&&crs){
-      const rIdx=lgGetTeamMatchIndex(m.t2,m.round);
+      const rIdx=m.round-1;
       const players=[[m.p3f,m.p3b,t2Team.p1hi[rIdx]||0],[m.p4f,m.p4b,t2Team.p2hi[rIdx]||0]];
       for(const[f,b,hi] of players){
         const hasF=f>0,hasB=b>0;if(!hasF&&!hasB)continue;
@@ -3394,12 +3394,10 @@ async function renderLgRecordsPage(){
     for(const m of d.matches){
       if((m.t1fw+m.t2fw+m.t1bw+m.t2bw)===0)continue;
       const crs=courses[m.course];if(!crs)continue;
-      const t1Matches=d.matches.filter(x=>(x.t1===m.t1||x.t2===m.t1)&&x.t1&&x.t2).sort((a,b)=>a.round-b.round);
-      const t2Matches=d.matches.filter(x=>(x.t1===m.t2||x.t2===m.t2)&&x.t1&&x.t2).sort((a,b)=>a.round-b.round);
-      const rIdxT1=t1Matches.findIndex(x=>x.round===m.round);const rIdxT2=t2Matches.findIndex(x=>x.round===m.round);
+      const rIdxT1=m.round-1;const rIdxT2=m.round-1;
       const t1t=d.teams.find(t=>t.label===m.t1);
       if(t1t){
-        const p1ch=lgGetCH(t1t.p1hi[rIdxT1>=0?rIdxT1:0]||0,m.course);const p2ch=lgGetCH(t1t.p2hi[rIdxT1>=0?rIdxT1:0]||0,m.course);
+        const p1ch=lgGetCH(t1t.p1hi[rIdxT1]||0,m.course);const p2ch=lgGetCH(t1t.p2hi[rIdxT1]||0,m.course);
         const t1ntp=((m.p1f+m.p1b)-p1ch-crs.par)+((m.p2f+m.p2b)-p2ch-crs.par);
         if(m.p1f>0&&!bestTeamRound||t1ntp<bestTeamRound.val){bestTeamRound={val:t1ntp,name:t1t.name,year:y}}
         // Individual
@@ -3409,7 +3407,7 @@ async function renderLgRecordsPage(){
       // T2 team NTP
       const t2t=d.teams.find(t=>t.label===m.t2);
       if(t2t){
-        const p3ch=lgGetCH(t2t.p1hi[rIdxT2>=0?rIdxT2:0]||0,m.course);const p4ch=lgGetCH(t2t.p2hi[rIdxT2>=0?rIdxT2:0]||0,m.course);
+        const p3ch=lgGetCH(t2t.p1hi[rIdxT2]||0,m.course);const p4ch=lgGetCH(t2t.p2hi[rIdxT2]||0,m.course);
         const t2ntp=((m.p3f+m.p3b)-p3ch-crs.par)+((m.p4f+m.p4b)-p4ch-crs.par);
         if(m.p3f>0&&(!bestTeamRound||t2ntp<bestTeamRound.val)){bestTeamRound={val:t2ntp,name:t2t.name,year:y}}
         if(m.p3f>0){const ntp=(m.p3f+m.p3b)-p3ch-crs.par;if(!bestIndivRound||ntp<bestIndivRound.val){bestIndivRound={val:ntp,name:t2t.p1,gross:m.p3f+m.p3b,year:y}}}
@@ -3447,9 +3445,7 @@ async function renderLgRecordsPage(){
           const isT1=m.t1===t.label;
           if(!isT1&&m.t2!==t.label)continue;
           const crs=courses[m.course];if(!crs)continue;
-          const tLabel=isT1?m.t1:m.t2;
-          const tMs=d.matches.filter(x=>(x.t1===tLabel||x.t2===tLabel)&&x.t1&&x.t2).sort((a,b)=>a.round-b.round);
-          const rIdx=Math.max(0,tMs.findIndex(x=>x.round===m.round));
+          const rIdx=m.round-1;
           let f,b,hi;
           if(isT1){f=pi.isP1?m.p1f:m.p2f;b=pi.isP1?m.p1b:m.p2b;hi=pi.hi[rIdx]||0}
           else{f=pi.isP1?m.p3f:m.p4f;b=pi.isP1?m.p3b:m.p4b;hi=pi.hi[rIdx]||0}
@@ -3499,19 +3495,16 @@ async function renderLgRecordsPage(){
       if(!lgCourseData[cName])lgCourseData[cName]={rounds:0,totalNtp:0,totalPlayers:0,bestNet:Infinity,bestNetBys:[],bestGrossGtp:Infinity,bestGrossScore:0,bestGrossBys:[],par:crs.par,rating:crs.rating,slope:crs.slope};
       const cd=lgCourseData[cName];
       cd.rounds++;
-      const ct1Ms=d.matches.filter(x=>(x.t1===m.t1||x.t2===m.t1)&&x.t1&&x.t2).sort((a,b)=>a.round-b.round);
-      const ct2Ms=d.matches.filter(x=>(x.t1===m.t2||x.t2===m.t2)&&x.t1&&x.t2).sort((a,b)=>a.round-b.round);
-      const crIdx1=Math.max(0,ct1Ms.findIndex(x=>x.round===m.round));
-      const crIdx2=Math.max(0,ct2Ms.findIndex(x=>x.round===m.round));
+      const crIdx1=m.round-1;const crIdx2=m.round-1;
       const t1t=d.teams.find(t=>t.label===m.t1);
       const t2t=d.teams.find(t=>t.label===m.t2);
       const allPlayers=[];
       if(t1t){
-        allPlayers.push({name:t1t.p1,hi:t1t.p1hi[crIdx1]||0,f:m.p1f,b:m.p1b});
+        allPlayers.push({name:t1t.p1,hi:t1t.p1hi[crIdx1]||0||0,f:m.p1f,b:m.p1b});
         allPlayers.push({name:t1t.p2,hi:t1t.p2hi[crIdx1]||0,f:m.p2f,b:m.p2b});
       }
       if(t2t){
-        allPlayers.push({name:t2t.p1,hi:t2t.p1hi[crIdx2]||0,f:m.p3f,b:m.p3b});
+        allPlayers.push({name:t2t.p1,hi:t2t.p1hi[crIdx2]||0||0,f:m.p3f,b:m.p3b});
         allPlayers.push({name:t2t.p2,hi:t2t.p2hi[crIdx2]||0,f:m.p4f,b:m.p4b});
       }
       for(const p of allPlayers){
@@ -3640,12 +3633,12 @@ function openLgMatchModal(matchIdx){
     h+=`<div style="font-size:0.55rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Individual Scores</div>`;
     const allP=[];
     if(t1Team){
-      const hiIdx1=lgGetTeamMatchIndex(m.t1,m.round);
+      const hiIdx1=m.round-1;
       allP.push({name:t1Team.p1,hi:t1Team.p1hi[hiIdx1]||0,f:m.p1f,b:m.p1b,team:t1Name});
       allP.push({name:t1Team.p2,hi:t1Team.p2hi[hiIdx1]||0,f:m.p2f,b:m.p2b,team:t1Name});
     }
     if(t2Team){
-      const hiIdx2=lgGetTeamMatchIndex(m.t2,m.round);
+      const hiIdx2=m.round-1;
       allP.push({name:t2Team.p1,hi:t2Team.p1hi[hiIdx2]||0,f:m.p3f,b:m.p3b,team:t2Name});
       allP.push({name:t2Team.p2,hi:t2Team.p2hi[hiIdx2]||0,f:m.p4f,b:m.p4b,team:t2Name});
     }
@@ -3714,7 +3707,7 @@ function lgGetMatchStrokes(m){
   if(!m.t1||!m.t2)return{text:'',strokes:0};
   const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
   if(!t1Team||!t2Team||!m.course)return{text:'',strokes:0};
-  const hiIdx1=lgGetTeamMatchIndex(m.t1,m.round);const hiIdx2=lgGetTeamMatchIndex(m.t2,m.round);
+  const hiIdx1=m.round-1;const hiIdx2=m.round-1;
   const t1CH=lgGetCH(t1Team.p1hi[hiIdx1]||0,m.course)+lgGetCH(t1Team.p2hi[hiIdx1]||0,m.course);
   const t2CH=lgGetCH(t2Team.p1hi[hiIdx2]||0,m.course)+lgGetCH(t2Team.p2hi[hiIdx2]||0,m.course);
   const diff=Math.abs(t1CH-t2CH);
@@ -3743,7 +3736,7 @@ function renderLgMatches(){
     const t1Name=lgTeamName(m.t1);const t2Name=lgTeamName(m.t2);
     const t1Team=lgTeamByLabel(m.t1);const t2Team=lgTeamByLabel(m.t2);
     const t1Won=m.t1w>m.t2w;const t2Won=m.t2w>m.t1w;const tied=m.t1w===m.t2w;
-    const crs=courses[m.course];const rIdx=m.t1?lgGetTeamMatchIndex(m.t1,m.round):0;const rIdx2=m.t2?lgGetTeamMatchIndex(m.t2,m.round):0;
+    const crs=courses[m.course];const rIdx=m.t1?m.round-1:0;const rIdx2=m.t2?m.round-1:0;
     const statusLabel=m.allPlayed?'Complete':m.inProgress?'In Progress':'Upcoming';
     const statusColor=m.allPlayed?'var(--text-muted)':m.inProgress?'var(--green-300)':'var(--text-muted)';
     h+=`<div class="lg-match-card" style="margin-bottom:16px">`;
@@ -3822,10 +3815,10 @@ function openLgPlayerModal(playerName,courseName,rIdx){
   for(const m of lgMatches){
     const t1t=lgTeamByLabel(m.t1);const t2t=lgTeamByLabel(m.t2);
     let f=0,b=0,hi=0,team='',isFound=false;
-    if(t1t&&t1t.p1===playerName){f=m.p1f;b=m.p1b;hi=t1t.p1hi[lgGetTeamMatchIndex(m.t1,m.round)]||0;team=t1t.name;isFound=true}
-    else if(t1t&&t1t.p2===playerName){f=m.p2f;b=m.p2b;hi=t1t.p2hi[lgGetTeamMatchIndex(m.t1,m.round)]||0;team=t1t.name;isFound=true}
-    else if(t2t&&t2t.p1===playerName){f=m.p3f;b=m.p3b;hi=t2t.p1hi[lgGetTeamMatchIndex(m.t2,m.round)]||0;team=t2t.name;isFound=true}
-    else if(t2t&&t2t.p2===playerName){f=m.p4f;b=m.p4b;hi=t2t.p2hi[lgGetTeamMatchIndex(m.t2,m.round)]||0;team=t2t.name;isFound=true}
+    if(t1t&&t1t.p1===playerName){f=m.p1f;b=m.p1b;hi=t1t.p1hi[m.round-1]||0;team=t1t.name;isFound=true}
+    else if(t1t&&t1t.p2===playerName){f=m.p2f;b=m.p2b;hi=t1t.p2hi[m.round-1]||0;team=t1t.name;isFound=true}
+    else if(t2t&&t2t.p1===playerName){f=m.p3f;b=m.p3b;hi=t2t.p1hi[m.round-1]||0;team=t2t.name;isFound=true}
+    else if(t2t&&t2t.p2===playerName){f=m.p4f;b=m.p4b;hi=t2t.p2hi[m.round-1]||0;team=t2t.name;isFound=true}
     if(!isFound)continue;
     const oppLabel=(t1t&&(t1t.p1===playerName||t1t.p2===playerName))?m.t2:m.t1;
     const oppName=lgTeamName(oppLabel);
@@ -3926,7 +3919,7 @@ function openLgTeamModal(label){
     const oppW=isT1?(m.t2fw+m.t2bw):(m.t1fw+m.t1bw);
     const hasScores=lgMatchHasScores(m);
     const won=myW>oppW;const lost=myW<oppW;const tied=myW===oppW;
-    const crs=courses[m.course];const rIdx=m.t1?lgGetTeamMatchIndex(m.t1,m.round):0;const rIdx2=m.t2?lgGetTeamMatchIndex(m.t2,m.round):0;
+    const crs=courses[m.course];const rIdx=m.t1?m.round-1:0;const rIdx2=m.t2?m.round-1:0;
     const allPlayed=hasScores&&[[m.p1f,m.p1b],[m.p2f,m.p2b],[m.p3f,m.p3b],[m.p4f,m.p4b]].every(([f,b])=>f>0&&b>0);
     const statusLabel=allPlayed?'Complete':hasScores?'In Progress':'Upcoming';
     const statusColor=allPlayed?'var(--text-muted)':hasScores?'var(--green-300)':'var(--text-muted)';
@@ -3971,8 +3964,8 @@ function openLgTeamModal(label){
 
       // Player scores
       h+=`<div style="font-size:0.5rem;font-weight:600;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:6px">INDIVIDUAL SCORES</div>`;
-      const myHiIdx=lgGetTeamMatchIndex(label,m.round);
-      const oppHiIdx=lgGetTeamMatchIndex(oppLabel,m.round);
+      const myHiIdx=m.round-1;
+      const oppHiIdx=m.round-1;
       const myPlayers=isT1?[
         {name:team.p1,hi:team.p1hi[myHiIdx]||0,f:m.p1f,b:m.p1b},
         {name:team.p2,hi:team.p2hi[myHiIdx]||0,f:m.p2f,b:m.p2b}
@@ -4162,9 +4155,9 @@ async function saveLgConfig(){
           await writeAdminToSheet(t+'!A2:A5',[['A'],['B'],['C'],['D']]);
         }
         else if(t.startsWith('League Scores')){
-          await writeAdminToSheet(t+'!A1:P1',[['Match','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+          await writeAdminToSheet(t+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
           // Default round robin for 4 teams
-          await writeAdminToSheet(t+'!A2:C7',[[1,'A','B'],[2,'C','D'],[3,'A','C'],[4,'B','D'],[5,'A','D'],[6,'B','C']]);
+          await writeAdminToSheet(t+'!A2:C7',[[1,'A','B'],[1,'C','D'],[2,'A','C'],[2,'B','D'],[3,'A','D'],[3,'B','C']]);
         }
       }
     }
@@ -4279,7 +4272,7 @@ function lgAddMatch(){
 async function saveLgSchedule(){
   const yr=lgAdminYear||lgCurrentYear;
   const tab='League Scores '+yr;
-  let ok=await writeAdminToSheet(tab+'!A1:P1',[['Match','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
+  let ok=await writeAdminToSheet(tab+'!A1:P1',[['Round','Team 1','Team 2','Course','T1 Front Won','T2 Front Won','T1 Back Won','T2 Back Won','P1 Front','P1 Back','P2 Front','P2 Back','P3 Front','P3 Back','P4 Front','P4 Back']]);
   const rows=[];
   const t1Selects=document.querySelectorAll('.lg-sch-t1');
   const t2Selects=document.querySelectorAll('.lg-sch-t2');
@@ -4288,7 +4281,7 @@ async function saveLgSchedule(){
     const t1=t1Selects[mi].value;const t2=t2Selects[mi].value;
     const course=courseSelects[mi].value;
     const existing=lgMatches[mi];
-    rows.push([mi+1,t1,t2,course,
+    rows.push([Math.floor(mi/2)+1,t1,t2,course,
       existing?existing.t1fw:0,existing?existing.t2fw:0,existing?existing.t1bw:0,existing?existing.t2bw:0,
       existing?existing.p1f:0,existing?existing.p1b:0,existing?existing.p2f:0,existing?existing.p2b:0,
       existing?existing.p3f:0,existing?existing.p3b:0,existing?existing.p4f:0,existing?existing.p4b:0]);
