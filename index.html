@@ -1018,7 +1018,7 @@
               <div class="scorer-title-text">League Scores</div>
               <div class="scorer-course-text" id="lgScorerSubtitle"></div>
             </div>
-            <button class="scorer-back-btn" onclick="document.getElementById('lgScorerModal').classList.remove('open');startLgPolling()">✕ Close</button>
+            <button class="scorer-back-btn" onclick="document.getElementById('lgScorerModal').classList.remove('open');lgLastCSV='';loadLgYear();startLgPolling()">✕ Close</button>
           </div>
           <div class="scorer-round-tabs" id="lgScorerRoundTabs"></div>
         </div>
@@ -1183,7 +1183,7 @@ let tournamentName = DEFAULT_NAME;
 let availableYears = [];
 let currentYear = START_YEAR;
 function tabsForYear(y){return{scores:`Scores ${y}`,rounds:`Rounds ${y}`}}
-function csvUrl(tab){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}`;}
+function csvUrl(tab){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_=${Date.now()}`;}
 
 let currentView = 'tournament';
 let players = [];
@@ -2111,7 +2111,7 @@ document.getElementById('teamModal').addEventListener('click',function(e){if(e.t
 document.getElementById('skinsModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('historyRoundModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('infoModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
-  document.getElementById('lgScorerModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');startLgPolling()}});
+  document.getElementById('lgScorerModal').addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');lgLastCSV='';loadLgYear();startLgPolling()}});
   document.getElementById('lgTeamModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
   document.getElementById('lgRecordsLink').addEventListener('click',showLgRecordsPage);
   document.getElementById('lgRecordsBack').addEventListener('click',hideLgRecordsPage);
@@ -3140,7 +3140,7 @@ async function loadLgYear(){
   renderLeague();
 }
 
-function startLgPolling(){stopLgPolling();lgPollInterval=setInterval(()=>{if(lgMode==='league')loadLgYear()},5000)}
+function startLgPolling(){stopLgPolling();lgPollInterval=setInterval(()=>{if(lgMode==='league'&&!galleryOpen&&!lgRecordsOpen)loadLgYear()},5000)}
 function stopLgPolling(){if(lgPollInterval){clearInterval(lgPollInterval);lgPollInterval=null}}
 
 // ── Helpers ──
