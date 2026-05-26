@@ -3030,7 +3030,8 @@ function initModeSwitcher(){
       btn.classList.add('active');
       lgMode=mode;
       if(mode==='league'){
-        // Hide all invitational elements
+        // Stop invitational polling, hide all invitational elements
+        if(window._pollTimer){clearInterval(window._pollTimer);window._pollTimer=null}
         document.querySelectorAll('#mainHeader,#yearControls,#courseInfoCard,#championBanner,#countdownBanner,#countdownLive,#highlights,#teamSection,#chartSection,#skinsSection,#individualSection,#historySection,#coursesSection,#hcSection,#infoTabsWrap,#recordsLinkWrap,#siteFooter,#recordsPage,#lgYearControls,#galleryLinks').forEach(el=>{if(el)el.style.display='none'});
         document.querySelector('#adminHeaderBtn').parentElement.style.display='none';
         recordsOpen=false;
@@ -3072,6 +3073,7 @@ function initModeSwitcher(){
         document.querySelector('#adminHeaderBtn').parentElement.style.display='';
         stopLgPolling();
         lastCSV='';load();
+        if(!window._pollTimer)window._pollTimer=setInterval(load,POLL_SECONDS*1000);
       }
     });
   });
@@ -4071,6 +4073,7 @@ function renderLgAdminYearSelector(){
 
 function lgAdminAuthenticated(){
   lgAdminYear=lgCurrentYear;
+  stopLgPolling();
   document.getElementById('lgAdminBrandName').textContent=lgName+' Admin';
   document.getElementById('lgAdminOverlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -4083,7 +4086,7 @@ function lgAdminAuthenticated(){
   document.getElementById('lgAdminClose').onclick=closeLgAdmin;
   renderLgAdminTab();
 }
-function closeLgAdmin(){document.getElementById('lgAdminOverlay').classList.remove('open');document.body.style.overflow='';const ys=document.getElementById('lgAdminYearSel');if(ys)ys.remove();lgLastCSV='';lgTeams=[];lgMatches=[];loadLgYear()}
+function closeLgAdmin(){document.getElementById('lgAdminOverlay').classList.remove('open');document.body.style.overflow='';const ys=document.getElementById('lgAdminYearSel');if(ys)ys.remove();lgLastCSV='';lgTeams=[];lgMatches=[];loadLgYear();startLgPolling()}
 
 function renderLgAdminTab(){
   const c=document.getElementById('lgAdminContent');
@@ -4360,6 +4363,7 @@ async function handleLgScoreInput(e){
     inp.classList.remove('saved');
   }
   lgLastCSV='';
+  setTimeout(()=>{loadLgYear()},200);
 }
 
 // ── League Scorer Modal ──
