@@ -3229,28 +3229,40 @@ function renderLgHandicaps(){
   if(!lgTeams.length){document.getElementById('lgHcSection').style.display='none';return}
   document.getElementById('lgHcSection').style.display='block';
   const maxR=lgTotalRounds()||3;
-  // Build header
+  // Simple header
   let hdr='<tr><th class="hc-name" style="text-align:left">Player</th>';
-  for(let r=1;r<=maxR;r++){
-    const roundMatches=lgMatches.filter(m=>m.round===r&&m.t1&&m.t2);
-    hdr+=`<th class="hc-val">R${r}</th>`;
-  }
+  for(let r=1;r<=maxR;r++){hdr+=`<th class="hc-val">Match ${r}</th>`}
   hdr+='</tr>';
   document.getElementById('lgHcHead').innerHTML=hdr;
-  // Build body grouped by team
-  const sortedTeams=[...lgTeams].sort((a,b)=>a.name.localeCompare(b.name));
+  // Sort teams by completion (most completed matches first)
+  const sortedTeams=[...lgTeams].sort((a,b)=>{
+    const aCompleted=lgMatches.filter(m=>(m.t1===a.label||m.t2===a.label)&&m.t1&&m.t2&&lgMatchHasScores(m)).length;
+    const bCompleted=lgMatches.filter(m=>(m.t1===b.label||m.t2===b.label)&&m.t1&&m.t2&&lgMatchHasScores(m)).length;
+    return bCompleted-aCompleted||a.name.localeCompare(b.name);
+  });
   let body='';
   for(const t of sortedTeams){
-    body+=`<tr><td colspan="${1+maxR}" style="padding:10px 10px 4px;font-size:0.65rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);border-bottom:1px solid var(--border)">${esc(t.name)}</td></tr>`;
+    const myMatches=lgMatches.filter(m=>(m.t1===t.label||m.t2===t.label)&&m.t1&&m.t2);
+    // Team header row with opponent labels
+    body+=`<tr><td style="padding:10px 6px 2px;font-size:0.65rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);border-bottom:1px solid var(--border)">${esc(t.name)}</td>`;
+    for(let r=0;r<maxR;r++){
+      const match=myMatches[r];
+      const oppLabel=match?(match.t1===t.label?match.t2:match.t1):'';
+      const oppName=oppLabel?lgTeamName(oppLabel):'';
+      const courseName=match?match.course:'';
+      body+=`<td style="padding:10px 4px 2px;text-align:center;border-bottom:1px solid var(--border);vertical-align:bottom"><span style="font-size:0.52rem;font-weight:500;color:var(--cream);display:block">${oppName?'vs '+esc(oppName):''}</span><span style="font-size:0.45rem;color:var(--text-muted);display:block;margin-top:1px">${courseName?esc(courseName):''}</span></td>`;
+    }
+    body+=`</tr>`;
+    // Player rows
     const members=[{name:t.p1,hi:t.p1hi},{name:t.p2,hi:t.p2hi}];
     for(const m of members){
       if(!m.name)continue;
       let row=`<tr><td class="hc-name" style="cursor:pointer" onclick="openLgPlayerModal('${esc(m.name)}','',0)">${esc(m.name)}</td>`;
       for(let r=0;r<maxR;r++){
-        const roundMatches=lgMatches.filter(mt=>mt.round===r+1&&mt.t1&&mt.t2);
-        const courseName=roundMatches.length?roundMatches[0].course:'';
+        const match=myMatches[r];
+        const courseName=match?match.course:'';
         const hi=m.hi[r]||0;
-        const ch=courseName?lgGetCH(hi,courseName):0;
+        const ch=courseName&&hi?lgGetCH(hi,courseName):0;
         row+=`<td class="hc-val">${courseName&&hi?ch:'—'}</td>`;
       }
       row+='</tr>';
