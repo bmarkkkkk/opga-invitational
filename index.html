@@ -3798,13 +3798,47 @@ function renderLgMatches(){
         h+=`<div class="lg-player-row"><div class="lg-player-name" style="cursor:pointer" onclick="openLgPlayerModal('${esc(p.name)}','${esc(m.course)}',${rIdx})">${esc(p.name)}<span style="font-size:0.55rem;color:var(--text-muted);margin-left:4px">${esc(p.team)}</span></div><div class="lg-player-stat">${p.hi.toFixed(1)}</div><div class="lg-player-stat">${fullCH}</div><div class="lg-player-stat">${hasP?gross:'—'}</div><div class="lg-player-stat" style="color:${hasP?ntpColor:'inherit'};${hasP&&ntp<0?'font-weight:700':''}">${hasP?fmtPar(ntp):'—'}</div><div class="lg-player-stat" style="color:var(--text-muted)">${hasP?thru:'—'}</div></div>`;
       }
     }else{
-      // Upcoming
-      h+=`<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;text-align:center;align-items:center;padding:8px 0">`;
-      h+=`<div style="font-weight:600;font-size:0.85rem;color:var(--cream)">${esc(t1Name)}</div>`;
-      h+=`<div style="font-size:0.6rem;color:var(--text-muted);font-weight:600">vs</div>`;
-      h+=`<div style="font-weight:600;font-size:0.85rem;color:var(--cream)">${esc(t2Name)}</div></div>`;
-      const strokeInfo=lgGetMatchStrokes(m);
-      if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin:4px 0">${strokeInfo.text}</div>`}
+      // Upcoming - check if ready to show full card (course + HI set)
+      const rIdx=m.t1?lgGetTeamMatchIndex(m.t1,m.round):0;const rIdx2=m.t2?lgGetTeamMatchIndex(m.t2,m.round):0;
+      const matchReady=crs&&t1Team&&t2Team&&(t1Team.p1hi[rIdx]>0||t1Team.p2hi[rIdx]>0||t2Team.p1hi[rIdx2]>0||t2Team.p2hi[rIdx2]>0);
+      if(matchReady){
+        // Show full card with player table (dashes for scores)
+        h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">`;
+        h+=`<div style="text-align:center;padding:14px 10px;border-radius:10px;border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)">`;
+        h+=`<div style="font-weight:700;font-size:0.82rem;color:var(--cream);margin-bottom:2px">${esc(t1Name)}</div>`;
+        h+=`<div style="font-size:0.58rem;color:var(--text-muted);line-height:1.4;margin-bottom:6px">${esc(t1Team.p1)}<br>${esc(t1Team.p2)}</div>`;
+        h+=`<div style="font-family:'Outfit',sans-serif;font-weight:500;font-size:1.8rem;line-height:1;color:var(--text-muted)">—</div>`;
+        h+=`</div>`;
+        h+=`<div style="text-align:center;padding:14px 10px;border-radius:10px;border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)">`;
+        h+=`<div style="font-weight:700;font-size:0.82rem;color:var(--cream);margin-bottom:2px">${esc(t2Name)}</div>`;
+        h+=`<div style="font-size:0.58rem;color:var(--text-muted);line-height:1.4;margin-bottom:6px">${esc(t2Team.p1)}<br>${esc(t2Team.p2)}</div>`;
+        h+=`<div style="font-family:'Outfit',sans-serif;font-weight:500;font-size:1.8rem;line-height:1;color:var(--text-muted)">—</div>`;
+        h+=`</div></div>`;
+        const strokeInfo=lgGetMatchStrokes(m);
+        if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin-bottom:12px">${strokeInfo.text}</div>`}
+        // Player table with HI/CH but dashes for scores
+        h+=`<div style="font-size:0.52rem;font-weight:600;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:6px">INDIVIDUAL SCORES</div>`;
+        const allP=[];
+        allP.push({name:t1Team.p1,hi:t1Team.p1hi[rIdx]||0,team:t1Name});
+        allP.push({name:t1Team.p2,hi:t1Team.p2hi[rIdx]||0,team:t1Name});
+        allP.push({name:t2Team.p1,hi:t2Team.p1hi[rIdx2]||0,team:t2Name});
+        allP.push({name:t2Team.p2,hi:t2Team.p2hi[rIdx2]||0,team:t2Name});
+        h+=`<div class="lg-player-row header"><div style="text-align:left">Player</div><div class="lg-player-stat">HI</div><div class="lg-player-stat">CH</div><div class="lg-player-stat">Gross</div><div class="lg-player-stat">NTP</div><div class="lg-player-stat">Thru</div></div>`;
+        let prevTeam='';
+        for(const p of allP){
+          const fullCH=m.course?lgGetCH(p.hi,m.course):0;
+          if(prevTeam&&prevTeam!==p.team){h+=`<div style="grid-column:1/-1;height:1px;background:rgba(245,240,232,0.06);margin:3px 0"></div>`}
+          prevTeam=p.team;
+          h+=`<div class="lg-player-row"><div class="lg-player-name">${esc(p.name)}<span style="font-size:0.55rem;color:var(--text-muted);margin-left:4px">${esc(p.team)}</span></div><div class="lg-player-stat">${p.hi.toFixed(1)}</div><div class="lg-player-stat">${fullCH}</div><div class="lg-player-stat">—</div><div class="lg-player-stat">—</div><div class="lg-player-stat">—</div></div>`;
+        }
+      }else{
+        h+=`<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;text-align:center;align-items:center;padding:8px 0">`;
+        h+=`<div style="font-weight:600;font-size:0.85rem;color:var(--cream)">${esc(t1Name)}</div>`;
+        h+=`<div style="font-size:0.6rem;color:var(--text-muted);font-weight:600">vs</div>`;
+        h+=`<div style="font-weight:600;font-size:0.85rem;color:var(--cream)">${esc(t2Name)}</div></div>`;
+        const strokeInfo=lgGetMatchStrokes(m);
+        if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin:4px 0">${strokeInfo.text}</div>`}
+      }
     }
     h+=`</div>`;
   }
