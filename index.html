@@ -1919,14 +1919,14 @@ function renderHandicaps(){
       html+=`<tr><td colspan="${2+totalRounds}" style="padding:12px 10px 6px;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;color:var(--text-muted);border-bottom:1px solid var(--border)">${esc(tn)}</td></tr>`;
       for(const p of teamGroups[tn]){
         const chs=Array.from({length:totalRounds},(_,i)=>i+1).map(rn=>{const cName=getCourseName(rn);return`<td class="hc-val">${cName&&courses[cName]?getCH(p.hi,rn):'—'}</td>`}).join('');
-        html+=`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
+        html+=`<tr style="cursor:pointer" onclick="openPlayerModal('${esc(p.name)}')"><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
       }
     }
     document.getElementById('hcBody').innerHTML=html;
   }else{
     document.getElementById('hcBody').innerHTML=sorted.map(p=>{
       const chs=Array.from({length:totalRounds},(_,i)=>i+1).map(rn=>{const cName=getCourseName(rn);return`<td class="hc-val">${cName&&courses[cName]?getCH(p.hi,rn):'—'}</td>`}).join('');
-      return`<tr><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
+      return`<tr style="cursor:pointer" onclick="openPlayerModal('${esc(p.name)}')"><td class="hc-name">${esc(p.name)}</td><td class="hc-val">${p.hi.toFixed(1)}</td>${chs}</tr>`;
     }).join('');
   }
 }
@@ -3250,14 +3250,14 @@ function renderLgHandicaps(){
       const oppLabel=match?(match.t1===t.label?match.t2:match.t1):'';
       const oppName=oppLabel?lgTeamName(oppLabel):'';
       const courseName=match?match.course:'';
-      body+=`<td style="padding:10px 4px 2px;text-align:center;border-bottom:1px solid var(--border);vertical-align:bottom"><span style="font-size:0.52rem;font-weight:500;color:var(--cream);display:block">${oppName?'vs '+esc(oppName):''}</span><span style="font-size:0.45rem;color:var(--text-muted);display:block;margin-top:1px">${courseName?esc(courseName):''}</span></td>`;
+      body+=`<td style="padding:10px 4px 2px;text-align:center;border-bottom:1px solid var(--border);vertical-align:bottom"><span style="font-size:0.62rem;font-weight:500;color:var(--cream);display:block">${oppName?'vs '+esc(oppName):''}</span><span style="font-size:0.54rem;color:var(--text-muted);display:block;margin-top:1px">${courseName?esc(courseName):''}</span></td>`;
     }
     body+=`</tr>`;
     // Player rows
     const members=[{name:t.p1,hi:t.p1hi},{name:t.p2,hi:t.p2hi}];
     for(const m of members){
       if(!m.name)continue;
-      let row=`<tr><td class="hc-name" style="cursor:pointer" onclick="openLgPlayerModal('${esc(m.name)}','',0)">${esc(m.name)}</td>`;
+      let row=`<tr style="cursor:pointer" onclick="openLgPlayerModal('${esc(m.name)}','',0)"><td class="hc-name">${esc(m.name)}</td>`;
       for(let r=0;r<maxR;r++){
         const match=myMatches[r];
         const courseName=match?match.course:'';
