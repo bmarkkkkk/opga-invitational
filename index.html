@@ -3731,7 +3731,7 @@ function renderLgMatches(){
     return{...m,idx:mi,hasScores,allPlayed,inProgress,t1w,t2w};
   });
   matchesWithStatus.sort((a,b)=>{
-    const aO=a.allPlayed?0:a.inProgress?1:2;const bO=b.allPlayed?0:b.inProgress?1:2;
+    const aDefined=a.course&&courses[a.course];const bDefined=b.course&&courses[b.course];const aO=a.allPlayed?0:a.inProgress?1:aDefined?2:3;const bO=b.allPlayed?0:b.inProgress?1:bDefined?2:3;
     return aO!==bO?aO-bO:a.round-b.round;
   });
   if(!matchesWithStatus.length){document.getElementById('lgMatches').innerHTML='<div class="card" style="padding:20px;text-align:center;color:var(--text-muted)">No matches scheduled</div>';return}
@@ -3800,7 +3800,7 @@ function renderLgMatches(){
     }else{
       // Upcoming - check if ready to show full card (course + HI set)
       const rIdx=m.t1?lgGetTeamMatchIndex(m.t1,m.round):0;const rIdx2=m.t2?lgGetTeamMatchIndex(m.t2,m.round):0;
-      const matchReady=crs&&t1Team&&t2Team&&(t1Team.p1hi[rIdx]>0||t1Team.p2hi[rIdx]>0||t2Team.p1hi[rIdx2]>0||t2Team.p2hi[rIdx2]>0);
+      const matchReady=crs&&t1Team&&t2Team;
       if(matchReady){
         // Show full card with player table (dashes for scores)
         h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">`;
@@ -3814,8 +3814,9 @@ function renderLgMatches(){
         h+=`<div style="font-size:0.58rem;color:var(--text-muted);line-height:1.4;margin-bottom:6px">${esc(t2Team.p1)}<br>${esc(t2Team.p2)}</div>`;
         h+=`<div style="font-family:'Outfit',sans-serif;font-weight:500;font-size:1.8rem;line-height:1;color:var(--text-muted)">—</div>`;
         h+=`</div></div>`;
-        const strokeInfo=lgGetMatchStrokes(m);
-        if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin-bottom:12px">${strokeInfo.text}</div>`}
+        const hasAnyHI=t1Team.p1hi[rIdx]>0||t1Team.p2hi[rIdx]>0||t2Team.p1hi[rIdx2]>0||t2Team.p2hi[rIdx2]>0;
+        if(hasAnyHI){const strokeInfo=lgGetMatchStrokes(m);
+        if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin-bottom:12px">${strokeInfo.text}</div>`}}
         // Player table with HI/CH but dashes for scores
         h+=`<div style="font-size:0.52rem;font-weight:600;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:6px">INDIVIDUAL SCORES</div>`;
         const allP=[];
@@ -3829,7 +3830,7 @@ function renderLgMatches(){
           const fullCH=m.course?lgGetCH(p.hi,m.course):0;
           if(prevTeam&&prevTeam!==p.team){h+=`<div style="grid-column:1/-1;height:1px;background:rgba(245,240,232,0.06);margin:3px 0"></div>`}
           prevTeam=p.team;
-          h+=`<div class="lg-player-row"><div class="lg-player-name">${esc(p.name)}<span style="font-size:0.55rem;color:var(--text-muted);margin-left:4px">${esc(p.team)}</span></div><div class="lg-player-stat">${p.hi.toFixed(1)}</div><div class="lg-player-stat">${fullCH}</div><div class="lg-player-stat">—</div><div class="lg-player-stat">—</div><div class="lg-player-stat">—</div></div>`;
+          h+=`<div class="lg-player-row"><div class="lg-player-name">${esc(p.name)}<span style="font-size:0.55rem;color:var(--text-muted);margin-left:4px">${esc(p.team)}</span></div><div class="lg-player-stat">${p.hi>0?p.hi.toFixed(1):'—'}</div><div class="lg-player-stat">${p.hi>0?fullCH:'—'}</div><div class="lg-player-stat">—</div><div class="lg-player-stat">—</div><div class="lg-player-stat">—</div></div>`;
         }
       }else{
         h+=`<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;text-align:center;align-items:center;padding:8px 0">`;
