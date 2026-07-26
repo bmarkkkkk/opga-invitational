@@ -3160,7 +3160,11 @@ function lgGetTeamMatchIndex(teamLabel, matchRound){
 
 function lgGetCH(hi,courseName){const c=courses[courseName];if(!c)return 0;return Math.round(hi*(c.slope/113)+(parseFloat(c.rating)-c.par))}
 function lgTotalRounds(){const valid=lgMatches.filter(m=>m.t1&&m.t2);return valid.length?Math.max(...valid.map(m=>m.round)):0}
-function lgMatchHasScores(m){return(m.t1fw+m.t2fw+m.t1bw+m.t2bw)>0}
+
+function lgNinePlayed(fw1,fw2){return(fw1>0||fw2>0)}
+function lgHolesPlayed(m){return(lgNinePlayed(m.t1fw,m.t2fw)?9:0)+(lgNinePlayed(m.t1bw,m.t2bw)?9:0)}
+
+function lgMatchHasScores(m){return lgNinePlayed(m.t1fw,m.t2fw)||lgNinePlayed(m.t1bw,m.t2bw)}
 
 function lgCalcStandings(){
   const stats={};
@@ -3365,7 +3369,7 @@ async function renderLgRecordsPage(){
     const totalMatchesNeeded=teams.length>0?(teams.length-1):0;
     for(const m of matches){
       const hasScores=(m.t1fw+m.t2fw+m.t1bw+m.t2bw)>0;if(!hasScores)continue;
-      const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;const halved=18-t1w-t2w;
+      const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;const holesPlayed=lgHolesPlayed(m);const halved=holesPlayed-t1w-t2w;
       if(stats[m.t1]){stats[m.t1].won+=t1w;stats[m.t1].lost+=t2w;stats[m.t1].halved+=halved;stats[m.t1].played++}
       if(stats[m.t2]){stats[m.t2].won+=t2w;stats[m.t2].lost+=t1w;stats[m.t2].halved+=halved;stats[m.t2].played++}
     }
@@ -3599,7 +3603,7 @@ function openLgMatchModal(matchIdx){
   const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;
   const t1Won=t1w>t2w;const t2Won=t2w>t1w;const tied=t1w===t2w;
   const hasScores=lgMatchHasScores(m);
-  const halved=18-t1w-t2w;
+  const holesPlayed=lgHolesPlayed(m);const halved=holesPlayed-t1w-t2w;
   const crs=courses[m.course];
   const rIdx=m.round-1;
 
@@ -3761,7 +3765,7 @@ function renderLgMatches(){
     h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:0.55rem;font-weight:600;letter-spacing:0.06em;color:${statusColor}">${statusLabel}</div><div style="font-size:0.68rem;color:var(--text-muted)">${m.course?esc(m.course)+(crs?' · Par '+crs.par+' · '+parseFloat(crs.rating).toFixed(1)+'/'+crs.slope+(crs.tees?' · '+esc(crs.tees):''):''):'Course TBD'}</div></div>`;
     h+=`</div>`;
     if(m.hasScores){
-      const halved=18-m.t1w-m.t2w;
+      const holesPlayed=lgHolesPlayed(m);const halved=holesPlayed-m.t1w-m.t2w;
       // Score block
       h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">`;
       h+=`<div style="text-align:center;padding:14px 10px;border-radius:10px;${t1Won&&m.allPlayed?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)'}">`;
@@ -3781,7 +3785,7 @@ function renderLgMatches(){
       if(strokeInfo.text){h+=`<div style="text-align:center;font-size:0.7rem;color:var(--text-muted);font-style:italic;margin-bottom:12px">${strokeInfo.text}</div>`}
       // Breakdown
       const t1fW=m.t1fw>m.t2fw;const t2fW=m.t2fw>m.t1fw;const t1bW=m.t1bw>m.t2bw;const t2bW=m.t2bw>m.t1bw;
-      const fH=9-m.t1fw-m.t2fw;const bH=9-m.t1bw-m.t2bw;
+      const frontPlayed=lgNinePlayed(m.t1fw,m.t2fw);const backPlayed=lgNinePlayed(m.t1bw,m.t2bw);const fH=frontPlayed?9-m.t1fw-m.t2fw:0;const bH=backPlayed?9-m.t1bw-m.t2bw:0;
       h+=`<div style="background:rgba(0,0,0,0.1);border-radius:8px;padding:8px 12px;margin-bottom:12px">`;
       h+=`<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:2px 14px;font-size:0.72rem;align-items:center">`;
       h+=`<div></div><div style="font-size:0.5rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);text-align:center">FRONT</div><div style="font-size:0.5rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);text-align:center">BACK</div><div style="font-size:0.5rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);text-align:center">TOTAL</div>`;
@@ -3985,6 +3989,7 @@ function openLgTeamModal(label){
     if(hasScores){
       const myFW=isT1?m.t1fw:m.t2fw;const myBW=isT1?m.t1bw:m.t2bw;
       const oppFW=isT1?m.t2fw:m.t1fw;const oppBW=isT1?m.t2bw:m.t1bw;
+      const tmFrontPlayed=lgNinePlayed(m.t1fw,m.t2fw);const tmBackPlayed=lgNinePlayed(m.t1bw,m.t2bw);
       // Score block - same as static display
       h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px">`;
       h+=`<div style="text-align:center;padding:12px 8px;border-radius:10px;${won&&allPlayed?'border:1px solid rgba(218,165,32,0.25);background:rgba(218,165,32,0.04)':'border:1px solid rgba(245,240,232,0.06);background:rgba(0,0,0,0.1)'}">`;
@@ -4004,7 +4009,7 @@ function openLgTeamModal(label){
 
       // Breakdown
       const myFWon=myFW>oppFW;const oppFWon=oppFW>myFW;const myBWon=myBW>oppBW;const oppBWon=oppBW>myBW;
-      const fH=9-myFW-oppFW;const bH=9-myBW-oppBW;
+      const fH=tmFrontPlayed?9-myFW-oppFW:0;const bH=tmBackPlayed?9-myBW-oppBW:0;
       h+=`<div style="background:rgba(0,0,0,0.1);border-radius:8px;padding:8px 12px;margin-bottom:10px">`;
       h+=`<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:2px 14px;font-size:0.7rem;align-items:center">`;
       h+=`<div></div><div style="font-size:0.5rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);text-align:center">FRONT</div><div style="font-size:0.5rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);text-align:center">BACK</div><div style="font-size:0.5rem;font-weight:600;letter-spacing:0.06em;color:var(--text-muted);text-align:center">TOTAL</div>`;
