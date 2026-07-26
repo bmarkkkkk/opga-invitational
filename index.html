@@ -3172,7 +3172,7 @@ function lgCalcStandings(){
   for(const m of lgMatches){
     if(!m.t1||!m.t2||!lgMatchHasScores(m))continue;
     const t1w=m.t1fw+m.t1bw;const t2w=m.t2fw+m.t2bw;
-    const totalPlayed=9+9;const halved=totalPlayed-t1w-t2w;
+    const holesPlayed=lgHolesPlayed(m);const halved=holesPlayed-t1w-t2w;
     if(stats[m.t1]){stats[m.t1].won+=t1w;stats[m.t1].lost+=t2w;stats[m.t1].halved+=halved;stats[m.t1].played++}
     if(stats[m.t2]){stats[m.t2].won+=t2w;stats[m.t2].lost+=t1w;stats[m.t2].halved+=halved;stats[m.t2].played++}
     // NTP tiebreaker - calculate team net scores
