@@ -970,7 +970,7 @@
             <button class="admin-tab active" data-lgtab="config">Config</button>
             <button class="admin-tab" data-lgtab="teams">Teams</button>
             <button class="admin-tab" data-lgtab="schedule">Rounds</button>
-            <button class="admin-tab" data-lgtab="scores">Scores</button>
+            <button class="admin-tab" data-lgtab="scores">Scores</button><button class="admin-tab" data-lgtab="infotabs">Info Tabs</button>
           </div>
           <div class="admin-content" id="lgAdminContent"></div>
         </div>
@@ -982,6 +982,7 @@
       <!-- League Admin FAB -->
 
 
+      <div class="info-tabs-wrap" id="lgInfoTabsWrap" style="display:none"></div>
       <div class="gallery-links" id="lgGalleryLinks" style="display:none">
         <span class="gallery-link" id="lgScorecardsLink">📋 Scorecards</span>
         <span class="gallery-link" id="lgGalleryLink">📸 Photo Gallery</span>
@@ -2622,6 +2623,7 @@ async function init(){
   // Info tabs from column C
   infoTabs=[];
   for(let i=1;i<configRows.length;i++){const v=(configRows[i][2]||'').trim();if(v)infoTabs.push({name:v,locked:false})}
+  loadLgInfoTabs(configRows);
   for(const tab of infoTabs){try{const r=await fetchTab(tab.name);if(r.length>0&&(r[0][2]||'').trim().toLowerCase()==='locked')tab.locked=true}catch(e){}}
   renderInfoTabButtons();
 
@@ -2833,7 +2835,7 @@ function openGallery(category,context){
     document.getElementById('scoreEntryFab').style.display='none';
     document.querySelector('#adminHeaderBtn').parentElement.style.display='none';
   }else{
-    document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap,#lgGalleryLinks').forEach(el=>el.style.display='none');
+    document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap,#lgGalleryLinks,#lgInfoTabsWrap').forEach(el=>el.style.display='none');
     document.getElementById('lgScorerFab').style.display='none';
     document.getElementById('lgAdminBtn').style.display='none';
   }
@@ -2865,6 +2867,7 @@ function closeGallery(){
     lastCSV='';load();
   }else{
     document.getElementById('lgGalleryLinks').style.display='';
+  if(lgInfoTabs.length)document.getElementById('lgInfoTabsWrap').style.display='flex';
     document.getElementById('lgScorerFab').style.display='';
     document.getElementById('lgAdminBtn').style.display='';
     document.getElementById('lgRecordsLinkWrap').style.display='';
@@ -3004,6 +3007,28 @@ function fileToBase64(file){
     reader.onerror=reject;
     reader.readAsDataURL(file);
   });
+}
+
+
+// ── League Info Tabs ──
+let lgInfoTabs=[];
+
+function renderLgInfoTabs(){
+  const wrap=document.getElementById('lgInfoTabsWrap');
+  if(!lgInfoTabs.length){wrap.style.display='none';return}
+  wrap.style.display='flex';
+  wrap.innerHTML=lgInfoTabs.map(t=>`<span class="info-tab-btn" data-lgtab="${esc(t.name)}">${t.locked?'<span style="font-size:0.65em;margin-right:3px">\u{1F512}</span>':''}${esc(t.name)}</span>`).join('');
+  wrap.querySelectorAll('.info-tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{const tab=lgInfoTabs.find(t=>t.name===btn.dataset.lgtab);if(tab&&tab.locked&&!window._lgInfoUnlocked?.includes(tab.name)){openPinModal('scorer',{title:tab.name,sub:'Enter PIN to view',onSuccess:()=>{if(!window._lgInfoUnlocked)window._lgInfoUnlocked=[];window._lgInfoUnlocked.push(tab.name);openInfoModal(tab.name)}})}else{openInfoModal(btn.dataset.lgtab)}});
+  });
+}
+
+async function loadLgInfoTabs(configRows){
+  lgInfoTabs=[];
+  if(!configRows)return;
+  for(let i=1;i<configRows.length;i++){const v=(configRows[i][5]||'').trim();if(v)lgInfoTabs.push({name:v,locked:false})}
+  for(const tab of lgInfoTabs){try{const r=await fetchTab(tab.name);if(r.length>0&&(r[0][2]||'').trim().toLowerCase()==='locked')tab.locked=true}catch(e){}}
+  renderLgInfoTabs();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3584,6 +3609,7 @@ function renderLeague(){
   if(lgRecordsOpen||galleryOpen)return;
   document.getElementById('lgRecordsLinkWrap').style.display='';
   document.getElementById('lgGalleryLinks').style.display='';
+  if(lgInfoTabs.length)document.getElementById('lgInfoTabsWrap').style.display='flex';
   document.getElementById('lgStandingsSection').style.display='';
   document.getElementById('lgMatchesSection').style.display='';
   renderLgYearSelector();
@@ -4141,15 +4167,106 @@ function lgAdminAuthenticated(){
 }
 function closeLgAdmin(){document.getElementById('lgAdminOverlay').classList.remove('open');document.body.style.overflow='';const ys=document.getElementById('lgAdminYearSel');if(ys)ys.remove();lgLastCSV='';lgTeams=[];lgMatches=[];loadLgYear();startLgPolling()}
 
-function renderLgAdminTab(){
+let lgAdminInfoActiveTab='';let lgAdminInfoRows=[];
+
+async function renderLgAdminInfoTabs(el){
+  if(!lgAdminInfoActiveTab&&lgInfoTabs.length)lgAdminInfoActiveTab=lgInfoTabs[0].name;
+  if(lgAdminInfoActiveTab&&!lgAdminInfoRows.length)await loadLgAdminInfoTab(lgAdminInfoActiveTab);
+  let h=`<div class="admin-section-title">League Info Tabs</div><div class="admin-section-sub">Manage content tabs shown at the bottom of the league page.</div>`;
+  h+=`<div style="display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;align-items:center">`;
+  h+=lgInfoTabs.map(t=>`<button class="admin-score-rtab ${t.name===lgAdminInfoActiveTab?'active':'inactive'}" onclick="switchLgInfoTab('${esc(t.name)}')">${esc(t.name)}${t.locked?' \u{1F512}':''}</button>`).join('');
+  h+=`<button class="admin-score-rtab inactive" style="border:1px solid var(--border)" onclick="addLgInfoTab()">+ Add Tab</button>`;
+  if(lgInfoTabs.length)h+=`<button style="padding:6px 12px;border-radius:6px;border:1px solid rgba(221,68,68,0.2);font-family:'Outfit',sans-serif;font-size:0.72rem;font-weight:600;cursor:pointer;background:rgba(221,68,68,0.08);color:var(--red)" onclick="deleteLgInfoTab()">Delete Tab</button>`;
+  h+=`</div>`;
+  if(lgAdminInfoActiveTab){
+    h+=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px"><div><div style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.2rem;color:var(--gold)">${esc(lgAdminInfoActiveTab)}</div><div style="font-size:0.72rem;color:var(--text-muted)">${lgAdminInfoRows.length} items</div></div><div style="display:flex;gap:10px;align-items:center"><button class="admin-btn admin-btn-primary admin-btn-sm" onclick="addLgInfoRow()">+ Add Row</button><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:0.72rem;color:var(--text-secondary)"><input type="checkbox" id="lgAdminInfoLocked" ${lgInfoTabs.find(t=>t.name===lgAdminInfoActiveTab)?.locked?'checked':''} style="width:14px;height:14px;accent-color:var(--green-500)" onchange="toggleLgInfoTabLock(this.checked)" /> PIN Protected</label></div></div>`;
+    h+=`<div class="admin-table-wrap"><div class="admin-table-head" style="grid-template-columns:1.2fr 2fr 36px"><span>Title</span><span>Description</span><span></span></div><div id="lgAdminInfoRows"></div></div>`;
+    h+=`<div class="admin-actions-row"><button class="admin-btn admin-btn-primary" onclick="saveLgInfoTab()">Save Tab</button></div>`;
+  }else{
+    h+=`<div style="padding:20px;text-align:center;color:var(--text-muted)">No info tabs yet — tap "+ Add Tab" to create one</div>`;
+  }
+  el.innerHTML=h;
+  if(lgAdminInfoActiveTab)renderLgInfoRows();
+}
+
+async function loadLgAdminInfoTab(name){
+  lgAdminInfoRows=[];
+  try{const rows=await fetchTab(name);for(let i=1;i<rows.length;i++){const t=(rows[i][0]||'').trim();const b=(rows[i][1]||'').trim();if(t||b)lgAdminInfoRows.push({title:t,body:b})}}catch(e){}
+}
+
+function renderLgInfoRows(){
+  const el=document.getElementById('lgAdminInfoRows');if(!el)return;
+  el.innerHTML=lgAdminInfoRows.map((r,i)=>`<div class="admin-table-row" style="grid-template-columns:1.2fr 2fr 36px"><input class="admin-input lg-info-title" value="${esc(r.title)}" placeholder="Title" /><input class="admin-input lg-info-body" value="${esc(r.body)}" placeholder="Description" /><button class="admin-del-btn" onclick="lgAdminInfoRows.splice(${i},1);renderLgInfoRows()">✕</button></div>`).join('');
+}
+
+async function switchLgInfoTab(name){lgAdminInfoActiveTab=name;lgAdminInfoRows=[];await loadLgAdminInfoTab(name);renderLgAdminTab()}
+function addLgInfoRow(){lgAdminInfoRows.push({title:'',body:''});renderLgInfoRows()}
+
+async function addLgInfoTab(){
+  if(!gAuthToken){showAdminToast('Sign in first',true);return}
+  const name=prompt('Tab name (e.g. League Rules, Format):');if(!name||!name.trim())return;
+  const tabName=name.trim();
+  if(lgInfoTabs.some(t=>t.name===tabName)||infoTabs.some(t=>t.name===tabName)){showAdminToast('Tab name already exists',true);return}
+  try{
+    const sheetsRes=await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID,{headers:{'Authorization':'Bearer '+gAuthToken}});
+    const sheetsData=await sheetsRes.json();
+    const existing=(sheetsData.sheets||[]).map(s=>s.properties.title);
+    if(!existing.includes(tabName)){
+      await fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+':batchUpdate',{method:'POST',headers:{'Authorization':'Bearer '+gAuthToken,'Content-Type':'application/json'},body:JSON.stringify({requests:[{addSheet:{properties:{title:tabName}}}]})});
+      await writeAdminToSheet(tabName+'!A1:C1',[['Title','Body','']]);
+    }
+    lgInfoTabs.push({name:tabName,locked:false});
+    const fullF=[];for(let i=0;i<20;i++)fullF.push(i<lgInfoTabs.length?[lgInfoTabs[i].name]:['']);
+    await writeAdminToSheet('Config!F2:F21',fullF);
+    lgAdminInfoActiveTab=tabName;lgAdminInfoRows=[];
+    renderLgAdminTab();
+    showAdminToast(tabName+' created');
+  }catch(err){showAdminToast('Failed: '+err.message,true)}
+}
+
+async function deleteLgInfoTab(){
+  if(!lgAdminInfoActiveTab)return;
+  if(!confirm('Delete "'+lgAdminInfoActiveTab+'" tab?'))return;
+  lgInfoTabs=lgInfoTabs.filter(t=>t.name!==lgAdminInfoActiveTab);
+  const fullF=[];for(let i=0;i<20;i++)fullF.push(i<lgInfoTabs.length?[lgInfoTabs[i].name]:['']);
+  await writeAdminToSheet('Config!F2:F21',fullF);
+  lgAdminInfoActiveTab=lgInfoTabs.length?lgInfoTabs[0].name:'';
+  lgAdminInfoRows=[];
+  if(lgAdminInfoActiveTab)await loadLgAdminInfoTab(lgAdminInfoActiveTab);
+  renderLgAdminTab();
+  showAdminToast('Tab deleted');
+}
+
+async function toggleLgInfoTabLock(checked){
+  const tab=lgInfoTabs.find(t=>t.name===lgAdminInfoActiveTab);if(tab)tab.locked=checked;
+  if(gAuthToken&&lgAdminInfoActiveTab){await writeAdminToSheet(lgAdminInfoActiveTab+'!C1',[[checked?'locked':'']]);showAdminToast(checked?'PIN protection enabled':'PIN protection removed')}
+}
+
+async function saveLgInfoTab(){
+  if(!gAuthToken){showAdminToast('Sign in first',true);return}
+  const titles=document.querySelectorAll('.lg-info-title');
+  const bodies=document.querySelectorAll('.lg-info-body');
+  const rows=[['Title','Body','']];
+  const locked=lgInfoTabs.find(t=>t.name===lgAdminInfoActiveTab)?.locked;
+  rows[0][2]=locked?'locked':'';
+  for(let i=0;i<titles.length;i++){rows.push([titles[i].value,bodies[i].value,''])}
+  // Clear extra rows
+  for(let i=0;i<20;i++)rows.push(['','','']);
+  const ok=await writeAdminToSheet(lgAdminInfoActiveTab+'!A1:C'+(rows.length),rows);
+  if(ok)showAdminToast(lgAdminInfoActiveTab+' saved');
+  else showAdminToast('Save failed',true);
+}
+
+
   const c=document.getElementById('lgAdminContent');
   document.getElementById('lgAdminTabs').querySelectorAll('.admin-tab').forEach(b=>{
-    b.classList.toggle('active',b.textContent.toLowerCase()===lgAdminActiveTab);
+    b.classList.toggle('active',b.dataset.lgtab===lgAdminActiveTab);
   });
   if(lgAdminActiveTab==='config')renderLgAdminConfig(c);
   else if(lgAdminActiveTab==='teams')renderLgAdminTeams(c);
   else if(lgAdminActiveTab==='schedule')renderLgAdminSchedule(c);
   else if(lgAdminActiveTab==='scores')renderLgAdminScores(c);
+  else if(lgAdminActiveTab==='infotabs')renderLgAdminInfoTabs(c);
 }
 
 function renderLgAdminConfig(c){
