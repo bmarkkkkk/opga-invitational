@@ -982,6 +982,7 @@
       <!-- League Admin FAB -->
 
 
+      <div class="info-tabs-wrap" id="lgInfoTabsWrap" style="display:none"></div>
       <div class="gallery-links" id="lgGalleryLinks" style="display:none">
         <span class="gallery-link" id="lgScorecardsLink">📋 Scorecards</span>
         <span class="gallery-link" id="lgGalleryLink">📸 Photo Gallery</span>
@@ -2833,7 +2834,7 @@ function openGallery(category,context){
     document.getElementById('scoreEntryFab').style.display='none';
     document.querySelector('#adminHeaderBtn').parentElement.style.display='none';
   }else{
-    document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap,#lgGalleryLinks').forEach(el=>el.style.display='none');
+    document.querySelectorAll('#lgYearControls,#lgViewControls,#lgStandingsSection,#lgMatchesSection,#lgHcSection,#lgChampBanner,#lgRecordsLinkWrap,#lgGalleryLinks,#lgInfoTabsWrap').forEach(el=>el.style.display='none');
     document.getElementById('lgScorerFab').style.display='none';
     document.getElementById('lgAdminBtn').style.display='none';
   }
@@ -2865,6 +2866,7 @@ function closeGallery(){
     lastCSV='';load();
   }else{
     document.getElementById('lgGalleryLinks').style.display='';
+  if(lgInfoTabs.length)document.getElementById('lgInfoTabsWrap').style.display='flex';
     document.getElementById('lgScorerFab').style.display='';
     document.getElementById('lgAdminBtn').style.display='';
     document.getElementById('lgRecordsLinkWrap').style.display='';
@@ -3006,6 +3008,32 @@ function fileToBase64(file){
   });
 }
 
+
+// ── League Info Tabs (loaded from Config column F) ──
+let lgInfoTabs=[];
+
+function renderLgInfoTabs(){
+  const wrap=document.getElementById('lgInfoTabsWrap');
+  if(!lgInfoTabs.length){wrap.style.display='none';return}
+  wrap.style.display='flex';
+  wrap.innerHTML=lgInfoTabs.map(t=>{
+    const lockIcon=t.locked?'<span style="font-size:0.65em;margin-right:3px">&#x1F512;</span>':'';
+    return '<span class="info-tab-btn" data-lgtab="'+esc(t.name)+'">'+lockIcon+esc(t.name)+'</span>';
+  }).join('');
+  wrap.querySelectorAll('.info-tab-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var tab=lgInfoTabs.find(function(t){return t.name===btn.dataset.lgtab});
+      if(tab&&tab.locked&&(!window._lgInfoUnlocked||window._lgInfoUnlocked.indexOf(tab.name)<0)){
+        openPinModal('scorer',{title:tab.name,sub:'Enter PIN to view',onSuccess:function(){
+          if(!window._lgInfoUnlocked)window._lgInfoUnlocked=[];
+          window._lgInfoUnlocked.push(tab.name);
+          openInfoModal(tab.name);
+        }});
+      }else{openInfoModal(btn.dataset.lgtab)}
+    });
+  });
+}
+
 // ══════════════════════════════════════════════════════════════
 // LEAGUE MODULE
 // ══════════════════════════════════════════════════════════════
@@ -3090,6 +3118,11 @@ async function loadLeague(){
   }
   const configRows=await fetchTab('League Config');
   if(!configRows||configRows.length<2){return}
+  // Load league info tabs from League Config column E
+  lgInfoTabs=[];
+  for(var li=1;li<configRows.length;li++){var ltv=(configRows[li][4]||'').trim();if(ltv)lgInfoTabs.push({name:ltv,locked:false})}
+  for(var lj=0;lj<lgInfoTabs.length;lj++){try{var ltr=await fetchTab(lgInfoTabs[lj].name);if(ltr.length>0&&(ltr[0][2]||'').trim().toLowerCase()==='locked')lgInfoTabs[lj].locked=true}catch(e){}}
+  renderLgInfoTabs();
   lgYears=[];
   for(let i=1;i<configRows.length;i++){const v=(configRows[i][0]||'').trim();if(v)lgYears.push(v)}
   if(configRows[1]&&configRows[1][1])lgName=(configRows[1][1]||'OPGA Round Robin').trim();
@@ -3584,6 +3617,7 @@ function renderLeague(){
   if(lgRecordsOpen||galleryOpen)return;
   document.getElementById('lgRecordsLinkWrap').style.display='';
   document.getElementById('lgGalleryLinks').style.display='';
+  if(lgInfoTabs.length)document.getElementById('lgInfoTabsWrap').style.display='flex';
   document.getElementById('lgStandingsSection').style.display='';
   document.getElementById('lgMatchesSection').style.display='';
   renderLgYearSelector();
