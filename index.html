@@ -3296,11 +3296,8 @@ function renderLgHandicaps(){
       if(!m.name)continue;
       let row=`<tr style="cursor:pointer" onclick="openLgPlayerModal('${esc(m.name)}','',0)"><td class="hc-name">${esc(m.name)}</td>`;
       for(let r=0;r<maxR;r++){
-        const match=myMatches[r];
-        const courseName=match?match.course:'';
         const hi=m.hi[r]||0;
-        const ch=courseName&&hi?lgGetCH(hi,courseName):0;
-        row+=`<td class="hc-val">${courseName&&hi?ch:'—'}</td>`;
+        row+=`<td class="hc-val">${hi>0?hi.toFixed(1):'—'}</td>`;
       }
       row+='</tr>';
       body+=row;
