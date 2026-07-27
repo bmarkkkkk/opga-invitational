@@ -3711,8 +3711,7 @@ function renderLgStandings(){
     const lgAllComplete=lgTeams.length>0&&displayStats.every(s=>s.played>=(lgTeams.length-1))&&(lgTeams.length-1)>0;
     let thru=0;const matchSet=lgMatches;
     for(const m of matchSet){if(!m.t1||!m.t2)continue;const isT1=m.t1===s.label;if(!isT1&&m.t2!==s.label)continue;
-      const ps=isT1?[[m.p1f,m.p1b],[m.p2f,m.p2b]]:[[m.p3f,m.p3b],[m.p4f,m.p4b]];
-      for(const[f,b] of ps){if(f>0&&b>0)thru+=18;else if(f>0||b>0)thru+=9}}
+      if(lgMatchHasScores(m))thru+=lgHolesPlayed(m)}
     h+=`<div class="lg-standings-row${i===0&&lgAllComplete?' rank-1':''}" onclick="openLgTeamModal('${s.label}')">
       <div class="rank">${i+1}</div>
       <div><div class="team-nm">${esc(s.name)}</div><div style="font-size:0.65rem;font-weight:400;color:var(--text-muted)">${(()=>{const t=lgTeamByLabel(s.label);return t?esc(t.p1)+', '+esc(t.p2):''})()}</div><div class="team-sub">${s.played} match${s.played!==1?'es':''} played</div></div>
